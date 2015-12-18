@@ -1,0 +1,4 @@
+<root>
+  <robot name="1" src="scripts/robot1"/>
+  <robot name="2" src="scripts/robot2"/>
+</root>

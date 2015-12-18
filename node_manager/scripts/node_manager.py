@@ -1,20 +1,121 @@
 #!/usr/bin/env python
 
-import rospy
-from std_msgs.msg import String
+from lxml import objectify 
+import os.path, json, httplib
 
-def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(10)
-    while not rospy.is_shutdown():
-        hello_str = "Hello world %s" % rospy.get_time()
-        rospy.loginfo(hello_str)
-        pub.publish(hello_str)
-        rate.sleep()
+from roslaunch.scriptapi import ROSLaunch
+from roslaunch.core import Node
+from std_msgs.msg import String
+import rospy
+
+from config import config
+
+
+def convertXMLToObject(data): return objectify.fromstring(data)
+def convertJSONToObject(data): return json.loads(data)
+
+def loadObjectFromFile(name):
+  file = open(name, 'r'); data = file.read()
+  fileName, fileExtension = os.path.splitext(name)
+  return {
+    '.json': lambda data: convertJSONToObject(data),
+    '.xml': lambda data: convertXMLToObject(data)
+  }.get(fileExtension, lambda name: {})(data)
+
+
+robotConfig = loadObjectFromFile(config['robotConfig'])
+
+worldIDsToStart = []
+worldIDsToStop = []
+launchFile = {}
+
+
+def getWorldById(id):
+  return loadObjectFromFile(config['root']+'/node_manager/scripts/world.json')
+  conn = httplib.HTTPConnection(config['server']['url'])
+  conn.request("GET", "%s?id=%i"%(config['server']['worldById'], id))
+  response = conn.getresponse()
+  data = response.read()
+  conn.close()
+ 
+
+def startWorldById(id):
+  global launch, launchId, nodeId
+
+  launch = ROSLaunch()
+  launchFile[id] = launch
+  nodeId, launchId = 0, id
+  launch.start()
+  
+  data = getWorldById(id)
+  parseWorld(data)
+
+
+def stopWorldById(id):
+  if not id in launchFile: return
+  launchFile[id].stop()
+  del launchFile[id]
+
+
+def parseWorld(data):
+  for robot in data['robot']:
+    parseRobot(robot)
+
+
+def parseRobot(robot):
+  name, attr = robot['name'], parseAttrs(robot['attr'])
+  src = getRobotSrcByName(name)
+  path = os.path.join(config['robots'], src)
+  launchRobotBySrc(path, src, attr)
+
+
+def parseAttrs(attrs):
+  return [(attr['name'], attr['value']) for attr in attrs]
+
+
+def getRobotSrcByName(name):
+  for robot in robotConfig['robot']:
+    if robot.get('name') == name: return robot.get('src')
+
+
+def launchRobotBySrc(path, src, attr):
+  global nodeId; nodeId += 1
+  for name in config['robotNodes']:
+    file = os.path.join(src, name)
+    if os.path.isfile(os.path.join(path, name+'.py')):
+      launch.launch(Node(config['pkg']['robots'], name+'.py', 
+        namespace=launchId, name="%s_%i"%(name, nodeId), filename=file+'.py',
+        env_args=attr))
+    if os.path.isfile(os.path.join(path, name+'.cpp')):
+      launch.launch(Node(config['pkg']['robots'], name+'.cpp', 
+        namespace=launchId, name="%s_%i"%(name, nodeId), filename=file+'.cpp',
+        env_args=attr))
+
+
+def startWorld(data):
+  rospy.loginfo(data.data)
+  worldIDsToStart.append(data.data)
+
+
+def stopWorld(data):
+  rospy.loginfo(data.data)
+  wolrdIDsToStop.append(data.data)
+
+
+def run():
+  rospy.init_node('node_manager', anonymous=True)
+  rospy.Subscriber('node_manager_start', String, startWorld)
+  rospy.Subscriber('node_manager_stop', String, stopWorld)
+  rate = rospy.Rate(config['rate'])
+  while not rospy.is_shutdown():
+    for id in worldIDsToStart: startWorldById(id)
+    for id in worldIDsToStop: stopWorldById(id)
+
+    del worldIDsToStart[:]
+    del worldIDsToStop[:]
+
+    rate.sleep()
+
 
 if __name__ == '__main__':
-    try:
-        talker()
-    except rospy.RosInterruptException:
-        pass
+  run()
