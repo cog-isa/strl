@@ -63,14 +63,10 @@ def parseWorld(data):
 
 
 def parseRobot(robot):
-  name, attr = robot['name'], parseAttrs(robot['attr'])
+  name = robot['name']
   src = getRobotSrcByName(name)
   path = os.path.join(config['robots'], src)
   launchRobotBySrc(path, src, attr)
-
-
-def parseAttrs(attrs):
-  return [(attr['name'], attr['value']) for attr in attrs]
 
 
 def getRobotSrcByName(name):
@@ -78,18 +74,16 @@ def getRobotSrcByName(name):
     if robot.get('name') == name: return robot.get('src')
 
 
-def launchRobotBySrc(path, src, attr):
+def launchRobotBySrc(path, src):
   global nodeId; nodeId += 1
   for name in config['robotNodes']:
     file = os.path.join(src, name)
     if os.path.isfile(os.path.join(path, name+'.py')):
       launch.launch(Node(config['pkg']['robots'], name+'.py', 
-        namespace=launchId, name="%s_%i"%(name, nodeId), filename=file+'.py',
-        env_args=attr))
+        namespace=launchId, name="%s_%i"%(name, nodeId), filename=file+'.py'))
     if os.path.isfile(os.path.join(path, name+'.cpp')):
       launch.launch(Node(config['pkg']['robots'], name+'.cpp', 
-        namespace=launchId, name="%s_%i"%(name, nodeId), filename=file+'.cpp',
-        env_args=attr))
+        namespace=launchId, name="%s_%i"%(name, nodeId), filename=file+'.cpp'))
 
 
 def startWorld(data):
@@ -117,5 +111,4 @@ def run():
     rate.sleep()
 
 
-if __name__ == '__main__':
-  run()
+if __name__ == '__main__': run()
