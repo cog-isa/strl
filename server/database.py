@@ -17,6 +17,7 @@ M = db.Model
 class Modeling(M):
 	date = DateTimeField(default=datetime.datetime.now)
 	name = CharField(max_length = 200)
+	# objects
 #	class Meta:
 #		database = db
 	

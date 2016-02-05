@@ -28,11 +28,27 @@ if __name__ == '__main__':
 		if not ms.first() :
 			m = Modeling.create(name ='наше первое моделирование')
 			print('сделали моделирование', m)
+	def minitest():
+		m = Modeling.select().where(Modeling.name == 'наше первое моделирование').first()
+		o = Object.select().limit(1).first()
+		if not o :
+			o = Object.create(type=1, shape="bla", activity=False, tranparency=12, life=100, material='steel', \
+				tempriche=12, reflecion=50, fuelvalue=30, modeling=m, x=1,y=1)
+		print(dir(m), ' !!!! we have objects back link')
+		print(list(m.objects))
+		for o in m.objects:
+			print(o)
+		# ищем имя моделирование у которого температура = 12
+		print( Modeling.select().join(Object).where(Object.tempriche == 12).first().name )
+	minitest()
 	# ПОДКЛЮЧИМ REST	
 	# http://docs.peewee-orm.com/projects/flask-peewee/en/latest/getting-started.html#exposing-content-using-a-rest-api
 	# create a RestAPI container
 	api = RestAPI(app)
 	api.register(Modeling)
+	api.register(Object)
+	api.register(LogEntry)
+	api.register(Execution)
 	api.setup()
 	# now curl http://127.0.0.1:5000/api/modeling/ - все	
 	# http://127.0.0.1:5000/api/modeling/1/   - первый
