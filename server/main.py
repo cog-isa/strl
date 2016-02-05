@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	api = RestAPI(app)
 	api.register(Modeling) #, ModelingResource)
 	api.register(Object, ObjectResource)
-	# теперь curl -v http://127.0.0.1:5000/api/object/modeling=1 
+	# теперь curl -v http://127.0.0.1:5000/api/object/?modeling=1 
 	# показывает только объекты первого моделирования т.к. ObjectResource filter_fields
 	api.register(LogEntry)
 	api.register(Execution)
