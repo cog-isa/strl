@@ -18,10 +18,13 @@ class Modeling(M):
 	date = DateTimeField(default=datetime.datetime.now)
 	name = CharField(max_length = 200)
 	# objects
+	# executions
 #	class Meta:
 #		database = db
 	
 class Execution(M):
+	date = DateTimeField(default=datetime.datetime.now)
+	name = CharField(max_length = 200)
 	modeling = ForeignKeyField(Modeling, null=True, related_name='executions') 
 	# objects with settings
 	# logs = list of LogEntrys
@@ -41,7 +44,7 @@ class Object(M):
 	y = FloatField()
 	
 	modeling 	= ForeignKeyField(Modeling,  null=True, related_name='objects') 
-	execution 	= ForeignKeyField(Execution, null=True, related_name='objects') 
+	execution 	= ForeignKeyField(Execution, null=True, related_name='executions') 
 #	class Meta:
 #		database = db
 	

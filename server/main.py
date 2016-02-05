@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask_peewee.rest import RestAPI
+from flask_peewee.rest import RestAPI, RestResource
 from app import app
 from database import db, Object,Modeling, LogEntry, Execution
 
@@ -41,12 +41,18 @@ if __name__ == '__main__':
 		# ищем имя моделирование у которого температура = 12
 		print( Modeling.select().join(Object).where(Object.tempriche == 12).first().name )
 	minitest()
+
 	# ПОДКЛЮЧИМ REST	
 	# http://docs.peewee-orm.com/projects/flask-peewee/en/latest/getting-started.html#exposing-content-using-a-rest-api
 	# create a RestAPI container
+	#	определеим ресурсы, чтобы включать вложенные объекты
+	class ObjectResource(RestResource):
+			filter_fields = ('modeling','execution', 'type')
 	api = RestAPI(app)
-	api.register(Modeling)
-	api.register(Object)
+	api.register(Modeling) #, ModelingResource)
+	api.register(Object, ObjectResource)
+	# теперь curl -v http://127.0.0.1:5000/api/object/modeling=1 
+	# показывает только объекты первого моделирования т.к. ObjectResource filter_fields
 	api.register(LogEntry)
 	api.register(Execution)
 	api.setup()
