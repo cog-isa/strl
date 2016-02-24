@@ -1,29 +1,41 @@
-define( [ 	"/static/js/modules/planarizator.js"	],  
-		function( plnr ){
+п»їdefine( [ 	"/static/js/lib/aplib.js" , "/static/js/modules/helpers.js",  "/static/js/lib/finchjs/finch.js", 
+			"/static/js/modules/planarizator.js"
+		],
+		function( _aplib, _helpers, _finch, plnr ){
 
-/*
-	////////////////////////////////// setup our class ( aplib )
+
+        // global dpi РґР»СЏ СЂР°СЃС‡РµС‚РѕРІ СЂР°Р·РјРµСЂР° РїРёРєСЃРµР»РµР№ РЅР° РґСЋР№Рј РІ РјРѕРЅРёС‚РѕСЂРµ
+        dpi = {
+            v: 0,
+            get: function (noCache) {
+                if (noCache || dpi.v == 0) {
+                    e = document.body.appendChild(document.createElement('DIV'));
+                    e.style.width = '1in';
+                    e.style.padding = '0';
+                    dpi.v = e.offsetWidth;
+                    e.parentNode.removeChild(e);
+                }
+                return dpi.v;
+            }
+        }
+        dpi.get(true);
+
+
+	/////////////// setup our class ( aplib )////////////////
 	ap.jsdesc['agent'] = {
 		fields:{
 			id: "rnd1",
 			type_obj:"agent",
-			posx:0,
-			posy:0,
+			posx:10,
+			posy:10,
 			
 			isVisible: true,
 			
-			//width: 1, //размер отображаемой картинки
-			//height: 0.25,
-			// расчитаются планаризатором ..хз что
-			//left: 1,
-			//top: 1,
-			
-			// logic part
 			icons: 	[
-						{hint:'Агент',	img:'/static/img/rob1.png'}, 
+						{hint:'СРіРµРЅС‚',	img:'/static/img/rob1.png'}, 
 					],
 			
-			properties: {
+			properties:{
 					shape:'rect',
 					active:1,
 					passability: 40,
@@ -33,10 +45,8 @@ define( [ 	"/static/js/modules/planarizator.js"	],
 					reflectivity: 50,
 					fuel: 80
 			},
-			//actions:
-			// view part
-			opened: false, // переделать под свойства
-			element: null, // СТАРОЕ, используется в методе _resize, устанавливается в директиве alight.directives.sup.node
+
+			opened: false, // РїРµСЂРµРґРµР»Р°С‚СЊ РїРѕРґ СЃРІРѕР№СЃС‚РІР°
 		},	
 		methods:{
 			_getid:{
@@ -45,91 +55,87 @@ define( [ 	"/static/js/modules/planarizator.js"	],
 					return { _getid: this.__id }; 
 				}
 			},
-			
-	//	_get_pos:{todo}
-	//	_delete_obj:{todo}
-		
-			
-			//проверить РЕСАЙЗ ПО масштабу!!!?
-			// только устанавливает ТЕКУЩИЕ РАЗМЕРЫ чтобы подвинуть соседей,  они УЖЕ должны быть применены/установлены, 
-			//сначала применяем ($scan) - затем пододвигаем соседей через этот метод
-			_resize:{
-				code:function(width, height){
-					if(this.element){
-						//console.log("_resize2");
-						this.left =  $(this.element).position().left/dpi.get(false);
-						this.top =  $(this.element).position().top/dpi.get(false);
-						this.width = $(this.element).width()/dpi.get(false);
-						this.height = $(this.element).height()/dpi.get(false);
-						
-						plnr.updatePositions(S.nodes, S.rootId);
-						S.$scan();
-					}else{
-						console.log("_resize3");
+			_get_pos:{ //Р±РµСЃРїРѕР»РµР·РЅР° РЅР°РІРµСЂРЅРѕ
+				code:function(){
+				return {_get_pos: this.posx +": "+ this.posy}
+				}
+			},
+			_step:{
+				code:function(x, y){
+					if (this.posx < x){
+						this.posx += 1;
+						if(this.posx > x){
+							this.posx -= 1;
+						}
 					}
-					
-					// сообщим новые размеры на сервер
-					//var node = this;
-					//S.supajax( 	'resizeNode', 
-					//			history.state.map, 
-					//			S.userid, 
-					//			node.getid().getid,
-					//			function(){
-					//				// ! updateAllEdgeOnNode(node.getid().getid);
-					//				// S.$scan();
-					//			}, 
-					//			[width, height]
-					//);
-					
-
-					
+						
+					if (this.posy < y){
+						this.posy += 1;
+						if(this.posy > y){
+							this.posy -= 1;
+						}
+					}					
+				//return {posix:this.posx, posix:this.posy};			
 				}
 			}, 
-			
-			// закрыть/скрыть список свойств 2x$scan
-			_close:{
-				code: function(){
-
-					this.opened = false;
-					S.$scan(); // покажем уменьшенный узел - теперь у него размеры меньше
-					// скажем mmdbjs новые свои размеры
-					this._resize(); // переасчитаем координаты в зависимости от его нового размера
-					S.$scan();
-				}	
-			}, 
-			
-			// открыть/показать список свойств 2x$scan
-			_open: {
-				code: function(){				
-					this.opened = true;// откроем те свойства которые уже имеются.
-					S.$scan(); // покажем увеличенный открытый узел - теперь у него размеры больше
-					// скажем mmdbjs новые свои размеры
-					this._resize(); // переасчитаем координаты в зависимости от его нового размера
-					S.$scan(); // покажемв новых координатах
-					//S.$scan(); // todo костыль... из за watch
+			//РїСЂРѕР±Р»РµРјР° РІС‹Р»РµР·Р°РµС‚ РёР·-Р·Р° РѕР±РµСЂС‚РѕРє РЅР°Рґ _gotoxy	//РїРµСЂРµРЅРµСЃС‚Рё С„СѓРЅРєС†РёСЋ РІ РґСЂСѓРіРѕРµ РјРµСЃС‚Рѕ
+			_gotoxy: {
+				code: function gotoxy(x, y, scope){
+					console.log(this.posx, this.posy);
+					this._step(x, y);
+					if (this.posx < x || this.posy < y) {
+						scope.$scan();//РѕР±РЅРѕРІРёС‚СЊ РѕР±СЉРµРєС‚ => РїРµСЂРµСЂРёСЃРѕРІР°С‚СЊ
+						var self = this;
+						//setTimeout(function() {self._gotoxy(x, y, scope)}, 10); РЅР° С‡С‚Рѕ РІР»РёСЏРµС‚ С‚РѕС‡РєР° СЃ Р·Р°РїСЏС‚РѕР№??
+						  setTimeout(function() {self._gotoxy(x, y, scope);}, 10);
+						
+					}
 				}
 			},
 			
-			// произишел выбор этого узла, тычком мыши
+			//_delete_obj:{todo}
+			
+			//todo
+			_insertagent:{
+				code:function(agent, x, y){
+					var node=this;
+					var id= guid();
+					
+					var n = ap.walk.getObject2('agent', id);
+					n.id = id;
+					S.nodes[id]=n;
+					
+					S.agent.posx = x;
+					S.agent.posy = y;
+					
+					S.$scan();
+					//$('#workarea').focus();
+					setTimeout(function(){
+						n._paint();
+					},0);
+					
+				}
+			},			
+			
+			// РїСЂРѕРёР·РёС€РµР» РІС‹Р±РѕСЂ СЌС‚РѕРіРѕ СѓР·Р»Р°, С‚С‹С‡РєРѕРј РјС‹С€Рё
 			_select: {
 				code: function(){
 					var nodeid = this.id;
  
-					Finch.navigate( 'mindmap', {nodeid:nodeid}, true ); // #mindmap doUpdate
+					Finch.navigate( 'startmap', {nodeid:nodeid}, /*doUpdate*/true ); // #mindmap
 					
-					// пометим в главном S что выбрали этого !!! - плохая связь с контекстом.
+					// РїРѕРјРµС‚РёРј РІ РіР»Р°РІРЅРѕРј S С‡С‚Рѕ РІС‹Р±СЂР°Р»Рё СЌС‚РѕРіРѕ !!! - РїР»РѕС…Р°В¤ СЃРІВ¤Р·СЊ СЃ РєРѕРЅС‚РµРєСЃС‚РѕРј.
 					S.selectednode = this;
-					// скроем инфу
-					hideInfoBlocks();
-					// S.$scan() // сам делается внутри обработчика тычка мыши, не фиг тут делать скан
+					// S.$scan() // СЃР°Рј РґРµР»Р°РµС‚СЃВ¤ РІРЅСѓС‚СЂРё РѕР±СЂР°Р±РѕС‚С‡РёРєР° С‚С‹С‡РєР° РјС‹С€Рё, РЅРµ С„РёРі С‚СѓС‚ РґРµР»Р°С‚СЊ СЃРєР°РЅ
 				}
 			}, 
-			// установить свойство $scan
+			
+			// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІРѕР№СЃС‚РІРѕ $scan
 			_setProperty:{
 				code: function(n,v){
 					this.properties[n]=v;
 					S.$scan();
-					// todo отправить новое свойство на сервак
+					// todo РѕС‚РїСЂР°РІРёС‚СЊ РЅРѕРІРѕРµ СЃРІРѕР№СЃС‚РІРѕ РЅР° СЃРµСЂРІР°Рє
 				}
 			}, 
 			_getTitle:{
@@ -137,168 +143,72 @@ define( [ 	"/static/js/modules/planarizator.js"	],
 					return {_getTitle: this._getProperty('title')};
 				}
 			},
-			_setTitle : {
-				code: function(a,b,c,d,e){
-					console.log(a,b,c,d,e);
-				}
-			},
-			// получить свойство
+
+			// РїРѕР»СѓС‡РёС‚СЊ СЃРІРѕР№СЃС‚РІРѕ
 			_getProperty: {
 				code:function(n){
 					return {_getProperty:this.properties[n]};
 				}
 			},
-			// списиок ИМЕН всех свойств, кроме свойств исключений (для показа в списке сойств узле) + EDGES
+			//СЃРїРёСЃРѕРє РёРјРµРЅ РІСЃРµС… СЃРІРѕР№СЃС‚РІ
 			_allPropertyes:{
 				code:function(){
-					var props = Object.keys(this.properties);
-					// удалим исключения
-					// todo сделать через clone и for in Или filter
-					//for(var i = props.length - 1; i >= 0; i--) {
-					//	if( props[i] === 'title' ) { // props[i] === 'color' || 
-					//	   props.splice(i, 1);
-					//	}
-					//}
-					
+					var props = Object.keys(this.properties);					
 					return { allPropertyes: props };
 				}
 			},
-
-			// вызывается в alight.directives.sup.path для отображения пути к родителю
-			
-			//за этими данными происходит $watch
-			// TODO она вызывает ТОРМОЗА, ЕСЛИ сделать $watch результатов этой функции ... надо КЭШИРОВАТЬ	
 		}
 	}
 	//ap.walk.class.node = {};	 // todo remove
-*/	
 
-function Agent(){
-		var fields = {
-			id: "rnd1",
-			type_obj:"agent",
-			posx:0,
-			posy:0,
-			isVisible: true,
-			
-			icons: 	[	{hint:'Агент',	img:'/static/img/rob1.png'}, 
-					],
-			
-			properties: {
-					shape:'rect',
-					active:1,
-					passability: 40,
-					health: 100,
-					material: 'wood',
-					tempriche: 30,
-					reflectivity: 50,
-					fuel: 80
-			},
-			opened: false, // переделать под распахивание свойств объекта
-		},	
-		var methods = {
-			_getid:{
-				code:function(){
-					return { _getid: this.__id };
-				}
-			},			
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СѓР·Р»Р° РІ Р±СЂР°СѓР·РµСЂРµ
+	
+//TODO
+	function initAgent(agent_element, node){
+		//$(agent_element).tooltip();
 
-			_get_pos:{
-				code:function(){
-				return {_get_pos: this.posx +":"+ this.posy}
-				}
-			},		
-			
-			//_delete_obj:{todo}
+		var id = $(event.target).attr('id');
 		
-			
-			//проверить РЕСАЙЗ ПО масштабу!!!?
-			//close, open, select, setProp,  getTitle, setTitle, getProp, allProp
-			// закрыть/скрыть список свойств 2x$scan
-			
-		}
-	}	
-};
-	
-	/**	
-	getObject2 - создает объект с описанными свойствами
-	описать code:
-	
-	писать свои директивы..
-	директива:  -словарь (хуже)
-				-функция +	
-	***/
-	
-	// инициализация объекта в браузере
-	var positions = {};
-	// сама инициализация
-			
-	function initAgent(agent_element, node){ // todo перенести в контекст вызова
-		$(agent_element).tooltip();
-		
-		/******************   перетаскивание узлов ************************/
-
-		// Всплывающая редактируемая инфа.
+		// СЃРґРµР»Р°РµРј title СЂРµРґР°РєС‚РёСЂСѓРµРјС‹Рј
 		var te = $(agent_element).find('.nodetitle');
 		te.editable({
 		   type:  'text',
-		   send:'never', 
-		   
+		   send:'never',
+   
 		   name:  'title',
-		   title: 'Enter new Title',
-		   //placement: 'right',
-		   //enablefocus:true
+		   title: 'Р’РІРµРґРёС‚Рµ РЅРѕРІРѕРµ РЅР°Р·РІР°РЅРёРµ',
+		   placement: 'right',
+		   enablefocus:true
 		});
 		te.on('update', function(e, editable) {
 			//alert('new value: ' + editable.value);
 			//$('#workarea').focus();
 		});
-		node.te = te;	
+		node.te = te;
 	};	
 	
-	////////////////////////directives
-	alight.directives.sup={};
-	alight.directives.sup.node = function(e, value, scope){
-		// INFO ? т.к. al-repeat = "node in nodes" => node
-		var KEY = value || 'node';
+	
+	////	function FirstPrint (node){	};
+	
+	/////////directives
+	//alight.directives.strl ={}; РЅРµР»СЊР·СЏ РѕР±РЅСѓР»СЏС‚СЊ. С‚.Рє. РѕРЅ РЅРµ 1Р№ СЂР°Р±РѕС‚Р°РµС‚ СЃ directives.strl
+	alight.directives.strl.agent = function(e, value, scope){
+		var KEY = value || 'agent';
 		//var node=scope.$getValue(KEY); 
-		var node=scope.$parent.nodes[scope.nodeid];
-		initNode(e, node); //настраиваем 
-		// сохраним в модели элемент  узла - связжем DOM в модель (чтобы в resize узнавать СВОЙ реальный размер)
+		var node=scope.nodes[scope.nodeid]; 
+		initAgent(e, node); //РЅР°СЃС‚СЂР°РёРІР°РµРј 
+				
+		//СЌР»РµРјРµРЅС‚ nodes[scope.nodeid]
 		node.element = e; 
 		
-		/*
-		// прослушаем всякое от  элемента (сворачивание/разворачивание, например)
-		var expandbutton = $(e).find('.nodehandle_collapse_expand');
+		var agent1 = scope.nodes[scope.nodeid]; 
 		
-		expandbutton.on('click', function(){
-			if(!node.isCollapsed ){
-				node._collapse();
-			}else{
-				node._expand();
-			}
-			return false;
-		});	
+		//agent1._insertagent(agent1, 200,300);
 		
-		// показ информации для всех объектов
-		var needShow = false;
-		var infoBlockClicked = false;
-		var showInfoBlock = function(){
-			$(e).find('.info_block').show();	
-		};
+
+		scope.$scan();
 		
-		// скрыть все инфо блоки
-		//var  глобальная функция вызовется везде
-		hideInfoBlocks = function(){
-			needShow = false;
-			infoBlockClicked = false;
-			
-			$('.info_block').hide();	
-		};
-				
-		
-		// при тычке либо показать либо скрыть, по ситуации, 
-		// не выделять узел (stopPropagation), т.к. при выделении узла скрываются инфо блоки
+		// РїСЂРё С‚С‹С‡РєРµ Р»РёР±Рѕ РїРѕРєР°Р·Р°С‚СЊ Р»РёР±Рѕ СЃРєСЂС‹С‚СЊ, РїРѕ СЃРёС‚СѓР°С†РёРё, 
 		$(e).find('.info_circle').click(function(evt){
 			if(!infoBlockClicked){
 				infoBlockClicked = true;
@@ -310,17 +220,16 @@ function Agent(){
 			
 			evt.stopPropagation();
 		});
-	*/
+		
+	/**/
 	}	
 
 	return  {
 		agent_app : function (scope){
-		
 
-				scope.mapid = 'MAPID', // ! not binded
-				scope.userid = 'USERID', // ! need read logined user id? now not used
+				//scope.mapid = 'MAPID', // ! not binded
+				//scope.userid = 'USERID', // ! need read logined user id? now not used
 				scope.scale = 1;
-				//scope.viewPort = [ ]; 	// inches x,y,w,h
 				
 				scope.nodes = { };
 				scope.helper = {
@@ -332,40 +241,195 @@ function Agent(){
 					}
 				}
 				
-							
-				// add root
-				scope.rootId = 'root';
-				var r = ap.walk.getObject2('node', scope.rootId);
-				r.id = scope.rootId;
-				r.parent = undefined;
+				// add agent TODO РїРµСЂРµРґРµР»Р°С‚СЊ id			
+				scope.firsId = 'agent'; //1Р№ Р°РіРµРЅС‚ РЅР° РїРѕР»Рµ
+				var r = ap.walk.getObject2('agent', scope.firsId);
+				r.id = scope.firsId;
+				r.posx = 50;
+				r.posy = 50;
+				r._gotoxy(1200,500, scope);
 				scope.nodes[r.id] = r;
 				
-				// выбираем первыйузел в списке или ничто
-				scope.selectednode = scope.rootNode;
+				/*
+				//scope.firsId = 'agent'; //2Р№ Р°РіРµРЅС‚ РЅР° РїРѕР»Рµ
+				scope.ID = '1' + guid();
+				var r2 = ap.walk.getObject2('agent', scope.ID);
+				r2.id = scope.ID;
+				r2.posx = 10;
+				r2.posy = 50;
+				r2._gotoxy(800,300, scope);
+				scope.nodes[r2.id] = r2;
+				*/
 				
-				scope.newNode = function(parentNode, indexBefore){
-					// todo send to server
-					var id = guid();
-					var n = ap.walk.getObject2('node', id);
-					n.id = id;
-					n.parent = parentNode.id;
-					
-					//parentNode.childs.splice(indexBefore, 0, id);
-					
-					scope.nodes[id] = n;
-					
-					plnr.updatePositions(scope.nodes, scope.rootId);
-					scope.$scan(); // такой узел появился
-					setTimeout(function(){
-						n._resize();// подвинули соседей
-						scope.$scan(); // такой узел появился
-					},0);
-					
+				
+			/***TODO СЃРѕР·РґР°РЅРёРµ РЅРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ РїРµСЂРµРїРёСЃР°С‚СЊ С„СѓРЅРєС†РёСЋ***/
+				scope.newNode = function(n){
+					var x = 1;
+					while (x<n) { // С‡С‚Рѕ-С‚Рѕ РїРѕС€Р»Рѕ РЅРµ С‚Р°РєР°
+						var id = 'agent'+guid();
+						var n = ap.walk.getObject2('agent', id);
+						n.id = id;
+						n.posx +=  50;
+						n.posy +=  50;
+						
+						scope.nodes[n.id] = n;
+
+						scope.$scan(); // С‚Р°РєРѕР№ Р°РіРµРЅС‚ РїРѕСЏРІРёР»СЃСЏ
+						x++;
+					}
+				
 				}
+				
+			//nodes[nodeid].posx	
+			//var xx = scope.newNode(20); // С‡С‚Рѕ-С‚Рѕ РЅРµ СЂР°Р±РѕС‚Р°РµС‚		
+	
+/*			
+	var x = 1;
+	while (x<10) {
+				scope.firsId = 'agent'+x; //1Р№ Р°РіРµРЅС‚РЅР° РїРѕР»Рµ
+				var r = ap.walk.getObject2('agent', scope.firsId);
+				r.id = scope.firsId;
+				r.posx = 100+x*10;
+				r.posy = 100+x*10;
+				scope.nodes[r.id] = r;
+	x++;
+	}	
+*/	
+						
+			//*********С„СѓРЅРєС†РёРё - РјРµС‚РѕРґС‹ РєРѕРЅС‚РµРєСЃС‚Р° *****************
+			
+			
+			//РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїРѕРєР°
+			// С„СѓРЅРєС†РёСЏ СЂР°Р±РѕС‚Р°РµС‚ СЃ РєРѕРЅС‚РµРєСЃС‚РѕРј, РѕРЅР° РјРµРЅСЏРµС‚ РјРѕРґРµР»СЊ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РѕС‚РІРµС‚Р° СЃ СЃРµСЂРІРµСЂР°
+				scope.handleajaxresponse = function (data){
+					var nodeinnodes = function(nodeid){
+						for(var ni in scope.nodes){
+							if(scope.nodes[ni]._getid()._getid==nodeid)
+								return true;
+						}
+						return false;
+					}
+					for(var i=0; i<data.length; ++i){
+						var c=data[i];
+						switch(c.command){
+							case 'setViewPort': {
+									scope.viewPort.left = c.x;
+									scope.viewPort.top = c.y;
+									break;
+								} 
+							case 'newNodeCoord': {
+									var n=ap.walk.getObject('node', c.nodeid); //Р·Р°РјРµРЅРёС‚СЊ РЅР° getObject2
+									
+									if( ! n.getProperty('title').getProperty )
+										n.setProperty('title', 'Р·Р°РіРѕР»РѕРІРѕРє '+n._getid()._getid);
+									//n.icons = '<>';
+									
+									if( ! nodeinnodes(c.nodeid) ){
+										///scope.nodes.push(n)
+										// С‚.Рє. СѓР·РµР» РµС‰Рµ РЅРµ РІ РјРѕРґРµР»Рё РІРѕР·РјРѕР¶РЅРѕ РµРіРѕ РїРѕР·РёС†РёСЏ РЅРµ РєРѕСЂСЂРµРєС‚РЅР°, 
+										// СЃРѕРѕР±С‰РёРј Рѕ РµРіРѕ СЂРµР°Р»СЊРЅС‹С…  СЂР°Р·РјРµСЂР°С… РЅР° СЃРµСЂРІРµСЂ
+										//scope.$scan();
+										//n._resize(); // TODO РјРѕР¶РЅРѕ РїРµСЂРµСЃС‡РёС‚Р°С‚СЊ РІСЃРµ СѓР·Р»С‹ РїРѕСЃР»Рµ РѕР±СЂР°Р±РѕС‚РєРё РІСЃРµР№ РїР°С‡РєРё РєРѕРјРјР°РЅРґ.
+									}
+									break;
+								}
+							case 'setTargetNode':{
+									ap.walk.getObject('node', c.nodeid)._select();
+									//scope.selectednode = ap.walk.getObject('node', c.nodeid);
+									break;
+								} 
+							
+							// РїРµСЂРµРґРµР»Р°С‚СЊ РЅРµРІРёРґРёРјРѕСЃС‚СЊ РїРѕРґ РїСЂРѕР·СЂР°С‡РЅС‹Р№
+							case 'nodeInvisible':{
+									// СѓР±РµСЂРµРј РµРіРѕ РёР· СЃРїРёСЃРєР° СѓР·Р»РѕРІ
+									for(var i in scope.nodes){
+										var n = scope.nodes[i];
+										if(n._getid()._getid==c.nodeid){
+											///scope.nodes.splice(i,1);
+											break;
+										}
+									}
+									// СЃРѕС‚СЂРµРј РёРЅС„РѕСЂРјР°С†РёСЋ РїСЂРѕ РЅРµРіРѕ TODO
+									//delete ap.walk.class.node[c.nodeid]
+								}
+							
+							case 'openNode':{// РІРѕР·РјРѕР¶РЅРѕ СѓР±РµСЂРµРј
+									// РѕС‚РІРµС‚ РѕС‚ СЃРµСЂРІРµСЂР° РїСЂРёС€РµР» СЃРѕ СЃРІРѕР№СЃС‚РІР°РјРё, РґР°РІР°Р№ РёС… Р·Р°РїРѕР»РЅРёРј
+									var node = ap.walk.getObject('node', c.nodeid);
+									for(var k in c.properties)
+										if(k!='command')
+											node.setProperty(k,c.properties[k]);										
+									// TODO
+									// updateAllEdgeOnNode(this._getid()._getid);
+									// РїРѕРїСЂР°РІРёРј РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ, РјРѕРіСѓС‚ РёР·РјРµРЅРёС‚СЃСЏ СЂР°Р·РјРµСЂС‹
+									
+									S.$scan();
+									// РѕС‚РѕС€Р»РµРј РЅРѕРІС‹Рµ СЂР°Р·РјРµСЂС‹ РЅР° СЃРµСЂРІРµСЂ, РјРѕР¶РµС‚ С‡С‚Рѕ-С‚Рѕ РµС‰Рµ РїРѕРґРІРёРЅРµС‚СЃСЏ
+									node._resize();
+									break
+								}
+							default: 
+						};
+					}
+					
+					// РїРѕР»СѓС‡РёР»Рё РЅРѕРІС‹Рµ РґР°РЅРЅС‹Рµ, РїРѕРїСЂР°РІРёР»Рё РјРѕРґРµР»СЊ - РѕР±РЅРѕРІРёРј GUI
+					scope.$scan(); 
+				}
+			
+				/* РїРѕСЃР»Р°С‚СЊ РёРЅС„Сѓ РЅР° СЃРµСЂРІРµСЂ, РїРѕСЃС‹Р»Р°РµРј РєР°Рє РµСЃС‚СЊ РїРѕ СЂРµР°Р»СЊРЅРѕРјСѓ СЂР°Р·РјРµСЂСѓ РѕР±Р»Р°СЃС‚Рё РїСЂРѕСЃРјРѕС‚СЂР° 
+				 * РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· container drag stop */
 
-			//*********функции - методы контекста *****************
+				scope.setViewPort = function (id){
+						/*// СЃРѕРѕР±С‰РёС‚СЊ РЅР° СЃРµСЂРІРµСЂ Рѕ С‚РµРєСѓС‰РёС… СЂР°Р·РјРµСЂР°С… РѕР±Р»Р°СЃС‚Рё РїСЂРѕСЃРјРѕС‚СЂР°
+						var position = $("#container").position();
+						*/
+					var positionx = $(""+id).posx;
+					var positiony = $(""+id).posy;
+					scope.viewPort = { // inches
+						left: position.left / dpi.get(false), 
+						top:  position.top / dpi.get(false),  
+					};
+					//scope.$scan();
+				}
+			
+
+				scope.scaleUp = function(){
+					scope.scale = scope.scale*1.1;
+				};
+				scope.scaleDown = function(){
+					scope.scale = scope.scale/1.1;
+				};
 
 				
+		/***** РїРµСЂРµРјРµС‰РµРЅРёРµ РѕР±СЉРєС‚Р° РІ РјРѕРґРµР»Рё	****/
+		/*
+		function gotoxy(node, x, y){
+			while (node.posx < x){
+				while (node.posy < y){
+					node._step(x, y);
+				//scope.$scan();	
+				}		
+			}
+			
+		scope.$scan();	
+		//temp = nodes[id]._get_pos(); СЂР°Р±РѕС‚Р° СЃ РјРµС‚РѕРґР°РјРё РїСЂРёРјРµСЂРЅРѕ С‚Р°РєР°СЏ
+		//S.nodes['agent']._step();
+		//S.$scan();
+
+		};
+		*/
+		
+			//gotoxy(r, 800,500); //scope.nodes[r.id]
+	
+		
+				// РїРµСЂРµРїРёСЃР°С‚СЊ РїР»Р°РЅРѕСЂРёР·Р°С‚РѕСЂ РґР»СЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ
+				//plnr.updatePositions(scope.nodes, scope.firsId);
+				
+				// РіР»РѕР±Р°Р»СЊРЅР°В¤ РїРµСЂРµРјРµРЅРЅР°В¤ - РґР»СЏ РѕС‚Р»Р°РґРєРё
+				// РЅР°Р·РЅР°С‡РµРЅРёРµ 1) СЃРІСЏР·СЊ СЃ РґРёСЂРµРєС‚РёРІР°РјРё РїСЂРёР»РѕР¶РµРЅРёВ¤, 2) СЃРІСЏР·СЊ СЃ РјРµС‚РѕРґР°РјРё РєР»Р°СЃСЃРѕРІ
+				S = scope;	
+				//scope.$scan(); //- РїРµСЂРµСЂРёСЃРѕРІР°С‚СЊ РѕР±РЅРѕРІР»РµРЅРЅРѕРµ
+
 		}
 	}
 	
