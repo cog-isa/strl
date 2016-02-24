@@ -58,9 +58,7 @@
 							
 							visibility: {{nodes[nodeid].isVisible ? 'visible' : 'hidden'}};
 							"
-                        
-                        tabindex="-1"
-                        
+
                         al-click="nodes[nodeid]._select()"
 						
                         al-css="nodeselected: selectednode.id==nodes[nodeid].id"
@@ -83,7 +81,7 @@
 							<!-- info circle -->
 							<span 	class="info_circle"
 									style="float:right; width:15px; height:15px;
-											background-image:url(/static/img/glyphicons_free/glyphicons/png/glyphicons_195_circle_info.png);
+											background-image:url(./static/img/glyphicons_free/glyphicons/png/glyphicons_195_circle_info.png);
 											background-size: 15px 15px;
 											
 											opacity: 0.5;"    >
@@ -93,12 +91,12 @@
                        
                 </div>
             </div>	
-			
+		
 			<div id="nodes2"
 				 style="position:relative;"		 
 			>
-			<div 	al-repeat="nodeid in helper2.nodesIDs()" /*здесь важно чтобы nodes2[] node - это в коде есть*/                       
-						strl-wall=""
+			<div 	al-repeat="nodeid in helper2.nodesIDs()"                 
+						st-wall=""
 						
 						id="{{nodes2[nodeid].id}}" class="wall"
 						
@@ -108,13 +106,8 @@
 							left:{{nodes2[nodeid].posx}}px;
 							top: {{nodes2[nodeid].posy}}px;
 
-							
-							background-size: 15px 15px;
-							
 							visibility: {{nodes2[nodeid].isVisible ? 'visible' : 'hidden'}};
 							"
-                        
-                        tabindex="-1"
                         
                         al-click="nodes2[nodeid]._select()"
 						
@@ -122,23 +115,22 @@
                     >
 
                         <div class ="node_icon"
-							al-repeat="icon in nodes2[nodeid].icons"
+							al-repeat="icon in nodes2[nodeid].icon"
 							title="{{icon.hint}}"
 							al-if="icon.img">
                             <img al-src="{{icon.img}}" ></img>
                         </div>
-						
-						<!--название агента,  ограничить видимую длинну -->
+
                         <div class="ediatable text_cut">
                             <span 	class="nodetitle"
 									style="border-bottom: dashed 1px #0088cc;
 										   width: 1px">
 							</span>
 							
-							<!-- info circle -->
+							
 							<span 	class="info_circle"
 									style="float:right; width:15px; height:15px;
-											background-image:url(/static/img/glyphicons_free/glyphicons/png/glyphicons_195_circle_info.png);
+											background-image:url(./static/img/glyphicons_free/glyphicons/png/glyphicons_195_circle_info.png);
 											background-size: 15px 15px;
 											
 											opacity: 0.5;"    >
@@ -148,9 +140,9 @@
                        
                 </div>
 			</div>
-		</div>
+		</div><!--container-->
 		
-	</div>
+	</div> <!--workarea-->
   
   <script>
 		require(["./static/js/jquery-1.9.1.js" /*for jq_ui*/, ], function(_jquery){
@@ -170,13 +162,18 @@
 						// CONFIGURE SCOPE AND BIND to BODY
 						var tag = document.querySelector('body'); 
 
-						var scope = alight.Scope();
+						var scope = alight.Scope();						
+						//var scope1 = alight.Scope();
+						//var scope2 = alight.Scope();
 						
 						// init scope
 						wall.wall_app(scope);
 						agent.agent_app(scope);
 						
-						alight.applyBindings(scope, tag);						
+						alight.applyBindings(scope, tag);		
+						
+						//alight.applyBindings(scope1, tag);												
+						//alight.applyBindings(scope2, tag);						
 			});
 		});
   </script>

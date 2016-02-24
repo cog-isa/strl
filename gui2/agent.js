@@ -1,11 +1,11 @@
-﻿define( [ 	"/static/js/lib/aplib.js" , "/static/js/modules/helpers.js",  "/static/js/lib/finchjs/finch.js", 
-			"/static/js/modules/planarizator.js"
+﻿define( [ 	"./static/js/lib/aplib.js" , "./static/js/modules/helpers.js",  "./static/js/lib/finchjs/finch.js", 
+			"./static/js/modules/planarizator.js"
 		],
 		function( _aplib, _helpers, _finch, plnr ){
 
 
         // global dpi для расчетов размера пикселей на дюйм в мониторе
-        dpi = {
+  /*      dpi = {
             v: 0,
             get: function (noCache) {
                 if (noCache || dpi.v == 0) {
@@ -20,6 +20,7 @@
         }
         dpi.get(true);
 
+*/
 
 	/////////////// setup our class ( aplib )////////////////
 	ap.jsdesc['agent'] = {
@@ -32,7 +33,7 @@
 			isVisible: true,
 			
 			icons: 	[
-						{hint:'јгент',	img:'/static/img/rob1.png'}, 
+						{hint:'Агент',	img:'./static/img/rob1.png'}, 
 					],
 			
 			properties:{
@@ -81,7 +82,7 @@
 			//проблема вылезает из-за оберток над _gotoxy	//перенести функцию в другое место
 			_gotoxy: {
 				code: function gotoxy(x, y, scope){
-					console.log(this.posx, this.posy);
+					console.log(this.posx, this.posy, this.id);
 					this._step(x, y);
 					if (this.posx < x || this.posy < y) {
 						scope.$scan();//обновить объект => перерисовать
@@ -166,7 +167,6 @@
 //TODO
 	function initAgent(agent_element, node){
 		//$(agent_element).tooltip();
-
 		var id = $(event.target).attr('id');
 		
 		// сделаем title редактируемым
@@ -191,7 +191,7 @@
 	////	function FirstPrint (node){	};
 	
 	/////////directives
-	//alight.directives.strl ={}; нельзя обнулять. т.к. он не 1й работает с directives.strl
+	alight.directives.strl ={}; //нельзя обнулять т.к. он работает не 1й
 	alight.directives.strl.agent = function(e, value, scope){
 		var KEY = value || 'agent';
 		//var node=scope.$getValue(KEY); 
@@ -204,8 +204,6 @@
 		var agent1 = scope.nodes[scope.nodeid]; 
 		
 		//agent1._insertagent(agent1, 200,300);
-		
-
 		scope.$scan();
 		
 		// при тычке либо показать либо скрыть, по ситуации, 

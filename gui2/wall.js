@@ -24,15 +24,15 @@
 	/////////////// setup our class ( aplib )////////////////
 	ap.jsdesc['wall'] = {
 		fields:{
-			id: "rndw",
+			id: "rndd",
 			type_obj:"wall",
 			posx:350,
 			posy:100,
 			
 			isVisible: true,
 			
-			icons: 	[
-						{hint:'јгент',	img:'./static/img/wall1.png'}, 
+			icon: 	[
+						{hint:'Стена',	img:'./static/img/wall1.png'}, 
 					],
 			
 			properties:{
@@ -130,10 +130,11 @@
 	// инициализация узла в браузере
 	
 //TODO
+
 	function initWall(wall_element, node){
 
 		var id = $(event.target).attr('id');
-		
+		/*
 		// сделаем title редактируемым
 		var te = $(wall_element).find('.nodetitle');
 		te.editable({
@@ -141,7 +142,7 @@
 		   send:'never',
    
 		   name:  'title',
-		   title: 'Введите новое название',
+		   title: 'Введите имя стены',
 		   placement: 'right',
 		   enablefocus:true
 		});
@@ -150,21 +151,22 @@
 			//$('#workarea').focus();
 		});
 		node.te = te;
+		*/
 	};
 	
 	/////////directives
-	alight.directives.strl ={};
-	alight.directives.strl.wall = function(e, value, scope){
+	alight.directives.st ={};
+	alight.directives.st.wall = function(e, value, scope){
 		var KEY = value || 'wall';
 		//var node=scope.$getValue(KEY); 
 		var node=scope.nodes2[scope.nodeid]; 
 		initWall(e, node); //настраиваем 
-				
+		
 		//элемент nodes2[scope.nodeid]
 		node.element = e; 
 		
 		var wall1 = scope.nodes2[scope.nodeid]; 
-		//wall._insertwall...
+		//wall._insertwall()
 		scope.$scan();
 		
 		// при тычке либо показать либо скрыть, по ситуации, 
