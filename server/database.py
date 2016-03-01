@@ -17,17 +17,15 @@ M = db.Model
 class Modeling(M):
 	date = DateTimeField(default=datetime.datetime.now)
 	name = CharField(max_length = 200)
-	# objects
-	# executions
-#	class Meta:
-#		database = db
+	# "objects"
+	# "executions"
 	
 class Execution(M):
 	date = DateTimeField(default=datetime.datetime.now)
 	name = CharField(max_length = 200)
 	modeling = ForeignKeyField(Modeling, null=True, related_name='executions') 
-	# objects with settings
-	# logs = list of LogEntrys
+	# "objects" with settings
+	# "logs" = list of LogEntrys
 	
 class Object(M):
 	type = IntegerField()
