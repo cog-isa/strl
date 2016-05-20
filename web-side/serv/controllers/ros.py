@@ -11,7 +11,7 @@ def get_data(id):
 
     data = {
         'id': id,
-        'objects': [o.properties for o in objects]
+        'objects': [o._data for o in objects]
     }
 
     return flask.jsonify(**data)
@@ -19,8 +19,20 @@ def get_data(id):
 
 @app.route('/executions/<id>/set_data', methods=['POST'])
 def set_data(id):
-    print request.form
-    return request.form
+    data = request.get_json()
+    print data
+
+    objects = [Object.create(
+        time=data['time'],
+
+        execution_id=data['id'],
+        object_id=obj['id'],
+
+        program_id=obj['program'],
+        properties=obj['properties'])
+            for obj in data['objects']]
+
+    return 'Ok!'
 
 
 @app.route('/worlds/<id>/execute', methods=['GET'])
@@ -30,7 +42,7 @@ def create_world(id):
     base_execution = Execution.get(Execution.world==world, Execution.base==True)
     base_objects = Object.select().where(Object.execution==base_execution)
 
-    execution = Execution.create(world=world, time=0) 
+    execution = Execution.create(world=world) 
     objects = [Object.create(
         execution=execution,
         program=base_object.program,

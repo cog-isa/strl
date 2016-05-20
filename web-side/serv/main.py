@@ -24,7 +24,27 @@ def createTables():
 
     world = World.create(name='hello')
     execution = Execution.create(world=world, base=True)
-    Object.create(execution=execution, properties={'a': []})
+    Object.create(execution=execution, properties={
+        "active": True,
+        "program": "2",
+        "name": "2",
+        "geometry": {
+            "type": "circle",
+            "position": {"x": 100.0, "y": 0.0},
+            "radius": 5
+        }
+    })
+
+    Object.create(execution=execution, properties={
+        "active": False,
+        "name": "wall1",
+        "geometry": {
+            "type": "circle",
+            "position": {"x": 0.0, "y": 0.0},
+            "radius": 10
+        }
+    })
+
     print world.id
 
 

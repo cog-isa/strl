@@ -9,7 +9,7 @@ config ={
       'get_data': 'http://localhost:5000/executions/%s/get_data'
   },
 
-  'root': 'src',
+  'root': '../../',
   'robots': {
     'root': 'robots',
     'runner': 'runner.py',
@@ -24,3 +24,6 @@ config ={
     }
   }
 }
+
+import os
+config['root'] = os.path.join(os.path.dirname(__file__), config['root'])
