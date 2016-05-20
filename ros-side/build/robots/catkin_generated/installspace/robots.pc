@@ -1,8 +1,0 @@
-prefix=/home/artsobes/Documents/Development/ROS/catkin_ws/install
-
-Name: robots
-Description: Description of robots
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/artsobes/Documents/Development/ROS/catkin_ws/install/lib 
-Requires: std_msgs roscpp rospy
