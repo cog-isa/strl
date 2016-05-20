@@ -6,7 +6,8 @@ config ={
   },
 
   'url': {
-      'get_data': 'http://localhost:5000/executions/%s/get_data'
+      'get_data': 'http://localhost:5000/executions/%s/get_data',
+      'set_data': 'http://localhost:5000/executions/%s/set_data'
   },
 
   'root': '../../',

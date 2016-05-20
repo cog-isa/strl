@@ -1,32 +1,36 @@
 from app import app
 from flask import request
 from models import *
-import os, flask
+import os, flask, json
+
+
+def get_data_by_time(execution, time=int(1e+9)):
+    groups = Object.select(fn.Max(Object.id)).where(Object.execution_id==execution, Object.time<=time).group_by(Object.object)
+    objects = Object.select().where(Object.id << groups)
+
+    data = {
+        'id': execution,
+        'objects': [o._data for o in objects]
+    }
+
+    return data
 
 
 @app.route('/executions/<id>/get_data', methods=['GET'])
 def get_data(id):
-    execution = Execution.get(Execution.id==id)
-    objects = Object.select().where(Object.execution==execution).order_by(+Object.time)
-
-    data = {
-        'id': id,
-        'objects': [o._data for o in objects]
-    }
-
+    data = get_data_by_time(execution=id)
     return flask.jsonify(**data)
 
 
 @app.route('/executions/<id>/set_data', methods=['POST'])
 def set_data(id):
-    data = request.get_json()
-    print data
+    data = json.loads(request.get_data())
 
     objects = [Object.create(
         time=data['time'],
 
         execution_id=data['id'],
-        object_id=obj['id'],
+        object=obj['object'],
 
         program_id=obj['program'],
         properties=obj['properties'])
@@ -45,6 +49,7 @@ def create_world(id):
     execution = Execution.create(world=world) 
     objects = [Object.create(
         execution=execution,
+        object=base_object.object,
         program=base_object.program,
         properties=base_object.properties)
             for base_object in base_objects]

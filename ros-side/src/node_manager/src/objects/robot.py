@@ -11,7 +11,7 @@ class Robot(Object):
 
   def __init__(self, world, json):
     Object.__init__(self, world=world, json=json)
-    self.__robot = Robot.by_name(json['name'])
+    self.__robot = Robot.by_program(self.properties['program'])
 
     for node_name in config['robots']['launch']:
       robo_path = join(config['root'], config['robots']['root'])
@@ -32,8 +32,8 @@ class Robot(Object):
 
 
   @staticmethod
-  def by_name(name):
+  def by_program(program):
     xml = converter.load(join(config['root'], 
       config['robots']['root'], config['robots']['config']))
     for robot in xml['robot']:
-      if robot.get('name') == name: return robot
+      if robot.get('program') == program: return robot

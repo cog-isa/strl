@@ -5,7 +5,10 @@ class Object(NodeFuncs):
 
   def __init__(self, world, json):
     self.world = world
-    self.properties = json
+
+    self.data = json
+    self.properties = self.data['properties']
+
     self.id = self.properties['name']
     self.nodes = []  
 

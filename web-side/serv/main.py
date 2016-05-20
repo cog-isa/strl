@@ -45,6 +45,8 @@ def createTables():
         }
     })
 
+    Object.update(object=Object.id).execute()
+
     print world.id
 
 
