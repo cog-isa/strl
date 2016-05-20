@@ -1,0 +1,5 @@
+*.swp
+*.pyc
+.*
+ros-side/devel/
+ros-side/build/
