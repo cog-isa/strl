@@ -1,0 +1,2 @@
+node_manager:robots
+-DCATKIN_DEVEL_PREFIX=/home/artsobes/Documents/Development/ROS/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/artsobes/Documents/Development/ROS/catkin_ws/install -G Unix Makefiles
