@@ -5,6 +5,10 @@ config ={
     'destroy_world': 'destroy_world',
   },
 
+  'url': {
+      'get_data': 'http://localhost:5000/executions/%s/get_data'
+  },
+
   'root': 'src',
   'robots': {
     'root': 'robots',

@@ -33,7 +33,7 @@ class World(NodeFuncs):
 
 
   def __init_by_json(self, json):
-    NodeFuncs.__init__(self, namespace='/worlds/', name=json['name'])
+    NodeFuncs.__init__(self, namespace='/worlds/', name=json['id'])
 
     self.id = json['id']
     for obj in json['objects']:

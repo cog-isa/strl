@@ -1,10 +1,9 @@
-import os
+import os, requests
+from config import config
+import rospy
 
 
-def request_world(ID):
-  import converter
-  name = os.path.abspath(__file__)
-  name = os.path.dirname(name)
-  name = os.path.join(name, 'world.json')
-  json = converter.load(name)
-  return json
+def request_world(id):
+    url = config['url']['get_data'] % id
+    r = requests.get(url)
+    return r.json()
