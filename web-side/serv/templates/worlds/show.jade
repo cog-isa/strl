@@ -1,0 +1,23 @@
+extends layouts/application
+
+block content
+    .panel.panel-default: .panel-body
+        .row
+            .col-lg-8
+                - for obj in objects
+                    div: canvas(object=obj['object'])
+
+            .col-lg-4
+                .row: .col-lg-12
+                    button.btn.btn-default Агент
+                    button.btn.btn-default Не агент
+                .row: .col-lg-12
+                    select.form-control#obj
+                        - for obj in objects
+                            option(value=obj['object'])= obj['properties']['name']
+                .row: .col-lg-12
+                    table.table
+                        thead
+                            th Свойство
+                            th Значение
+                        tbody#tbody

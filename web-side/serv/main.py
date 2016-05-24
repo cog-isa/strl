@@ -1,20 +1,12 @@
 # -*- coding: utf-8 -*-
 from flask_peewee.rest import RestAPI, RestResource
-#from flask import Flask
-#from flask import jsonify
 
-#import json
-#from app import app
-
-#auth = Auth(app, db)x
-#auth.User.create_table(fail_silently=True)
-
-from app import app
+from app import app, socketio
 from models import *
 import controllers
 
 
-controllers.route()
+controllers.route(app)
 
 
 def createTables():
@@ -30,7 +22,7 @@ def createTables():
         "name": "2",
         "geometry": {
             "type": "circle",
-            "position": {"x": 100.0, "y": 0.0},
+            "position": {"x": 200.0, "y": 100.0},
             "radius": 5
         }
     })
@@ -40,14 +32,12 @@ def createTables():
         "name": "wall1",
         "geometry": {
             "type": "circle",
-            "position": {"x": 0.0, "y": 0.0},
+            "position": {"x": 10.0, "y": 100.0},
             "radius": 10
         }
     })
 
     Object.update(object=Object.id).execute()
-
-    print world.id
 
 
 if __name__ == '__main__':
@@ -59,4 +49,4 @@ if __name__ == '__main__':
         api.register(model)
     api.setup()
 
-    app.run()
+    socketio.run(app)
