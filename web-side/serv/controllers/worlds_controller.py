@@ -13,7 +13,16 @@ def route(app):
         return render_template('worlds/show.jade', 
                 world=world, execution=execution, objects=objects)
 
-    @socketio.on('get_object_properties')
+
+    @socketio.on('object:index')
+    def object_index(data):
+        if 'time' not in data: data['time'] = int(1e+9)
+        objects = ros.get_data_by_time(data['execution'], data['time'])['objects']
+        for obj in objects: 
+            object = Object.get(Object.id==obj['id'])
+            socketio.emit('object:update', object._data)
+
+    @socketio.on('object:get')
     def get_object_properties(json):
         object = Object.get(Object.id==json['id'])
-        socketio.emit('update_properties', {'object': object.object, 'props': object.properties})
+        socketio.emit('object:update', object._data)

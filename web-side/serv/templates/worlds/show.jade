@@ -1,11 +1,20 @@
 extends layouts/application
 
 block content
+    script data={world:#{world.id}, execution:#{execution.id}}
     .panel.panel-default: .panel-body
         .row
             .col-lg-8
-                - for obj in objects
-                    div: canvas(object=obj['object'])
+                canvas(al-repeat='obj in objects'
+                    object="{< obj.get('object') >}"
+                    style="
+                        left:{< obj.get_geom('position.x') >}px;
+                        top:{< obj.get_geom('position.y') >}px;
+                        display:inline-block;
+                        position:absolute;
+                        transform: translate(-50%, -50%);"
+                   )
+
 
             .col-lg-4
                 .row: .col-lg-12

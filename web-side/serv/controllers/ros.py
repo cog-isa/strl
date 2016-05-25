@@ -1,3 +1,4 @@
+from app import socketio
 from flask import request
 from models import *
 import os, flask, json
@@ -37,6 +38,9 @@ def route(app):
             program_id=obj['program'],
             properties=obj['properties'])
                 for obj in data['objects']]
+
+        for obj in objects:
+            socketio.emit('object:update', obj._data)
 
         return 'Ok!'
 
