@@ -23,7 +23,8 @@ class World(NodeFuncs):
 
       self.tick_count = 0
       self.tick = 0
-      self.time = 0
+      rospy.loginfo(json)
+      self.time = json['time']
 
       self.__init_by_json(json)
       self.__start()

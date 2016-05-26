@@ -1,20 +1,24 @@
 from app import socketio
 from flask import request
 from models import *
-import os, flask, json
+import os, flask, json, helpers
 
 from py4j.java_gateway import JavaGateway
 
 
-def get_data_by_time(execution, time=int(1e+9)):
+def get_data_by_time(execution, time=None):
+    if not time: time = Object.select(fn.Max(Object.time)).where(Object.execution_id==execution).scalar()
     groups = Object.select(fn.Max(Object.id)).where(Object.execution_id==execution, Object.time<=time).group_by(Object.object)
     objects = Object.select().where(Object.id << groups)
 
+    print Object.execution_id==execution, Object.time<=time
+
     data = {
-        'id': execution,
+        'id': execution, 'time': time,
         'objects': [o._data for o in objects]
     }
 
+    print data
     return data
 
 
@@ -45,33 +49,48 @@ def route(app):
         return 'Ok!'
 
 
-    @app.route('/executions/<id>/destroy_world', methods=['GET'])
-    def destroy_world(id):
+    @socketio.on('destroy_world')
+    def destroy_world(data):
         gateway = JavaGateway()
         bridge = gateway.entry_point
         bridge.publish('/destroy_world', 'std_msgs/String',
-                json.dumps({"data": id}, ensure_ascii=False))
-        return 'Ok!'
+                json.dumps({"data": str(data['execution'])}, ensure_ascii=False))
 
 
-    @app.route('/worlds/<id>/execute', methods=['GET'])
-    def create_world(id):
-        world = World.get(World.id==id)
-
-        base_execution = Execution.get(Execution.world==world, Execution.base==True)
-        base_objects = Object.select().where(Object.execution==base_execution)
-
-        execution = Execution.create(world=world) 
-        objects = [Object.create(
-            execution=execution,
-            object=base_object.object,
-            program=base_object.program,
-            properties=base_object.properties)
-                for base_object in base_objects]
-
+    @socketio.on('create_world')
+    def create_world(data):
         gateway = JavaGateway()
         bridge = gateway.entry_point
         bridge.publish('/create_world', 'std_msgs/String', 
-                json.dumps({"data": str(execution.id)}, ensure_ascii=False))
+                json.dumps({"data": str(data['execution'])}, ensure_ascii=False))
 
-        return str(execution.id)
+
+    @socketio.on('rewrite_data')
+    def rewrite_data(data, objects):
+        execution = Execution.get(Execution.id==data['execution'])
+        Object.delete().where(Object.execution==execution, Object.time>=data['time']).execute()
+        for obj in objects:
+            del obj['data']['id']
+            obj['data']['time'] = data['time']
+            obj['data']['execution'] = execution
+            Object.create(**obj['data'])
+
+
+    @socketio.on('clone_data')
+    def clone_data(data, objects):
+        base_execution = Execution.get(Execution.id==data['execution'])
+        base_objects = Object.select().where(Object.execution==base_execution, Object.time<data['time']).execute()
+
+        time = data['time']
+        data = base_execution._data; del data['id']
+        execution = Execution.create(**data)
+        for obj in base_objects:
+            data = obj._data; del data['id']
+            data['execution'] = execution
+            obj = Object.create(**data)
+
+        for obj in objects:
+            data = obj['data']; del data['id']
+            data['execution'] = execution
+            data['time'] = time
+            Object.create(**data)

@@ -1,7 +1,7 @@
 extends layouts/application
 
 block content
-    script data={world:#{world.id}, execution:#{execution.id}}
+    script data={world:#{world.id}}
     .panel.panel-default: .panel-body
         .row
             .col-lg-8
@@ -18,15 +18,44 @@ block content
 
             .col-lg-4
                 .row: .col-lg-12
-                    button.btn.btn-default Агент
-                    button.btn.btn-default Не агент
+                    button.btn.btn-default(al-click='funcs.new_object()') Новый
+                    button.btn.btn-default(al-click='funcs.remove_object()') Удалить
                 .row: .col-lg-12
-                    select.form-control#obj
-                        - for obj in objects
-                            option(value=obj['object'])= obj['properties']['name']
+                    label Объект
+                    select.form-control(al-value='data.selected')
+                        option(value='')
+                        option(al-repeat='obj in objects'
+                            value="{< obj.get('object') >}")
+                            | {< obj.get_prop('name') >}
+
                 .row: .col-lg-12
                     table.table
                         thead
                             th Свойство
                             th Значение
                         tbody#tbody
+                            tr(al-repeat="field in data.fields")
+                                td {< field.key >}
+                                td: input(al-value="field.value"
+                                    type="{< field.type >}"
+                                    al-change="funcs.update_field(field)")
+
+                .row: .col-lg-12
+                    label Пуск
+                    select.form-control(al-value='data.execution')
+                        option(al-repeat='exec in executions'
+                            value="{< exec.get('id') >}"
+                            al-attr-if="data.execution==exec.get('id')")
+                            | {< exec.get('id') >}
+
+                .row: .col-lg-12
+                    label Время
+                    input.form-control(type='number', step='1', al-value='data.time'
+                        al-change='funcs.load_world()', al-get-element='$input_time')
+
+                .row: .col-lg-12
+                    .row: .col-lg-12: label Управление
+                    button.btn.btn-default(al-click='funcs.clone()') Клонировать
+                    button.btn.btn-default(al-click='funcs.rewrite()') Перезаписать
+                    button.btn.btn-default(al-click='funcs.launch()') Пуск
+                    button.btn.btn-default(al-click='funcs.destroy()') Стоп

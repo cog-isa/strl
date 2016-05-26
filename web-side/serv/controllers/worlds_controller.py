@@ -3,15 +3,13 @@ from app import socketio
 from models import *
 import ros
 
+
 def route(app):
 
-    @app.route('/worlds/<id>/<exec_id>', methods=['GET'])
-    def show(id, exec_id):
-        world = World.get(World.id==id)
-        execution = Execution.get(Execution.id==exec_id)
-        objects = ros.get_data_by_time(execution.id)['objects']
-        return render_template('worlds/show.jade', 
-                world=world, execution=execution, objects=objects)
+    @app.route('/worlds/<world_id>', methods=['GET'])
+    def show(world_id):
+        world = World.get(World.id==world_id)
+        return render_template('worlds/show.jade', world=world)
 
 
     @socketio.on('object:index')
@@ -22,7 +20,14 @@ def route(app):
             object = Object.get(Object.id==obj['id'])
             socketio.emit('object:update', object._data)
 
+
     @socketio.on('object:get')
-    def get_object_properties(json):
+    def object_get(json):
         object = Object.get(Object.id==json['id'])
         socketio.emit('object:update', object._data)
+        
+
+    @socketio.on('execution:index')
+    def execution_index(data):
+        executions = Execution.select().where(Execution.world_id==data['world'])
+        for execute in executions: socketio.emit('execution:update', execute._data)

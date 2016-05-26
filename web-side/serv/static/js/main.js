@@ -1,8 +1,10 @@
 require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
     require(
         [
-        '/static/js/object.js',
         '/bower/socket.io-client/socket.io.js',
+
+        '/static/js/object.js',
+        '/static/js/execution.js',
         
         '/static/libs/js/jquery-ui.js',
         '/static/libs/alight.debug.js',
@@ -12,25 +14,30 @@ require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
         '/static/libs/js/lib/simpletip/jquery.simpletip-1.3.1.pack.js',
         ],
         
-        function(_object, io) {
+        function(io, _object, _execution) {
             // CONFIGURE SCOPE AND BIND to BODY
             var tag = document.querySelector('body');
             var scope = alight.Scope();
 
             socket = io.connect();
 
-            obj = _object;
-            obj.init(scope);
+            _object.init(scope);
+            _execution.init(scope);
 
             // init scope
             //var go = document.getElementById("Start");
             //if (){}
             //    wall.wall_app(scope);
             //    agent.agent_app(scope);
+            alight.directives.al.getElement = function(element, key, scope) { scope[key] = element; };
+            alight.directives.al.attrIf = function(element, key, scope) { 
+                console.log(arguments);
+            }
             
             alight.applyBindings(scope, tag);
             alight.utilits.pars_start_tag = '{<';
             alight.utilits.pars_finish_tag = '>}';
+
     });
 
     /*
