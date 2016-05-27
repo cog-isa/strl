@@ -1,4 +1,5 @@
 from flask import request, render_template
+from flask_socketio import emit
 from app import socketio
 from models import *
 import ros
@@ -12,22 +13,20 @@ def route(app):
         return render_template('worlds/show.jade', world=world)
 
 
-    @socketio.on('object:index')
+    @socketio.on('objects:index')
     def object_index(data):
-        if 'time' not in data: data['time'] = int(1e+9)
-        objects = ros.get_data_by_time(data['execution'], data['time'])['objects']
-        for obj in objects: 
-            object = Object.get(Object.id==obj['id'])
-            socketio.emit('object:update', object._data)
+        data = ros.get_data_by_time(data['execution'], data['time'])
+        emit('objects:index', data)
 
 
-    @socketio.on('object:get')
+    @socketio.on('objects:get')
     def object_get(json):
         object = Object.get(Object.id==json['id'])
-        socketio.emit('object:update', object._data)
+        emit('objects:update', object._data)
         
 
-    @socketio.on('execution:index')
+    @socketio.on('executions:index')
     def execution_index(data):
         executions = Execution.select().where(Execution.world_id==data['world'])
-        for execute in executions: socketio.emit('execution:update', execute._data)
+        data = {'id': data['world'], 'executions': [e._data for e in executions]}
+        emit('executions:index', data)

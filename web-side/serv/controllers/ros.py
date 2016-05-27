@@ -1,7 +1,10 @@
 from app import socketio
+from flask_socketio import emit
+
 from flask import request
 from models import *
 import os, flask, json, helpers
+import ros
 
 from py4j.java_gateway import JavaGateway
 
@@ -11,14 +14,11 @@ def get_data_by_time(execution, time=None):
     groups = Object.select(fn.Max(Object.id)).where(Object.execution_id==execution, Object.time<=time).group_by(Object.object)
     objects = Object.select().where(Object.id << groups)
 
-    print Object.execution_id==execution, Object.time<=time
-
     data = {
         'id': execution, 'time': time,
         'objects': [o._data for o in objects]
     }
 
-    print data
     return data
 
 
@@ -43,9 +43,8 @@ def route(app):
             properties=obj['properties'])
                 for obj in data['objects']]
 
-        for obj in objects:
-            socketio.emit('object:update', obj._data)
-
+        data['objects'] = [o._data for o in objects]
+        socketio.emit('objects:index', data)
         return 'Ok!'
 
 
@@ -75,6 +74,8 @@ def route(app):
             obj['data']['execution'] = execution
             Object.create(**obj['data'])
 
+        socketio.emit('objects:index', ros.get_data_by_time(execution.id))
+
 
     @socketio.on('clone_data')
     def clone_data(data, objects):
@@ -94,3 +95,6 @@ def route(app):
             data['execution'] = execution
             data['time'] = time
             Object.create(**data)
+        
+        emit('executions:update', execution._data)
+

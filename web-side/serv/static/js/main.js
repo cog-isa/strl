@@ -5,6 +5,7 @@ require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
 
         '/static/js/object.js',
         '/static/js/execution.js',
+        '/static/js/global.js',
         
         '/static/libs/js/jquery-ui.js',
         '/static/libs/alight.debug.js',
@@ -14,40 +15,36 @@ require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
         '/static/libs/js/lib/simpletip/jquery.simpletip-1.3.1.pack.js',
         ],
         
-        function(io, _object, _execution) {
-            // CONFIGURE SCOPE AND BIND to BODY
+        function(io, object, execution, global) {
             var tag = document.querySelector('body');
-            var scope = alight.Scope();
 
             socket = io.connect();
+            scope = alight.Scope();
 
-            _object.init(scope);
-            _execution.init(scope);
+            scope.data = data;
+            scope.funcs = {
+                executions: execution.funcs,
+                objects: object.funcs,
+                globals: global.funcs
+            };
 
-            // init scope
-            //var go = document.getElementById("Start");
-            //if (){}
-            //    wall.wall_app(scope);
-            //    agent.agent_app(scope);
+            object.init();
+            execution.init();
+
             alight.directives.al.getElement = function(element, key, scope) { scope[key] = element; };
-            alight.directives.al.attrIf = function(element, key, scope) { 
-                console.log(arguments);
+            alight.directives.al.selected = function(element, key, scope) { 
+                var fn = scope.$compile(key);
+                if (fn()) 
+                    $(element).attr('selected', ''); else
+                    $(element).removeAttr('selected');
+            }
+            alight.directives.al.appendTag = function(element, key, scope) {
+                var fn = scope.$compile(key);
+                $(element).append(fn());
             }
             
-            alight.applyBindings(scope, tag);
             alight.utilits.pars_start_tag = '{<';
             alight.utilits.pars_finish_tag = '>}';
-
+            alight.applyBindings(scope, tag);
     });
-
-    /*
-    require(['/bower/socket.io-client/socket.io.js'], function(io) {
-        socket = io.connect();
-        socket.on('update_properties', update_properties);
-
-        $('select#obj').on('change', function() {
-            socket.emit('get_object_properties', {id: this.value});
-        });
-    });
-    */
 });
