@@ -14,21 +14,21 @@ create_ids = []
 destroy_ids = []
 
 
-def create_world(ID):
-  if ID.data in worlds: destroy_world(ID)
-  rospy.loginfo("create: %s", ID.data)
-  worlds[ID.data] = World(ID=ID.data)
+def create_world(id):
+  if id.data in worlds: destroy_world(id)
+  rospy.loginfo("create: %s", id.data)
+  worlds[id.data] = World(id=id.data)
 
 
-def destroy_world(ID):
-  if ID.data not in worlds: return
-  rospy.loginfo("destroy: %s", ID.data)
-  worlds[ID.data].destroy_synch()
-  del worlds[ID.data]
+def destroy_world(id):
+  if id.data not in worlds: return
+  rospy.loginfo("destroy: %s", id.data)
+  worlds[id.data].destroy_synch()
+  del worlds[id.data]
 
 
-def create(ID): create_ids.append(ID)
-def destroy(ID): destroy_ids.append(ID)
+def create(id): create_ids.append(id)
+def destroy(id): destroy_ids.append(id)
 
 
 def run():

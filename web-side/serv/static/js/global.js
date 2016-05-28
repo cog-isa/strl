@@ -35,13 +35,32 @@ define([], function() {
             tag: '<select/>',
             attrs: {
                 'al-value': 'field.value',
+                'al-element': 'field.element',
                 'al-change': 'field.update(field)'
             },
             html: {
                 tag: '<option/>',
                 attrs: {
                     'al-repeat': 'val in [true, false]',
-                    value: '{< val >}', text: '{< val >}'
+                    value: '{< val >}', text: '{< val >}',
+                    'al-selected': 'field.value == val'
+                }
+            }
+        },
+
+        program: {
+            tag: '<select/>',
+            attrs: {
+                'al-value': 'field.value',
+                'al-element': 'field.element',
+                'al-change': 'field.update(field)'
+            },
+            html: {
+                tag: '<option/>',
+                attrs: {
+                    'al-repeat': 'prog in programs',
+                    value: '{< prog.data.name >}', text: '{< prog.data.name >}',
+                    'al-selected': 'field.value == prog.data.name'
                 }
             }
         }

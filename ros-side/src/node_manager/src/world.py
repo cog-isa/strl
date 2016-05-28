@@ -1,7 +1,6 @@
 from roslaunch.scriptapi import ROSLaunch
 from threading import Thread
 
-#from objects.object import *
 from objects.robot import *
 from helpers.node_funcs import *
 
@@ -14,8 +13,8 @@ import rospy
 
 class World(NodeFuncs):
 
-    def __init__(self, ID):
-      json = bridge.request_world(ID)
+    def __init__(self, id):
+      json = bridge.request_world(id)
 
       self.__destroy = False
       self.__launch = ROSLaunch()
@@ -23,7 +22,6 @@ class World(NodeFuncs):
 
       self.tick_count = 0
       self.tick = 0
-      rospy.loginfo(json)
       self.time = json['time']
 
       self.__init_by_json(json)
@@ -65,6 +63,7 @@ class World(NodeFuncs):
         for node in obj.nodes:
           self.__launch.launch(node)
       self.__launch.launch(self.env.node)
+
 
     def __stop(self): 
       self.__launch.stop()
@@ -116,13 +115,3 @@ class World(NodeFuncs):
             'objects': [o.data for o in self.objects]
         }
         return data
-
-
-class Struct(object):
-
-    def __init__(self, **entries):
-      for key in entries:
-        if isinstance(entries[key], dict):
-          entries[key] = Struct(**entries[key])
-
-      self.__dict__.update(entries)

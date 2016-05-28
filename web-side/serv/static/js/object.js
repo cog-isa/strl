@@ -14,8 +14,7 @@ define(['/static/libs/aplib.js'], function(aplib) {
         } },
 
         methods: {
-            get: { code: function(name) {
-                var arr = name.split('.');
+            get: { code: function(name) { var arr = name.split('.');
                 var value = this.data;
                 for (var i=0; i<arr.length; i++)
                     value = value[arr[i]];
@@ -54,6 +53,7 @@ define(['/static/libs/aplib.js'], function(aplib) {
                         array = array.concat(this.get_array(field)); 
                     } else {
                         var type = typeof this.get(field);
+                        if (key == 'program') type = key;
                         var constructor = this.get(field).constructor;
                         array.push({key: key, value: this.get(field),
                             name: field, link: this.get(name), 
@@ -66,7 +66,11 @@ define(['/static/libs/aplib.js'], function(aplib) {
 
             update_field: { code: function(field) { 
                 constructor = field.constructor;
-                field.link[field.key] = constructor(field.value);
+                if (field.element) field.value = $(field.element).val();
+                if (field.type == 'boolean')
+                    field.link[field.key] = field.value == 'true'; else
+                    field.link[field.key] = constructor(field.value);
+
                 field.object.update_canvas();
                 field.value = field.link[field.key];
                 
@@ -96,6 +100,7 @@ define(['/static/libs/aplib.js'], function(aplib) {
         index: function(data) {
             if (data['id'] != scope.data.execution) return;
             scope.objects = [];
+            scope.data.fields = [];
             for (var ind in data['objects'])
                 funcs.update(data['objects'][ind]);
             scope.$scan();

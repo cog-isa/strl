@@ -27,17 +27,19 @@ require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
                 objects: object.funcs,
                 globals: global.funcs
             };
+            scope.programs = [
+            {data:{name:'2'}},
+            {data:{name:'3'}}
+            ];
 
             object.init();
             execution.init();
 
-            alight.directives.al.getElement = function(element, key, scope) { scope[key] = element; };
+            alight.directives.al.element = function(element, key, scope) { scope.$setValue(key, element); };
             alight.directives.al.selected = function(element, key, scope) { 
-                var fn = scope.$compile(key);
-                if (fn()) 
-                    $(element).attr('selected', ''); else
-                    $(element).removeAttr('selected');
+                if (scope.$compile(key)()) $(element).attr('selected', '');
             }
+
             alight.directives.al.appendTag = function(element, key, scope) {
                 var fn = scope.$compile(key);
                 $(element).append(fn());

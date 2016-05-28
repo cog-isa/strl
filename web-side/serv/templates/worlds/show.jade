@@ -10,8 +10,7 @@ block content
                     style="
                         left:{< obj.get_geom('position.x') >}px;
                         top:{< obj.get_geom('position.y') >}px;
-                        display:inline-block;
-                        position:absolute;
+                        display:inline-block; position:absolute;
                         transform: translate(-50%, -50%);"
                         )
 
@@ -52,7 +51,7 @@ block content
                 .row: .col-lg-12
                     label Время
                     input.form-control(type='number', step='1', al-value='data.time'
-                        al-change='funcs.objects.emit_index()', al-get-element='&time')
+                        al-change='funcs.objects.emit_index()', al-element='&time')
 
                 .row: .col-lg-12
                     .row: .col-lg-12: label Управление
