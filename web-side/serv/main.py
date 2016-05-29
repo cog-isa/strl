@@ -11,7 +11,7 @@ controllers.route(app)
 
 def createTables():
     for model in models:
-        model.drop_table(cascade=True)
+        model.drop_table(cascade=True, fail_silently=True)
         model.create_table(fail_silently=False)
 
     world = World.create(name='hello')

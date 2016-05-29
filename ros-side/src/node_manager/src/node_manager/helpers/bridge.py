@@ -1,6 +1,6 @@
 import requests
-from config import config
-from helpers.json_helper import *
+from node_manager.config import config
+from json_helper import *
 
 
 def request_world(id):

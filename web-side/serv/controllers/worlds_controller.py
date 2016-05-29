@@ -23,10 +23,13 @@ def route(app):
     def object_get(json):
         object = Object.get(Object.id==json['id'])
         emit('objects:update', object._data)
-        
+
 
     @socketio.on('executions:index')
     def execution_index(data):
-        executions = Execution.select().where(Execution.world_id==data['world'])
+        print data
+        executions = Execution.select().where(Execution.world==data['world'])
+        print [e._data for e in Execution.select()]
         data = {'id': data['world'], 'executions': [e._data for e in executions]}
+        print data
         emit('executions:index', data)

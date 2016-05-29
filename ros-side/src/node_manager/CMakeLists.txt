@@ -46,20 +46,14 @@ catkin_python_setup()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  Reaction.msg
-  Properties.msg
-  Position.msg
-)
+#add_message_files(
+#  FILES
+#)
 
 ## Generate services in the 'srv' folder
- add_service_files(
+add_service_files(
   FILES
-  RNode.srv
-  EnvExecute.srv
-  WorldIds.srv
-  WorldProperties.srv
+  JSON.srv
 )
 
 ## Generate actions in the 'action' folder

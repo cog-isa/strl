@@ -10,8 +10,8 @@ from py4j.java_gateway import JavaGateway
 
 
 def get_data_by_time(execution, time=None):
-    if not time: time = Object.select(fn.Max(Object.time)).where(Object.execution_id==execution).scalar()
-    groups = Object.select(fn.Max(Object.id)).where(Object.execution_id==execution, Object.time<=time).group_by(Object.object)
+    if not time: time = Object.select(fn.Max(Object.time)).where(Object.execution==execution).scalar()
+    groups = Object.select(fn.Max(Object.id)).where(Object.execution==execution, Object.time<=time).group_by(Object.object)
     objects = Object.select().where(Object.id << groups)
 
     data = {
@@ -60,7 +60,7 @@ def route(app):
     def create_world(data):
         gateway = JavaGateway()
         bridge = gateway.entry_point
-        bridge.publish('/create_world', 'std_msgs/String', 
+        bridge.publish('/create_world', 'std_msgs/String',
                 json.dumps({"data": str(data['execution'])}, ensure_ascii=False))
 
 
@@ -95,6 +95,6 @@ def route(app):
             data['execution'] = execution
             data['time'] = time
             Object.create(**data)
-        
+
         emit('executions:update', execution._data)
 

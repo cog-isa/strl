@@ -1,6 +1,6 @@
 import roslaunch.core, rospy
-from config import config
-from helpers.node_funcs import *
+from node_manager.config import config
+from node_manager.helpers.node_funcs import *
 
 
 class Node(roslaunch.core.Node, NodeFuncs):
@@ -15,5 +15,5 @@ class Node(roslaunch.core.Node, NodeFuncs):
         package=config['robots']['root'],
         node_type=config['robots'][node_type],
         name=name, namespace=namespace)
-    
+
     NodeFuncs.__init__(self, namespace=self.namespace, name=self.name)

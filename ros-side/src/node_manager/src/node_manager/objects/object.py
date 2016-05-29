@@ -1,4 +1,4 @@
-from helpers.node_funcs import *
+from node_manager.helpers.node_funcs import *
 
 
 class Object(NodeFuncs):
@@ -10,13 +10,11 @@ class Object(NodeFuncs):
     self.properties = self.data['properties']
 
     self.id = self.properties['name']
-    self.nodes = []  
+    self.nodes = []
 
     NodeFuncs.__init__(self, namespace=self.world.get_name('~'), name=self.properties['name'])
 
 
-  def update_properties(self):
-    for node in self.nodes:
-      node.set_param('~properties', self.properties)
-    
-
+  #def update_properties(self):
+  #  for node in self.nodes:
+  #    node.set_param('~properties', self.properties)

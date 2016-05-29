@@ -3,6 +3,7 @@ config ={
     'name': 'NodeManager',
     'create_world': 'create_world',
     'destroy_world': 'destroy_world',
+    'rate': 1
   },
 
   'url': {
@@ -10,7 +11,7 @@ config ={
       'set_data': 'http://localhost:5000/executions/%s/set_data'
   },
 
-  'root': '../../',
+  'root': '../../../',
   'robots': {
     'root': 'robots',
     'runner': 'runner.py',

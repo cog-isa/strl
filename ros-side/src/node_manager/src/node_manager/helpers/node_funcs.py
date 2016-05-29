@@ -1,4 +1,4 @@
-import rospy
+import rospy, wrappers
 
 
 class NodeFuncs:
@@ -19,6 +19,7 @@ class NodeFuncs:
     return '%s%s/' % (path, name)
 
 
+  @wrappers.service_request
   def get_srv(self, name, srv):
     name = self.get_name(name)
     rospy.wait_for_service(name)
