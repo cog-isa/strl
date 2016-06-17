@@ -66,6 +66,8 @@ class World(NodeFuncs):
 
     def __stop(self):
       self.__launch.stop()
+      self.__launch.spin()
+      rospy.loginfo('stop')
       for srv in self.services:
         srv.shutdown()
       for obj in self.objects:

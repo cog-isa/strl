@@ -10,7 +10,8 @@ from node_manager.helpers import imports
 
 @wrappers.service_json
 def ready(*args, **kwargs):
-    return {'vx': -7}
+    from robots import actuators
+    return {'reac': actuators.accelerator_data}
 
 
 def init():

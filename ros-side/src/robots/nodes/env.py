@@ -17,6 +17,23 @@ def apply_reaction(prop, reaction):
     return obj
 
 
+def accelerator(properties, acceleration):
+    if not hasattr(object, 'acceleration'):
+        object.acceleration = 0
+
+    properties = simulink.actuator('accelerator')(acceleration)
+
+    object.acceleration = acceleration
+
+
+def robot(object):
+    if not hasattr(object, 'velocity'):
+        object.velocity = 0
+    object.velocity += object.acceleration
+    object.position.x += object.velocity
+    
+
+
 def check_collisions(p1, p2):
     if p1.type == 'circle' and p2.type == 'circle':
         return math.hypot(
@@ -30,7 +47,10 @@ def check_collisions(p1, p2):
 def execute(req):
     old_prop = get_srv('get_properties', JSON)(req.robot_id)
     ids = get_srv('get_ids', JSON)().ids
-    prop = apply_reaction(old_prop, req)
+    #prop = apply_reaction(old_prop, req)
+    prop = copy.deepcopy(old_prop)
+    accelerator(prop, req.reac) 
+    robot(prop)
 
     for id in ids:
         if id == req.robot_id: continue

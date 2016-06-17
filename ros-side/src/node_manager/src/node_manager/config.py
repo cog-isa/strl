@@ -20,7 +20,7 @@ config ={
     'config': 'config.xml',
     'launch': ['r', 's', 't'],
     'rate': {
-      'r': 5,
+      'r': 1,
       's': 15,
       't': 3
     }

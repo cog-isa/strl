@@ -28,6 +28,7 @@ require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
                 globals: global.funcs
             };
             scope.programs = [
+            {data:{name: ''}},
             {data:{name:'2'}},
             {data:{name:'3'}}
             ];

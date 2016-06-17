@@ -2,6 +2,7 @@ from node_manager.config import config
 from node_manager import srv
 
 from node import *
+from node_manager.helpers import json_helper
 
 
 class RNode(Node):
@@ -24,7 +25,8 @@ class RNode(Node):
     reac = self.get_srv('~get_data', srv.JSON)()
     reac.robot_id = self.object.id
     prop = env.get_srv('~execute', srv.JSON)(reac)
-    self.object.properties['geometry']['position']['x'] = prop.position.x
+    self.object.properties['geometry'] = json_helper.obj2dict(prop)
+    print self.object.properties
     #self.object.update_properties()
     #print prop
 
