@@ -17,6 +17,17 @@ define([], function() {
         rewrite: function() { socket.emit('rewrite_data', scope.data, scope.objects); },
         launch: function() { socket.emit('create_world', scope.data); },
         stop: function() { socket.emit('destroy_world', scope.data); },
+	record: function() { 
+		function tt() { 
+		    scope.data.time += 1;
+		    $(scope['&time']).val(scope.data.time);
+		    $(scope['&time']).change();
+		    scope.funcs.objects.emit_index();
+		    scope.$scan();
+	       	};
+		my_interval = setInterval(tt, 75);
+	},
+	stop_record: function() { clearInterval(my_interval); },
 
         get_field_tag: getTag
     }

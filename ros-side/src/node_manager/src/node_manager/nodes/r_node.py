@@ -24,6 +24,7 @@ class RNode(Node):
     env = world.env.node
     reac = self.get_srv('~get_data', srv.JSON)()
     reac.robot_id = self.object.id
+    print reac
     prop = env.get_srv('~execute', srv.JSON)(reac)
     self.object.properties['geometry'] = json_helper.obj2dict(prop)
     print self.object.properties

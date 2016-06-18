@@ -11,4 +11,6 @@ class Collision(Service):
 
     @wrappers.service_json
     def __call__(self):
+        try: return self.owner.properties['geometry']['collide']
+        except: return False
         return self.owner.properties['geometry']['position']

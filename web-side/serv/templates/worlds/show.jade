@@ -2,7 +2,8 @@ extends layouts/application
 
 block content
     script data={world:#{world.id}}
-    .panel.panel-default: .panel-body
+    div
+        //.panel.panel-default: .panel-body
         .row
             .col-lg-8
                 canvas(al-repeat='obj in objects'
@@ -60,3 +61,6 @@ block content
                     .row: .col-lg-12
                     button.btn.btn-default(al-click='funcs.globals.launch()') Пуск
                     button.btn.btn-default(al-click='funcs.globals.stop()') Стоп
+                    .row: .col-lg-12
+                    button.btn.btn-default(al-click='funcs.globals.record()') Запись
+                    button.btn.btn-default(al-click='funcs.globals.stop_record()') Остановить

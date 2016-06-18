@@ -11,7 +11,8 @@ from node_manager.helpers import imports
 @wrappers.service_json
 def ready(*args, **kwargs):
     from robots import actuators
-    return {'reac': actuators.accelerator_data}
+    return {'a': actuators.a_value,
+            'phi': actuators.phi_value}
 
 
 def init():

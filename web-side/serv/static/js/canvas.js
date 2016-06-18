@@ -8,6 +8,12 @@ define([], function() {
         canvas.width = 2*radius;
         canvas.height = 2*radius;
 
+	if (obj.get_prop('active'))
+	    ctx.fillStyle='green'; else
+	    ctx.fillStyle='black';
+
+	console.log(ctx.fillStyle)
+
         ctx.beginPath();
         ctx.arc(radius, radius, radius, 0, Math.PI*2, true);
         ctx.closePath();

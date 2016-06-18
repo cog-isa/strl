@@ -17,21 +17,24 @@ def apply_reaction(prop, reaction):
     return obj
 
 
-def accelerator(properties, acceleration):
-    if not hasattr(object, 'acceleration'):
-        object.acceleration = 0
+def accelerator(object, acceleration):
+    if not hasattr(object, 'a'): object.a = 0.0
+    object.a = (acceleration - object.a) / 2.0
 
-    properties = simulink.actuator('accelerator')(acceleration)
 
-    object.acceleration = acceleration
+def wheel(object, phi):
+    if not hasattr(object, 'phi'): object.phi = 0.0
+    object.phi = (phi - object.phi) / 2.0
 
 
 def robot(object):
-    if not hasattr(object, 'velocity'):
-        object.velocity = 0
-    object.velocity += object.acceleration
-    object.position.x += object.velocity
-    
+    import math
+    if not hasattr(object, 'v'): object.v = 0.0
+    if not hasattr(object, 'angle'): object.angle = 0.0
+    object.v += object.a
+    object.angle += object.v * math.tan(object.phi)
+    object.position.x += object.v * math.cos(object.angle)
+    object.position.y += object.v * math.sin(object.angle)
 
 
 def check_collisions(p1, p2):
@@ -46,16 +49,20 @@ def check_collisions(p1, p2):
 @wrappers.service_json
 def execute(req):
     old_prop = get_srv('get_properties', JSON)(req.robot_id)
+    old_prop.collide = False
     ids = get_srv('get_ids', JSON)().ids
     #prop = apply_reaction(old_prop, req)
     prop = copy.deepcopy(old_prop)
-    accelerator(prop, req.reac) 
+    accelerator(prop, req.a) 
+    wheel(prop, req.phi)
     robot(prop)
 
     for id in ids:
         if id == req.robot_id: continue
         p = get_srv('get_properties', JSON)(id=id)
-        if check_collisions(prop, p): return old_prop
+        if check_collisions(prop, p): 
+            old_prop.collide = True
+            return old_prop
 
     rospy.loginfo(prop)
     return prop

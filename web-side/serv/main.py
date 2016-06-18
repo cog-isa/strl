@@ -22,7 +22,7 @@ def createTables():
         "name": "2",
         "geometry": {
             "type": "circle",
-            "position": {"x": 200.0, "y": 100.0},
+            "position": {"x": 400.0, "y": 200.0},
             "radius": 5
         }
     })
@@ -32,8 +32,8 @@ def createTables():
         "name": "wall1",
         "geometry": {
             "type": "circle",
-            "position": {"x": 10.0, "y": 100.0},
-            "radius": 10
+            "position": {"x": 340.0, "y": 310.0},
+            "radius": 30
         }
     })
 
@@ -49,4 +49,4 @@ if __name__ == '__main__':
         api.register(model)
     api.setup()
 
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')

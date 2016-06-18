@@ -36,6 +36,9 @@ define(['/static/libs/aplib.js'], function(aplib) {
                     radius = this.get_geom('radius');
                     canvas.width = 2*radius;
                     canvas.height = 2*radius;
+	if (this.get_prop('active'))
+	    ctx.fillStyle='Green'; else
+	    ctx.fillStyle='Black';
 
                     ctx.beginPath();
                     ctx.arc(radius, radius, radius, 0, Math.PI*2, true);

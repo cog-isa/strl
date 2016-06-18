@@ -32,6 +32,7 @@ class Robot(Object):
 
         GPS(self)
         Collision(self)
+        Velocity(self)
 
 
     @staticmethod
