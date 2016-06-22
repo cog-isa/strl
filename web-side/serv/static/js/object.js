@@ -25,25 +25,98 @@ define(['/static/libs/aplib.js'], function(aplib) {
             get_geom: { code: function(name) { return this.get_prop('geometry.'+name); } },
                         
             update_canvas: { code: function() {
-                canvas = $('canvas[object="'+this.get('object')+'"]').first().get(0);
+                var canvas = $('canvas[object="'+this.get('object')+'"]').first().get(0);
                 if (!canvas) return;
-                ctx = canvas.getContext('2d');
+                var ctx = canvas.getContext('2d');
 
-                x = this.get_geom('position.x');
-                y = this.get_geom('position.y');
+                var x = this.get_geom('position.x');
+                var y = this.get_geom('position.y');
 
-                if (this.get_geom('type') == 'circle') {
-                    radius = this.get_geom('radius');
+                if (this.get_prop('active'))
+                    ctx.fillStyle='Green'; else
+                    ctx.fillStyle='Black';
+
+                if (this.get_geom('type') == 'circle2') {
+                    var radius = this.get_geom('radius');
+                    var angle = this.get_geom('angle');
+                    var dangle = Math.PI/10;
+
                     canvas.width = 2*radius;
                     canvas.height = 2*radius;
-	if (this.get_prop('active'))
-	    ctx.fillStyle='Green'; else
-	    ctx.fillStyle='Black';
 
+
+                    //ctx.beginPath();
+                    //ctx.arc(radius, radius, radius, 0, Math.PI*2, true);
+                    //ctx.closePath();
+
+                    ctx.strokeStyle = 'Red';
+                    ctx.lineWidth = 2;
+                    //ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(radius, radius);
+                    ctx.lineTo(radius+radius*Math.cos(Math.PI/4), radius+radius*Math.sin(Math.PI/4));
+
+                    ctx.moveTo(radius, radius);
+                    ctx.lineTo(radius-radius*Math.cos(Math.PI/4), radius+radius*Math.sin(Math.PI/4));
+
+                    ctx.moveTo(radius, radius);
+                    ctx.lineTo(radius-radius*Math.cos(Math.PI/4), radius-radius*Math.sin(Math.PI/4));
+
+                    ctx.moveTo(radius, radius);
+                    ctx.lineTo(radius+radius*Math.cos(Math.PI/4), radius-radius*Math.sin(Math.PI/4));
+                    ctx.stroke();
+                    //ctx.strokeStyle('Black');
+                    //ctx.fill();
+                }
+
+                if (this.get_geom('type') == 'circle') {
+                    var radius = this.get_geom('radius');
+                    var angle = this.get_geom('angle');
+                    var dangle = Math.PI/10;
+
+                    canvas.width = 2*radius;
+                    canvas.height = 2*radius;
+
+                    if (this.get_prop('active'))
+                        ctx.fillStyle='Green'; else
+                        ctx.fillStyle='Black';
+                    
                     ctx.beginPath();
                     ctx.arc(radius, radius, radius, 0, Math.PI*2, true);
                     ctx.closePath();
                     ctx.fill();
+
+                    var xx = Math.cos(angle)*radius, 
+                        yy = Math.sin(angle)*radius;
+
+                    ctx.lineWidth=2;
+                    ctx.beginPath();
+                    ctx.moveTo(radius, radius);
+                    ctx.lineTo(radius+xx, radius+yy);
+                    ctx.stroke();
+                    
+                }
+
+                if (this.get_geom('type') == 'rectangle') {
+                    var width = this.get_geom('width');
+                    var height = this.get_geom('height');
+
+                    console.log(width, height);
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    ctx.lineWidth=30;
+
+                    //ctx.fillRect(0, 0, width, height);
+                    //ctx.rect(0, 0, width-1, height-1);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(width, 0);
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(0, height);
+                    ctx.stroke();
                 }
             } },
 

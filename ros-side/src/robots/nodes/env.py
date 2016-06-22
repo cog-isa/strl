@@ -23,6 +23,9 @@ def accelerator(object, acceleration):
 
 
 def wheel(object, phi):
+    phi = min(phi, math.pi/36)
+    phi = max(phi, -math.pi/36)
+
     if not hasattr(object, 'phi'): object.phi = 0.0
     object.phi = (phi - object.phi) / 2.0
 
@@ -43,6 +46,14 @@ def check_collisions(p1, p2):
             p1.position.x - p2.position.x,
             p1.position.y - p2.position.y) < p1.radius + p2.radius
 
+    if p1.type == 'circle' and p2.type == 'rectangle':
+        w, h, r = p2.width / 2, p2.height / 2, p1.radius
+        x1, y1 = p2.position.x - w - r, p2.position.y - h - r
+        x2, y2 = p2.position.x + w + r, p2.position.y + h + r
+        x, y = p1.position.x, p1.position.y
+        return x1-1 <= x and x <= x2+1 and y1-1 <= y and y <= y2+1
+
+
     return False
 
 
@@ -61,8 +72,9 @@ def execute(req):
         if id == req.robot_id: continue
         p = get_srv('get_properties', JSON)(id=id)
         if check_collisions(prop, p): 
-            old_prop.collide = True
-            return old_prop
+            prop.collide = True
+            prop.position = old_prop.position
+            return prop
 
     rospy.loginfo(prop)
     return prop

@@ -22,27 +22,48 @@ def createTables():
         "name": "2",
         "geometry": {
             "type": "circle",
-            "position": {"x": 400.0, "y": 200.0},
-            "radius": 5
+            "position": {"x": 0, "y": 200},
+            "radius": 25
         }
     })
 
     Object.create(execution=execution, properties={
         "active": False,
-        "name": "wall1",
+        "name": "target",
         "geometry": {
-            "type": "circle",
-            "position": {"x": 340.0, "y": 310.0},
-            "radius": 30
+            "type": "circle2",
+            "position": {"x": 250, "y": 300},
+            "radius": 25
         }
     })
+
+    xy = [0, 175,  100, 350,  200, 300,  100, 100,  200, -50,  150, 50,  300, 150,  200, 100,  250, 250]
+    wh = [1, 350,  200, 1,    1,   100,  1,   300,  200,  1,   100, 1,   1,   400,  1,   100,  100, 1]
+
+    dx, dy = 100, 300
+
+    for i in range(len(xy)): 
+        if i % 2 > 0: xy[i] += dy
+        else: xy[i] += dx
+
+    for i in range(0, len(xy)/2):
+        print i<<1, len(xy)
+        Object.create(execution=execution, properties={
+            "active": False, "name": "wall%i"%i,
+            "geometry": {
+                "type": "rectangle",
+                "position": {"x": xy[(i<<1)], "y": xy[(i<<1)+1]},
+                "width": wh[(i<<1)], "height": wh[(i<<1)+1]
+
+            }
+        })
 
     Object.update(object=Object.id).execute()
 
 
 if __name__ == '__main__':
 
-    createTables()
+    #createTables()
 
     api = RestAPI(app)
     for model in models:

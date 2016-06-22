@@ -87,7 +87,7 @@ class World(NodeFuncs):
           data = self.__prepare_data()
           bridge.set_data(data)
 
-      time.sleep(0.5)
+      time.sleep(1.5)
 
 
     def __loop(self):
@@ -105,7 +105,6 @@ class World(NodeFuncs):
       for obj in self.objects:
         if obj.id != id: continue
         prop = obj.properties['geometry']
-        print prop
         return prop
 
 

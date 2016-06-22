@@ -19,7 +19,6 @@ class RNode(Node):
     if self.tick * world.tick_count >= world.tick * self.tick_count: return
 
     self.tick += 1
-    print world.tick, world.time, self.tick, self.tick_count
 
     env = world.env.node
     reac = self.get_srv('~get_data', srv.JSON)()
@@ -27,7 +26,6 @@ class RNode(Node):
     print reac
     prop = env.get_srv('~execute', srv.JSON)(reac)
     self.object.properties['geometry'] = json_helper.obj2dict(prop)
-    print self.object.properties
     #self.object.update_properties()
     #print prop
 

@@ -9,11 +9,11 @@ import math
 from Queue import Queue
 
 
-tx, ty = 250, 300
+tx, ty = 250, 110
 
-x1, x2 = -5, 60
-y1, y2 = 15, 80 
-sw, sh = 9, 9
+x1, x2 = -10, 55
+y1, y2 = -10, 55 
+sw, sh = 10, 10
 
 def get_node(x, y): return (x / sw, y / sh)
 def get_pos((x, y)): return x*sw, y*sh
@@ -39,6 +39,7 @@ def build_path(start):
     frontier.put(start)
 
     came_from = {}
+    rospy.loginfo(start)
     came_from[start] = start
 
     while not frontier.empty():
@@ -67,12 +68,10 @@ def find_tar(x, y):
 
 def rem(x, y): 
     rad = 25
-    x1, x2 = (x-rad)/sw, (x+rad)/sw
-    y1, y2 = (y-rad)/sh, (y+rad)/sh
+    x1, x2 = x-rad, x+rad
+    y1, y2 = y-rad, y+rad
 
-    for xx in range(x1, x2+1):
-        for yy in range(y1, y2+1):
-            remove([xx, yy])
+    remove([x/sw, y/sh])
 
 def remove(a): 
     if a in all_nodes:
@@ -80,6 +79,8 @@ def remove(a):
 
 
 def run():
+    rate = rospy.Rate(10)
+    
     while not rospy.is_shutdown():
         data, pos = sensors.velocity(), sensors.gps()
         pos.x, pos.y = int(round(pos.x)), int(round(pos.y))
@@ -93,13 +94,18 @@ def run():
         tx, ty = find_tar(pos.x, pos.y)
         tx += pos.x; ty += pos.y
         rospy.loginfo((tx, ty, pos))
-        rospy.loginfo(get_node(tx+sw, ty) in all_nodes)
+        rospy.loginfo([tx/sw, ty/sh] in all_nodes)
 
         angle = math.atan2(ty-pos.y, tx-pos.x)
         phi = angle - data.angle
         phi = math.atan2(math.sin(phi), math.cos(phi))
 
-        acceleration = 3 - data.v
+        if sensors.collision():
+            acceleration = (0.5 - data.v) / 10
+        else:
+            acceleration = 4 - data.v
     
         actuators.accelerator(acceleration)
         actuators.wheel(phi)
+        
+        rate.sleep()

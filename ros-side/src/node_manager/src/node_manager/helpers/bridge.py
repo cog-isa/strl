@@ -10,7 +10,5 @@ def request_world(id):
 
 
 def set_data(data):
-    print data
     url = config['url']['set_data'] % data['id']
     r = requests.post(url, data=dict2json(data))
-    print r.text

@@ -12,7 +12,7 @@ from py4j.java_gateway import JavaGateway
 def get_data_by_time(execution, time=None):
     if not time: time = Object.select(fn.Max(Object.time)).where(Object.execution==execution).scalar()
     groups = Object.select(fn.Max(Object.id)).where(Object.execution==execution, Object.time<=time).group_by(Object.object)
-    objects = Object.select().where(Object.id << groups)
+    objects = Object.select().where(Object.id << groups).order_by(-Object.id)
 
     data = {
         'id': execution, 'time': time,
