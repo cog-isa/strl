@@ -14,9 +14,11 @@ class Object(Model):
 '''
 
 
-class Object(Model):
-	name = CharField(max_length=200)
-	type = ForeignKeyField(ObjectType, null=False)
-	world = ForeignKeyField(World, null=False)
+class ObjectToProperty(Model):
+	object = ForeignKeyField(Object, null=False)
+	property = ForeignKeyField(ObjectProperty, null=False)
+
+	class Meta:
+		primary_key = CompositeKey('object', 'property')
 
 

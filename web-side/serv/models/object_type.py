@@ -14,9 +14,7 @@ class Object(Model):
 '''
 
 
-class Object(Model):
+class ObjectType(Model):
 	name = CharField(max_length=200)
-	type = ForeignKeyField(ObjectType, null=False)
-	world = ForeignKeyField(World, null=False)
 
 
