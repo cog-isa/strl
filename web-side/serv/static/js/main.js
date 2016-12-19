@@ -18,7 +18,7 @@ require(["/bower/jquery/dist/jquery.min.js"], function(_jquery) {
         function(io, object, execution, global) {
             var tag = document.querySelector('body');
 
-            socket = io.connect();
+            // socket = io.connect();
             scope = alight.Scope();
 
             scope.data = data;

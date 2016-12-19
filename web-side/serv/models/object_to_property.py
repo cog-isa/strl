@@ -16,7 +16,7 @@ class Object(Model):
 
 class ObjectToProperty(Model):
 	object = ForeignKeyField(Object, null=False)
-	property = ForeignKeyField(ObjectProperty, null=False)
+	property = ForeignKeyField(PropertyDescription, null=False)
 
 	class Meta:
 		primary_key = CompositeKey('object', 'property')
