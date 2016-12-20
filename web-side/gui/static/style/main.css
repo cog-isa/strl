@@ -1,0 +1,365 @@
+@font-face {
+    font-family: "RobotoRegular";
+    src: url("./fonts/RobotoRegular/RobotoRegular.eot");
+    src: url("./fonts/RobotoRegular/RobotoRegular.eot?#iefix")format("embedded-opentype"),
+    url("./fonts/RobotoRegular/RobotoRegular.woff") format("woff"),
+    url("./fonts/RobotoRegular/RobotoRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoLight"; */
+@font-face {
+    font-family: "RobotoLight";
+    src: url("./fonts/RobotoLight/RobotoLight.eot");
+    src: url("./fonts/RobotoLight/RobotoLight.eot?#iefix")format("embedded-opentype"),
+    url("./fonts/RobotoLight/RobotoLight.woff") format("woff"),
+    url("./fonts/RobotoLight/RobotoLight.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoMedium"; */
+@font-face {
+    font-family: "RobotoMedium";
+    src: url("./fonts/RobotoMedium/RobotoMedium.eot");
+    src: url("./fonts/RobotoMedium/RobotoMedium.eot?#iefix")format("embedded-opentype"),
+    url("./fonts/RobotoMedium/RobotoMedium.woff") format("woff"),
+    url("./fonts/RobotoMedium/RobotoMedium.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoBold"; */
+@font-face {
+    font-family: "RobotoBold";
+    src: url("./fonts/RobotoBold/RobotoBold.eot");
+    src: url("./fonts/RobotoBold/RobotoBold.eot?#iefix")format("embedded-opentype"),
+    url("./fonts/RobotoBold/RobotoBold.woff") format("woff"),
+    url("./fonts/RobotoBold/RobotoBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+
+
+html, body, .dbody {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+body {
+    background-color: #e3e2de;
+    font: 12pt RobotoLight, "FontAwesome", Arial;
+    color: #251F17;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+ /* - FLEX STYLE CLASS - */
+
+.flex-row {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.flex-column {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: column;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+}
+
+.flex-2 {
+    -webkit-flex: 2;
+    -ms-flex: 2;
+    flex: 2;
+}
+.flex-1 {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+
+ /* - ELEMENTS - */
+
+.white-block {
+    background-color: #fff;
+    margin: 10px;
+    box-shadow: 0 0 5px rgba(59, 98, 99, 0.7);
+}
+.block-header {
+    font-family: RobotoRegular;
+    background-color: #106162;
+    color: #eaeaea;
+    padding: 10px 20px;
+}
+
+.relative {
+    position: relative;
+}
+
+.overflow-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+
+ /* – LIST OF PROJECT –*/
+
+.project-name {
+    padding: 20px 15px 20px 25px;
+    border-bottom: 1px solid #e3e2de;
+    align-items: center;
+}
+
+.edit-project, .clone-project, .delete-project{
+    font-size: 20px;
+    margin: 0px 10px;
+    cursor: pointer;
+    color: #5a6f6f;
+}
+.edit-project:before {
+    content: "\f044";
+}
+.clone-project:before {
+    content: "\f0c5";
+}
+.delete-project:before {
+    content: "\f00d";
+}
+
+.add-button {
+    text-align: center;
+    background-color: #106162;
+    color: #fff;
+    border-radius: 2px;
+    padding: 15px;
+    cursor: pointer;
+    margin: 10px;
+}
+.add-button:before {
+    content: "\f067";
+    font-size: 15px;
+    margin: 0px 15px 0px -20px;
+}
+
+
+
+/* СТИЛИ WORLD EDITOR И MODELING : ПАНЕЛЬ + CANVAS */
+
+.right-panel {
+    max-width: 450px;
+    min-width: 300px;
+}
+.left-panel {
+    margin: 10px 30px 10px 10px;
+}
+
+.left-panel-info {
+    align-items: flex-start;
+    padding-bottom: 15px;
+}
+.left-panel-info span {
+    font: 12px RobotoRegular;
+}
+
+.button {
+    background-color: #106162;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 12px;
+    cursor: pointer;
+    margin-left: 15px;
+    width: 200px;
+}
+
+.canvas {
+    background-color: #fff;
+}
+.canvas-panel {
+    background-color: #f0f0f0;
+    color: #106162;
+    padding: 10px 20px;
+    border-bottom: 1px solid #bfbfbf;
+    font-size: 18px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* правая панель */
+
+.layers-block {
+    padding: 10px 20px;
+}
+.layers-block:last-of-type {
+    padding-bottom: 30px;
+}
+.layers-name {
+    padding: 5px 0px;
+    align-items: center;
+}
+.layers-name:before {
+    content: "\f103";
+    margin-right: 10px;
+}
+.layers-list {
+    margin-left: 5px;
+    border-left: 1px solid #e3e2de;
+    padding: 0px 10px 7px 23px;
+}
+.layers-list span {
+    margin-top: 7px;
+}
+
+
+
+ /* - WORLD EDITOR - */
+
+.edit-choose:before {
+    content:"\f124";
+    padding: 5px;
+    cursor: pointer;
+}
+.edit-move:before {
+    content:"\f256";
+    padding: 5px;
+    cursor: pointer;
+}
+.edit-del:before {
+    content: "\f12d";
+    padding: 5px;
+    cursor: pointer;
+}
+.edit-copy:before {
+    content:"\f0c5";
+    padding: 5px;
+    cursor: pointer;
+}
+.edit-route:before {
+    content: "\f01e";
+    padding: 5px;
+    cursor: pointer;
+}
+.edit-zoomin:before {
+    content: "\f00e";
+    padding: 5px;
+    cursor: pointer;
+}
+.edit-zoomout:before {
+    content:"\f010";
+    padding: 5px;
+    cursor: pointer;
+}
+
+.obj-property {
+    padding: 10px 20px 0px;
+}
+.obj-property:last-of-type {
+    padding-bottom: 10px;
+}
+.obj-property input {
+    width: 40px;
+}
+
+
+
+ /* - MODELING - */
+
+.play:before {
+    content: "\f04b";
+    cursor: pointer;
+    margin-right: 15px;
+}
+.stop:before {
+    content: "\f04d";
+    cursor: pointer;
+    margin-right: 15px;
+}
+.canvas input {
+    margin-right: 100px;
+}
+
+.small-button {
+    display: inline-block;
+    background-color: #106162;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    width: 21px;
+    border-radius: 2px;
+    padding: 2px;
+    margin-left: 7px;
+    cursor: pointer;
+}
+
+
+/* свойства агента */
+
+.property-block {
+    border-bottom: 1px solid #e3e2de;
+}
+.property-block-head {
+    background-color: #f5f5f5;
+    padding: 7px 20px;
+}
+.property-block-head:last-of-type {
+    border-bottom: none;
+}
+
+/* история состояний */
+
+.states-history {
+    height: 150px;
+}
+.state-history {
+    padding: 7px 15px 7px 20px;
+    border-bottom: 1px solid #e3e2de;
+    align-items: center;
+    font-size: 13px;
+}
+.state-history:last-of-type {
+    border-bottom: none;
+}
+
+.clone-state:before, .delete-state:before {
+    font-size: 14px;
+    margin: 0px 5px;
+    cursor: pointer;
+}
+.clone-state:before {
+    content: "\f0c5";
+}
+.delete-state:before {
+    content: "\f00d";
+}
+
+.overflow-list .mCSB_container:not(.mCS_no_scrollbar_y) {
+    margin-right: 10px;
+}
+
+.save-state {
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e3e2de;
+    cursor: pointer;
+}
+.save-state:before{
+    content:"\f0c7";
+    margin-right: 10px;
+}
+
