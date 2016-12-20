@@ -7,18 +7,70 @@
     <script src="/static/vendor/moment/moment.min.js"></script>
 </head>
 <body>
-    <script>
 
+<h4>Проект</h4>
 
-    /*
+<div>
+    <button onclick="getProject()">Получить</button><input id="tb-get-project-id" value="1">
+</div>
+<div>
+    <button onclick="createProject()">Создать</button>
+    Название: <input id="tb-create-project-name" value="">
+</div>
+<div>
+    <button onclick="updateProject()">Обновить</button><input id="tb-update-project-id" value="1">
+    Название: <input id="tb-update-project-name" value="">
+</div>
+<div>
+    <button onclick="removeProject()">Удалить</button><input id="tb-remove-project-id" value="1">
+</div>
+
+<h4>Мир</h4>
+
+<div>
+    <button onclick="getWorld()">Получить</button><input id="tb-get-world-id" value="1">
+</div>
+<div>
+    <button onclick="createWorld()">Создать</button>
+    Название: <input id="tb-update-world-name" value="">
+</div>
+<div>
+    <button onclick="updateWorld()">Обновить</button><input id="tb-update-world-id" value="1">
+    Название: <input id="tb-update-world-name" value="">
+</div>
+<div>
+    <button onclick="removeWorld()">Удалить</button><input id="tb-remove-world-id" value="1">
+</div>
+
+<script>
+function getProject() {
+    $.ajax('/api/projects/' + $('#tb-get-project-id').val(), {
+        method: 'GET'
+    });
+}
+function createProject() {
     $.ajax('/api/projects', {
         method: 'POST',
         contentType: 'application/json; charset=UTF-8',
         data: JSON.stringify({
-            name: 'Проект - ' + moment().format('DD.MM HH:mm')
+            name: $('#tb-create-project-name').val()
         })
     });
-    */
-    </script>
+}
+function updateProject() {
+    $.ajax('/api/projects/' + $('#tb-update-project-id').val(), {
+        method: 'PATCH',
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify({
+            name: $('#tb-update-project-name').val()
+        })
+    });
+}
+function removeProject() {
+    $.ajax('/api/projects/' + $('#tb-remove-project-id').val(), {
+        method: 'DELETE'
+    });
+}
+</script>
 </body>
 </html>
