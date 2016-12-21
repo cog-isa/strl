@@ -4,9 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
+    <script src="./static/vendor/jquery/jquery-1.12.4.min.js"></script>
+    <script src="./static/vendor/alight/alight_0.12.last.min.js"></script>
+    <script src="./static/vendor/jquery-ui-1.11.4/jquery-ui.js"></script>
+
     <link rel="stylesheet" href="./static/style/main.css">
     <link rel="stylesheet" href="./static/vendor/font-awesome/css/font-awesome.min.css">
-    <script src="./static/vendor/jquery/jquery-1.12.4.min.js"></script>
     <script src="./static/vendor/fabric.js/fabric.js-1.7.1/dist/fabric.min.js"></script>
     <!-- custom scrolbar -->
     <link rel="stylesheet" href="./static/vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.css" />
@@ -18,369 +21,91 @@
 </head>
 
 <body>
-
-<div class="flex-2 flex-column left-panel">
-    <div class="flex-row left-panel-info">
-        <span class="flex-1">Проект12 <br>Мир2 <br>1:23:07</span>
-        <div class="button">Список проектов</div>
-        <div class="button">Редактор</div>
-    </div>
-
-    <div class="flex-1 flex-column canvas">
-        <div class="flex-row canvas-panel" style="justify-content: space-around">
-            <span class="play"></span>
-            <span class="stop"></span>
-            <input type="time" step="1" value="01:23:07"/>
-            <div align="right">
-                <span class="small-button">R</span>
-                <span class="small-button">S</span>
-                <span class="small-button">T</span>
-            </div>
+    <div class="flex-2 flex-column left-panel" al-app="mainScope">
+        <div class="flex-row left-panel-info">
+            <span class="flex-1">Проект12 <br>Мир2 <br>1:23:07</span>
+            <div class="button">Список проектов</div>
+            <div class="button">Редактор</div>
         </div>
-        <div id="canvas-container" class="flex-1">
-            <canvas id="canvas"></canvas>
-        </div>
-    </div>
 
-    <script>
-        jQuery( document ).ready(function() {
-            jQuery('#canvas').attr({
-                'width': jQuery('#canvas-container').width(),
-                'height': jQuery('#canvas-container').height()
-            });
-            // отрисовку элементов на канвас надо вынести в отдельную функцию и уже ее вызывать.
-            // + добавить resize
-
-        var canvas = new fabric.Canvas('canvas');
-
-        var greenWall = new fabric.Rect({
-            left: 200,
-            top: 10,
-            fill: '#92d050',
-            width: 200,
-            height: 20
-        });
-
-        var wall1 = new fabric.Rect({
-            left: 400,
-            top: 10,
-            fill: '#d3d3ab',
-            width: 20,
-            height: 200
-        });
-
-        var wall2 = new fabric.Rect({
-            left: 130,
-            top: 230,
-            fill: '#d3d3ab',
-            width: 340,
-            height: 20
-        });
-
-        var wall3 = new fabric.Rect({
-            left: 20,
-            top: 230,
-            fill: '#d3d3ab',
-            width: 90,
-            height: 20
-        });
-
-        var wall4 = new fabric.Rect({
-            left: 200,
-            top: 10,
-            fill: '#d3d3ab',
-            width: 20,
-            height: 220
-        });
-
-        var walls = new fabric.Group([ greenWall, wall1, wall2,wall3,wall4], {
-            // left: 260,
-            //top: 60,
-        });
-
-        var redCarBody = new fabric.Rect({
-            left: 260,
-            top: 60,
-            fill: '#d99690',
-            width: 50,
-            height: 70
-        });
-
-        var redCarWheel1 = new fabric.Rect({
-            left: 250,
-            top: 40,
-            fill: '#d99690',
-            width: 10,
-            height: 40
-        });
-
-        var redCarWheel2 = new fabric.Rect({
-            left: 310,
-            top: 40,
-            fill: '#d99690',
-            width: 10,
-            height: 40
-        });
-
-        var redCarWheel3 = new fabric.Rect({
-            left: 310,
-            top: 110,
-            fill: '#d99690',
-            width: 10,
-            height: 40
-        });
-
-        var redCarWheel4 = new fabric.Rect({
-            left: 250,
-            top: 110,
-            fill: '#d99690',
-            width: 10,
-            height: 40
-        });
-
-        var redCar = new fabric.Group([ redCarBody, redCarWheel1, redCarWheel2,redCarWheel3,redCarWheel4], {
-            // left: 260,
-            //top: 60,
-            fill: '#d3d3ab',
-        });
-
-        var topGreenCarBody = new fabric.Rect({
-            left: 50,
-            top: 60,
-            fill: '#d3d3ab',
-            width: 50,
-            height: 70
-        });
-
-        var topGreenWheel1 = new fabric.Rect({
-            left: 40,
-            top: 40,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var topGreenWheel2 = new fabric.Rect({
-            left: 100,
-            top: 40,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var topGreenWheel3 = new fabric.Rect({
-            left: 100,
-            top: 110,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var topGreenWheel4 = new fabric.Rect({
-            left: 40,
-            top: 110,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var topGreenCar = new fabric.Group([ topGreenCarBody, topGreenWheel1, topGreenWheel2,topGreenWheel3,topGreenWheel4], {
-            // left: 260,
-            // top: 60,
-        });
-
-        var bottomGreenCarBody = new fabric.Rect({
-            left: 90,
-            top: 280,
-            fill: '#d3d3ab',
-            width: 50,
-            height: 70
-        });
-
-        var bottomGreenWheel1 = new fabric.Rect({
-            left: 80,
-            top: 260,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var bottomGreenWheel2 = new fabric.Rect({
-            left: 140,
-            top: 260,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var bottomGreenWheel3 = new fabric.Rect({
-            left: 140,
-            top: 330,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var bottomGreenWheel4 = new fabric.Rect({
-            left: 80,
-            top: 330,
-            fill: '#d3d3ab',
-            width: 10,
-            height: 40
-        });
-
-        var bottomGreenCar = new fabric.Group([ bottomGreenCarBody, bottomGreenWheel1, bottomGreenWheel2,bottomGreenWheel3,bottomGreenWheel4], {
-            //left: 260,
-            // top: 60,
-            fill: '#d99690',
-        });
-
-        var rhombus = new fabric.Rect({
-            left: 350,
-            top: 180,
-            fill: '#bfcfe2',
-            width: 30,
-            height: 30,
-            angle: 45
-        });
-
-        canvas.add(walls,redCar,topGreenCar,bottomGreenCar,rhombus);
-        /*var canvas=document.getElementById("canvas");
-        var x=canvas.getContext("2d");
-
-        //стены
-        x.fillStyle="#92d050";
-        x.fillRect(200,10,200,20);
-
-        x.fillStyle="#d3d3ab";
-        x.fillRect(400,10,20,220);
-
-        x.fillStyle="#d3d3ab";
-        x.fillRect(400,10,20,220);
-
-        x.fillStyle="#d3d3ab";
-        x.fillRect(130,230,340,20);
-
-        x.fillStyle="#d3d3ab";
-        x.fillRect(20,230,90,20);
-
-        x.fillStyle="#d3d3ab";
-        x.fillRect(200,10,20,220);
-
-        // красная машина
-        x.fillStyle="#d99690"; //тело  машины
-        x.fillRect(260,60,50,70);
-
-        x.fillStyle="#d99690"; //левое верхнее колесо машины
-        x.fillRect(250,40,10,40);
-
-        x.fillStyle="#d99690"; //правое верхнее колесо машины
-        x.fillRect(310,40,10,40);
-
-        x.fillStyle="#d99690"; //правое нижнее колесо машины
-        x.fillRect(310,110,10,40);
-
-        x.fillStyle="#d99690"; //левое нижнее колесо машины
-        x.fillRect(250,110,10,40);
-
-        // левая верхняя зеленая машина
-        x.fillStyle="#d3d3ab"; //тело  машины
-        x.fillRect(50,60,50,70);
-
-        x.fillStyle="#d3d3ab"; //левое верхнее колесо машины
-        x.fillRect(40,40,10,40);
-
-        x.fillStyle="#d3d3ab"; //правое верхнее колесо машины
-        x.fillRect(100,40,10,40);
-
-        x.fillStyle="#d3d3ab"; //правое нижнее колесо машины
-        x.fillRect(100,110,10,40);
-
-        x.fillStyle="#d3d3ab"; //левое нижнее колесо машины
-        x.fillRect(40,110,10,40);
-
-         // левая нижняя зеленая машина
-        x.fillStyle="#d3d3ab"; //тело  машины
-        x.fillRect(90,280,50,70);
-
-        x.fillStyle="#d3d3ab"; //левое верхнее колесо машины
-        x.fillRect(80,260,10,40);
-
-        x.fillStyle="#d3d3ab"; //правое верхнее колесо машины
-        x.fillRect(140,260,10,40);
-
-        x.fillStyle="#d3d3ab"; //правое нижнее колесо машины
-        x.fillRect(140,330,10,40);
-
-        x.fillStyle="#d3d3ab"; //левое нижнее колесо машины
-        x.fillRect(80,330,10,40);*/
-
-        });
-    </script>
-</div>
-
-
-<div class="flex-1 flex-column right-panel">
-
-    <div class="flex-1 white-block relative">
-        <div class="overflow-list">
-            <div class="layers-block"><div class="flex-row layers-name">Роботы</div>
-                <div class="flex-column layers-list">
-                    <span>Робот Mk.1</span>
-                    <span>Робот Mk.2</span>
+        <div class="flex-1 flex-column canvas">
+            <div class="flex-row canvas-panel" style="justify-content: space-around">
+                <span class="play"></span>
+                <span class="stop"></span>
+                <input type="time" step="1" value="01:23:07"/>
+                <div align="right">
+                    <span class="small-button">R</span>
+                    <span class="small-button">S</span>
+                    <span class="small-button">T</span>
                 </div>
             </div>
-            <div class="layers-block"><div class="flex-row layers-name">Объекты</div>
-                <div class="flex-column layers-list">
-                    <span>Стена 1</span>
-                    <span>Стена 2</span>
-                    <span>Стена 3</span>
-                </div>
-            </div>
-            <div class="layers-block"><div class="flex-row layers-name">Маркеры</div>
-                <div class="flex-column layers-list">
-                    <span>Маркер 1</span>
-                </div>
+            <div id="canvas-container" class="flex-1">
+                <canvas id="canvas"></canvas>
             </div>
         </div>
     </div>
 
-    <div class="white-block">
-        <div class="block-header">Свойства агента</div>
-        <div class="property-block">
-            <div class="property-block-head">R</div>
-            <div></div>
-        </div>
-        <div class="property-block">
-            <div class="property-block-head">S</div>
-            <div></div>
-        </div>
-        <div class="property-block">
-            <div class="property-block-head">T</div>
-            <div></div>
-        </div>
-    </div>
 
-    <div class="flex-column white-block states-history">
-        <div class="block-header">История состояний</div>
-        <div class="flex-1 relative">
+    <div class="flex-1 flex-column right-panel">
+
+        <div class="flex-1 white-block relative">
             <div class="overflow-list">
-                <div class="flex-row state-history">
-                    <div class="flex-1">22.04.2016 15:30</div>
-                    <span class="clone-state"></span>
-                    <span class="delete-state"></span>
+                <div class="layers-block"><div class="flex-row layers-name">Роботы</div>
+                    <div class="flex-column layers-list">
+                        <span>Робот Mk.1</span>
+                        <span>Робот Mk.2</span>
+                    </div>
                 </div>
-                <div class="flex-row state-history">
-                    <div class="flex-1">23.04.2016 17:30</div>
-                    <span class="clone-state"></span>
-                    <span class="delete-state"></span>
+                <div class="layers-block"><div class="flex-row layers-name">Объекты</div>
+                    <div class="flex-column layers-list">
+                        <span>Стена 1</span>
+                        <span>Стена 2</span>
+                        <span>Стена 3</span>
+                    </div>
+                </div>
+                <div class="layers-block"><div class="flex-row layers-name">Маркеры</div>
+                    <div class="flex-column layers-list">
+                        <span>Маркер 1</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="save-state">Сохранить текущее состояние</div>
+
+        <div class="white-block">
+            <div class="block-header">Свойства агента</div>
+            <div class="property-block">
+                <div class="property-block-head">R</div>
+                <div></div>
+            </div>
+            <div class="property-block">
+                <div class="property-block-head">S</div>
+                <div></div>
+            </div>
+            <div class="property-block">
+                <div class="property-block-head">T</div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="flex-column white-block states-history">
+            <div class="block-header">История состояний</div>
+            <div class="flex-1 relative">
+                <div class="overflow-list">
+                    <div class="flex-row state-history">
+                        <div class="flex-1">22.04.2016 15:30</div>
+                        <span class="clone-state"></span>
+                        <span class="delete-state"></span>
+                    </div>
+                    <div class="flex-row state-history">
+                        <div class="flex-1">23.04.2016 17:30</div>
+                        <span class="clone-state"></span>
+                        <span class="delete-state"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="save-state">Сохранить текущее состояние</div>
+        </div>
+
     </div>
-
-</div>
-
 </body>
 </html>
