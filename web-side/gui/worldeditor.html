@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
@@ -30,11 +31,11 @@
 
         <div class="flex-1 flex-column canvas">
             <div class="flex-row canvas-panel" style="justify-content: space-around">
-                <span class="edit-choose"></span>
-                <span class="edit-move"></span>
-                <span class="edit-del"></span>
-                <span class="edit-copy"></span>
-                <span class="edit-route"></span>
+                <span class="edit-choose" al-click="editObject('choose')"></span>
+                <span class="edit-move" al-click="editObject('move')"></span>
+                <span class="edit-del" al-click="editObject('del')"></span>
+                <span class="edit-copy" al-click="editObject('copy')"></span>
+                <span class="edit-route" al-click="editObject('route')"></span>
                 <span class="edit-zoomin"></span>
                 <span class="edit-zoomout"></span>
             </div>

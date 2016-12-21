@@ -25,7 +25,9 @@ function mainScope($scope) {
                 // отрисовку элементов на канвас надо вынести в отдельную функцию и уже ее вызывать.
                 // + добавить resize
 
-                var canvas = new fabric.Canvas('canvas');
+                $scope.canvas = new fabric.Canvas('canvas');
+                $scope.canvas.objectCounter = {};
+                $scope.canvas.objectCounter['group'] = 0;
 
                 var greenWall = new fabric.Rect({
                     left: 200,
@@ -108,17 +110,20 @@ function mainScope($scope) {
                     height: 40
                 });
 
-                var redCar = new fabric.Group([redCarBody, redCarWheel1, redCarWheel2, redCarWheel3, redCarWheel4], {
+                $scope.redCar = new fabric.Group([redCarBody, redCarWheel1, redCarWheel2, redCarWheel3, redCarWheel4], {
                     // left: 260,
                     //top: 60,
+                    id: 'id-' + $scope.canvas.objectCounter['group']++,
                     fill: '#d3d3ab',
                     lockMovementX: true,
                     lockMovementY: true,
                     lockScalingX: true,
                     lockScalingY: true,
                     lockRotation: true
+                    //selectable: false
 
                 });
+                //console.log(redCar.id);
 
                 var topGreenCarBody = new fabric.Rect({
                     left: 50,
@@ -211,10 +216,50 @@ function mainScope($scope) {
                     angle: 45
                 });
 
-                canvas.add(walls, redCar, topGreenCar, bottomGreenCar, rhombus);
+                $scope.canvas.add(walls, $scope.redCar, topGreenCar, bottomGreenCar, rhombus);
             });
     };
-$scope.createCanvas();
+
+    $scope.createCanvas();
+
+    $scope.editObject = function (actionType) {
+        $scope.actionType = actionType;
+        //$scope.redCar.on('selected',function () {
+        if($scope.canvas.getActiveObject()) {
+            switch (actionType) {
+                case 'move':
+                    $scope.canvas.getActiveObject().set('lockMovementX', false);
+                    $scope.canvas.getActiveObject().set('lockMovementY', false);
+                    break;
+                case 'del':
+                    $scope.redCar.remove();
+                    break;
+                case 'copy':
+                    var x = $scope.redCar;
+                    var object = fabric.util.x.clone($scope.canvas.getActiveObject());
+                    object.set("top", object.top + 5);
+                    object.set("left", object.left + 5);
+                    $scope.canvas.add(object);
+                    break;
+                case 'route':
+                    console.log('повернуть');
+                    $scope.canvas.getActiveObject().set('angle', ($scope.canvas.getActiveObject().get('angle') + 90));
+                    break;
+                case 'choose':
+                    $scope.canvas.getActiveObject().set('selectable', true);
+                    break;
+            }
+        };
+            //console.log('выполнилось');
+        //});
+        console.log('click');
+    };
+
+
+
+    $scope.selectObject = function () {
+
+    };
 
     window.S = $scope;
 };
