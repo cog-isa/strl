@@ -15,6 +15,7 @@ class Object(Model):
 
 
 class ObjectType(Model):
+	parent = ObjectType
 	name = CharField(max_length=200)
 
 	class Meta:

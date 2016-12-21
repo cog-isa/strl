@@ -110,19 +110,24 @@ function removeWorld() {
 </script>
 
 
-<h4>Тип объекта</h4>
+<h4>Объект</h4>
 
 <div>
-    <button onclick="getObjectType()">Получить</button>
+    <button onclick="getObject()">Получить</button>
     <input id="tb-get-object-type-id" value="1">
 </div>
 <div>
-    <button onclick="getObjectTypes()">Получить все</button>
+    <button onclick="getObjects()">Получить все</button>
+    ID мира: <input id="tb-get-objects-world-id" value="1">
+</div>
+<div>
+    <button onclick="removeObject()">Удалить</button>
+    <input id="tb-remove-object-id" value="1">
 </div>
 
 <script>
 
-(function createObject() {
+function createObject() {
     $.ajax('/api/objects', {
         method: 'POST',
         contentType: 'application/json; charset=UTF-8',
@@ -137,19 +142,25 @@ function removeWorld() {
             }
         })
     });
-})();
+};
 
-(function getObject() {
+function getObject() {
     $.ajax('/api/objects/' + $('#tb-get-object-type-id').val(), {
         method: 'GET'
     });
-})();
+}
 
-(function getObjects() {
-    $.ajax('/api/object_types', {
+function getObjects() {
+    $.ajax('/api/worlds/' + $('#tb-get-objects-world-id').val() + '/objects', {
         method: 'GET'
     });
-})();
+}
+
+function removeObject() {
+    $.ajax('/api/objects/' + $('#tb-remove-object-id').val(), {
+        method: 'DELETE'
+    });
+}
 
 </script>
 

@@ -95,24 +95,32 @@ def route(app):
 
 	# --------------------   Object   -------------------------
 
-	@app.route('/api/world/<world_id>/objects', methods=['GET'])
+	@app.route('/api/worlds/<world_id>/objects', methods=['GET'])
 	def objects_get(world_id):
 		# TODO: Сделать через prefetch
 		objs = Object.select().where(Object.world_id == world_id)
 		obj_dcs = []
 		for obj in objs:
 			props = Property.select().where(Property.object == obj)
-			obj_dc = model_to_dict(obj)
+			obj_dc = model_to_dict(obj, recurse=False)
+			obj_dc['type_id'] = obj.type_id
+			obj_dc['world_id'] = obj.world_id
+			obj_dc.pop('type')
+			obj_dc.pop('world')
 			obj_dc['properties'] = {prop.name: prop.value for prop in props}
 			obj_dcs.append(obj_dc)
 		return jsonify(obj_dcs)
 
 	@app.route('/api/objects/<id>', methods=['GET'])
 	def object_get(id):
-		object = Object.get(Object.id == id)
-		props = Property.select().where(Property.object == object).execute()
-		obj_dc = model_to_dict(object)
-		obj_dc['properties'] = [model_to_dict(prop) for prop in props]
+		obj = Object.get(Object.id == id)
+		props = Property.select().where(Property.object == obj).execute()
+		obj_dc = model_to_dict(obj)
+		obj_dc['type_id'] = obj.type_id
+		obj_dc['world_id'] = obj.world_id
+		obj_dc.pop('type')
+		obj_dc.pop('world')
+		obj_dc['properties'] = {prop.name: prop.value for prop in props}
 		return jsonify(obj_dc)
 
 	@app.route('/api/objects', methods=['POST'])
@@ -124,14 +132,18 @@ def route(app):
 			for key, val in props_dc.items():
 				prop = Property.create(object=object, name=key, value=val)
 		obj_dc = model_to_dict(object)
+		obj_dc['type_id'] = object.type_id
+		obj_dc['world_id'] = object.world_id
+		obj_dc.pop('type')
+		obj_dc.pop('world')
 		obj_dc['properties'] = props_dc
 		return ujson.dumps(obj_dc), 201, {'Content-Type': 'application/json'}
 
-
 	@app.route('/api/objects/<id>', methods=['PATCH'])
 	def object_update(id):
+		# TODO: Доделать
 		data = request.json
-		props_dc = data.pop('properties', None)
+		props_dc = data.pop('properties', {})
 		effected_row_cnt = Object.update(**data).where(Object.id == id)
 		for key, val in props_dc.items():
 			# prop = Property.update(object=object, name=key, value=val)
@@ -141,7 +153,6 @@ def route(app):
 			return '', 404
 		else:
 			return '', 200
-
 
 	@app.route('/api/objects/<id>', methods=['DELETE'])
 	def object_remove(id):
