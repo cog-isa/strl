@@ -15,8 +15,9 @@ class Object(Model):
 
 
 class ObjectType(Model):
-	parent = ObjectType
 	name = CharField(max_length=200)
+	parent = ForeignKeyField('self', null=True)
+	position = SmallIntegerField()
 
 	class Meta:
 		db_table = 'object_types'

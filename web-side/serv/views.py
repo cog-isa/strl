@@ -47,12 +47,14 @@ def route(app):
 	@app.route('/api/worlds/<id>', methods=['GET'])
 	def world_get(id):
 		world = World.get(World.id == id)
-		return jsonify(model_to_dict(world))
+		world_dc = model_to_dict(world, recurse=False)
+		world_dc['project_id'] = world_dc['project']
+		world_dc.pop('project')
+		return jsonify(world_dc)
 
 	@app.route('/api/worlds', methods=['POST'])
 	def world_create():
 		#TODO: Проверка на недублирование имени
-
 		data = request.json
 		name = data['name']
 		project_id = data['project_id']
@@ -81,17 +83,37 @@ def route(app):
 
 	# --------------------   ObjectType   -------------------------
 
+	"""
 	@app.route('/api/object_types/<id>', methods=['GET'])
 	def object_type_get(id):
 		try: object_type = ObjectType.get(ObjectType.id == id)
 		except ObjectType.DoesNotExist:
 			return '', 404
 		return jsonify(model_to_dict(object_type))
+	"""
 
 	@app.route('/api/object_types', methods=['GET'])
 	def object_types_get():
+		"""Возвращает дерево типов."""
 		object_types = ObjectType.select()
-		return jsonify([model_to_dict(ot) for ot in object_types])
+		ots_dc = {}
+		children_dc = {}
+		for ot in object_types:
+			ot_dc = model_to_dict(ot, recurse=False)
+			ot_dc['parent_id'] = ot.parent_id
+			ot_dc.pop('parent')
+			ots_dc[ot.id] = ot_dc
+			if  ot.parent_id not in children_dc:
+				children_dc[ot.parent_id] = []
+			children_dc[ot.parent_id].append(ot_dc)
+		for id, ot_dc in ots_dc.items():
+			children = children_dc.get(ot_dc['id'])
+			if children:
+				children.sort(key=lambda child_dc: child_dc['position'])
+			else:
+				children = []
+			ot_dc['children'] = children
+		return jsonify(children_dc[None])
 
 	# --------------------   Object   -------------------------
 
@@ -144,11 +166,15 @@ def route(app):
 		# TODO: Доделать
 		data = request.json
 		props_dc = data.pop('properties', {})
-		effected_row_cnt = Object.update(**data).where(Object.id == id)
-		for key, val in props_dc.items():
-			# prop = Property.update(object=object, name=key, value=val)
-			prop = Property(object_id=id, name=key, value=val)
-			prop.save(force_insert=True)
+		if 'type_id' in data:
+			data['type'] = data['type_id']
+			data.pop('type_id')
+		with db.atomic() as txn:
+			effected_row_cnt = Object.update(**data).where(Object.id == id).execute()
+			for key, val in props_dc.items():
+				eff_cnt = Property.update(value=val).where((Property.object_id == id) & (Property.name == key)).execute()
+				if eff_cnt == 0:
+					Property.create(object_id=id, name=key, value=val)
 		if effected_row_cnt == 0:
 			return '', 404
 		else:

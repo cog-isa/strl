@@ -18,8 +18,22 @@ def recreate_db():
         model.drop_table(cascade=True, fail_silently=True)
         model.create_table(fail_silently=False)
 
+    # Создаем типы объектов
+    position = 0
     for ot_name in 'Робот', 'Стена', 'Маркер':
-        ObjectType.create(name=ot_name)
+        ObjectType.create(name=ot_name, position=position)
+        position += 1
+    robot_ot = ObjectType.get(name='Робот')
+    position = 0
+    for ot_name in 'Робот, умеющий разрушать препятствия', 'Робот, неумеющий разрушать препятствия':
+        ObjectType.create(name=ot_name, parent=robot_ot, position=position)
+        position += 1
+
+    # Создаем тестовый проект
+    project = Project.create(name='Проект1')
+
+    # Создаем тестовый мир
+    world = World.create(name='Мир1', project=project)
 
     """
     world = World.create(name='hello')
