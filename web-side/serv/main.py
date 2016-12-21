@@ -18,6 +18,9 @@ def recreate_db():
         model.drop_table(cascade=True, fail_silently=True)
         model.create_table(fail_silently=False)
 
+    for ot_name in 'Робот', 'Стена', 'Маркер':
+        ObjectType.create(name=ot_name)
+
     """
     world = World.create(name='hello')
     execution = Execution.create(world=world, base=True)

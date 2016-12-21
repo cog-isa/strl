@@ -14,11 +14,12 @@ class Object(Model):
 '''
 
 
-class ObjectToProperty(Model):
-	object = ForeignKeyField(Object, null=False)
-	property = ForeignKeyField(PropertyDescription, null=False)
+class Property(Model):
+	object = ForeignKeyField(Object, on_update='CASCADE', on_delete='CASCADE')
+	name = CharField(max_length=200)
+	value = JSONField(default='null')
 
 	class Meta:
-		primary_key = CompositeKey('object', 'property')
-
+		db_table = 'properties'
+		primary_key = CompositeKey('object', 'name')
 

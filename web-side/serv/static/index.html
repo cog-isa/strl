@@ -25,22 +25,7 @@
     <button onclick="removeProject()">Удалить</button><input id="tb-remove-project-id" value="1">
 </div>
 
-<h4>Мир</h4>
 
-<div>
-    <button onclick="getWorld()">Получить</button><input id="tb-get-world-id" value="1">
-</div>
-<div>
-    <button onclick="createWorld()">Создать</button>
-    Название: <input id="tb-update-world-name" value="">
-</div>
-<div>
-    <button onclick="updateWorld()">Обновить</button><input id="tb-update-world-id" value="1">
-    Название: <input id="tb-update-world-name" value="">
-</div>
-<div>
-    <button onclick="removeWorld()">Удалить</button><input id="tb-remove-world-id" value="1">
-</div>
 
 <script>
 function getProject() {
@@ -72,5 +57,101 @@ function removeProject() {
     });
 }
 </script>
+
+
+<h4>Мир</h4>
+
+<div>
+    <button onclick="getWorld()">Получить</button><input id="tb-get-world-id" value="1">
+</div>
+<div>
+    <button onclick="createWorld()">Создать</button>
+    Название: <input id="tb-create-world-name" value="">
+    ID проекта: <input id="tb-create-world-project-id" value="">
+</div>
+<div>
+    <button onclick="updateWorld()">Обновить</button><input id="tb-update-world-id" value="1">
+    Название: <input id="tb-update-world-name" value="">
+</div>
+<div>
+    <button onclick="removeWorld()">Удалить</button><input id="tb-remove-world-id" value="1">
+</div>
+
+<script>
+function getWorld() {
+    $.ajax('/api/worlds/' + $('#tb-get-world-id').val(), {
+        method: 'GET'
+    });
+}
+function createWorld() {
+    $.ajax('/api/worlds', {
+        method: 'POST',
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify({
+            name: $('#tb-create-world-name').val(),
+            project_id: $('#tb-create-world-project-id').val()
+        })
+    });
+}
+function updateWorld() {
+    $.ajax('/api/worlds/' + $('#tb-update-world-id').val(), {
+        method: 'PATCH',
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify({
+            name: $('#tb-update-world-name').val()
+        })
+    });
+}
+function removeWorld() {
+    $.ajax('/api/worlds/' + $('#tb-remove-world-id').val(), {
+        method: 'DELETE'
+    });
+}
+</script>
+
+
+<h4>Тип объекта</h4>
+
+<div>
+    <button onclick="getObjectType()">Получить</button>
+    <input id="tb-get-object-type-id" value="1">
+</div>
+<div>
+    <button onclick="getObjectTypes()">Получить все</button>
+</div>
+
+<script>
+
+(function createObject() {
+    $.ajax('/api/objects', {
+        method: 'POST',
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify({
+            name: 'объект1',
+            type_id: 1,
+            world_id: 1,
+            properties: {
+                length: 10,
+                width: 3,
+                color: '#459076'
+            }
+        })
+    });
+})();
+
+(function getObject() {
+    $.ajax('/api/objects/' + $('#tb-get-object-type-id').val(), {
+        method: 'GET'
+    });
+})();
+
+(function getObjects() {
+    $.ajax('/api/object_types', {
+        method: 'GET'
+    });
+})();
+
+</script>
+
 </body>
 </html>

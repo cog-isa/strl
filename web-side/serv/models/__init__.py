@@ -14,7 +14,7 @@ def run():
 
     dirname = os.path.dirname(__file__)
     files = ['program', 'project', 'user', 'world', 'execution',  'object_type', 'object', 'property_description',
-             'object_to_property', 'property_value_in_time']
+             'property', 'property_in_time']
     files = [os.path.join(dirname, '%s.py' % _) for _ in files]
 
     for filename in files:
