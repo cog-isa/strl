@@ -38,7 +38,27 @@ def recreate_db():
     """
     world = World.create(name='hello')
     execution = Execution.create(world=world, base=True)
-    Object.create(execution=execution, properties={
+    """
+
+    # Создаем объект - разрушающий робот
+    obj = Object.create(name='Разруш. робот 1', type_id=4, world_id=1)
+    Property.create(object=obj, name='position_x', value=20)
+    Property.create(object=obj, name='position_y', value=30)
+    Property.create(object=obj, name='width', value=10)
+    Property.create(object=obj, name='height', value=7)
+    Property.create(object=obj, name='color', value='#cccccc')
+
+    # Создаем объект - стена
+    obj = Object.create(name='Стена 1', type_id=2, world_id=1)
+    Property.create(object=obj, name='position_x', value=16)
+    Property.create(object=obj, name='position_y', value=9)
+    Property.create(object=obj, name='width', value=5)
+    Property.create(object=obj, name='height', value=21)
+    Property.create(object=obj, name='color', value='#eeeeee')
+
+
+    """
+    {
         "active": True,
         "program": "2",
         "name": "2",
