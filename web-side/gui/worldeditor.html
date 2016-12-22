@@ -21,8 +21,8 @@
 
     <title>STRL</title>
 </head>
-<body>
-    <div class="flex-2 flex-column left-panel" al-app="mainScope">
+<body al-app="mainScope">
+    <div class="flex-2 flex-column left-panel" >
         <div class="flex-row left-panel-info">
             <span class="flex-1">Проект12 <br>Мир2 <br>1:23:07</span>
             <div class="button">Список проектов</div>
@@ -43,20 +43,19 @@
                 <canvas id="canvas"></canvas>
             </div>
         </div>
-        </div>
     </div>
 
 
     <div class="flex-1 flex-column right-panel">
         <div class="flex-1 white-block relative">
             <div class="overflow-list">
-                <div class="layers-block"><div class="flex-row layers-name">Роботы</div>
+                <div class="layers-block" al-repeat="obj in objectTypes">
+                    <div class="flex-row layers-name">{{obj.name}}</div>
                     <div class="flex-column layers-list">
-                        <span>Робот Mk.1</span>
-                        <span>Робот Mk.2</span>
+                        <span al-repeat="objChild in obj.children">{{objChild.name}}</span>
                     </div>
                 </div>
-                <div class="layers-block"><div class="flex-row layers-name">Объекты</div>
+                <!--<div class="layers-block"><div class="flex-row layers-name">Объекты</div>
                     <div class="flex-column layers-list">
                         <span>Стена 1</span>
                         <span>Стена 2</span>
@@ -67,7 +66,7 @@
                     <div class="flex-column layers-list">
                         <span>Маркер 1</span>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
 
@@ -82,7 +81,7 @@
                 <input type="number"/>
             </div>
             <div class="flex-row obj-property">
-                <span class="flex-1">Число сегментов</span>
+                <span class="flex-1">Ширина</span>
                 <input type="number"/>
             </div>
             <div class="flex-row obj-property">

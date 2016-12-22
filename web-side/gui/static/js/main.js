@@ -16,6 +16,40 @@ function mainScope($scope) {
 
     })(jQuery);
 
+
+    $scope.test = 10;
+    /***/
+    $.ajax('/api/object_types', {
+        method: 'GET',
+        headers: {
+           'Content-Type': 'application/json; charset=UTF-8'
+        },
+        dataType: "json"
+    }).fail(function () {
+
+    }).done(function (result) {
+        $scope.objectTypes = result;
+        $scope.$scan();
+
+       /* for(var i = 0; i < $scope.objectTypes.length; i++) {
+            var objectName = $scope.objectTypes[i].name;
+            switch (objectName) {
+                case 'Робот':
+                    $scope.objectRobot = $scope.objectTypes[i];
+                    break;
+                case 'Стена':
+                    $scope.objectWall = $scope.objectTypes[i];
+                    break;
+                case 'Маркер':
+                    $scope.objectMarker = $scope.objectTypes[i];
+                    break;
+            }
+        }*/
+
+    });
+
+
+
     $scope.createCanvas = function () {
          jQuery( document ).ready(function() {
                 jQuery('#canvas').attr({
@@ -26,6 +60,11 @@ function mainScope($scope) {
                 // + добавить resize
 
                 $scope.canvas = new fabric.Canvas('canvas');
+                $scope.canvas.on('object:selected', function(){
+                    var obj = $scope.canvas.getActiveObject();
+                    $scope.activeObjWidth = obj.getWidth();
+                    $scope.activeObjWidth =obj.getHeight();
+                });
                 $scope.canvas.objectCounter = {};
                 $scope.canvas.objectCounter['group'] = 0;
 
@@ -223,6 +262,7 @@ function mainScope($scope) {
     $scope.createCanvas();
 
     $scope.editObject = function (actionType) {
+        //var activeObject = e.target;
         $scope.actionType = actionType;
         //$scope.redCar.on('selected',function () {
         if($scope.canvas.getActiveObject()) {
@@ -250,7 +290,7 @@ function mainScope($scope) {
                             $scope.canvas.renderAll();
                             $scope.canvas.calcOffset();
                         } else {
-                            alert("Sorry Object Not Initialized");
+                            alert("Объект для клонирования не выбран");
                         }
                     });
                     break;
