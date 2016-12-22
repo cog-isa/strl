@@ -44,6 +44,17 @@ def route(app):
 
 	# --------------------   World   -------------------------
 
+	@app.route('/api/projects/<project_id>/worlds', methods=['GET'])
+	def worlds_get(project_id):
+		worlds = World.select().where(World.project_id == project_id)
+		world_dcs = []
+		for world in worlds:
+			world_dc = model_to_dict(world, recurse=False)
+			world_dc['project_id'] = world_dc['project']
+			world_dc.pop('project')
+			world_dcs.append(world_dc)
+		return jsonify(world_dcs)
+
 	@app.route('/api/worlds/<id>', methods=['GET'])
 	def world_get(id):
 		world = World.get(World.id == id)
@@ -80,6 +91,8 @@ def route(app):
 			return '', 404
 		else:
 			return '', 204
+
+
 
 	# --------------------   ObjectType   -------------------------
 

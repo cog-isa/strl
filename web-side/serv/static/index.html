@@ -65,6 +65,10 @@ function removeProject() {
     <button onclick="getWorld()">Получить</button><input id="tb-get-world-id" value="1">
 </div>
 <div>
+    <button onclick="getWorlds()">Получить все</button>
+    ID мира: <input id="tb-get-worlds-project-id" value="1">
+</div>
+<div>
     <button onclick="createWorld()">Создать</button>
     Название: <input id="tb-create-world-name" value="">
     ID проекта: <input id="tb-create-world-project-id" value="">
@@ -80,6 +84,11 @@ function removeProject() {
 <script>
 function getWorld() {
     $.ajax('/api/worlds/' + $('#tb-get-world-id').val(), {
+        method: 'GET'
+    });
+}
+function getWorlds() {
+    $.ajax('/api/projects/' + $('#tb-get-worlds-project-id').val() + '/worlds', {
         method: 'GET'
     });
 }
