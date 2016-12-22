@@ -21,6 +21,7 @@
 
     <title>STRL</title>
 </head>
+
 <body al-app="mainScope">
     <div class="flex-2 flex-column left-panel" >
         <div class="flex-row left-panel-info">
@@ -28,16 +29,20 @@
             <div class="button">Список проектов</div>
             <div class="button">Запуск</div>
         </div>
-
         <div class="flex-1 flex-column canvas">
-            <div class="flex-row canvas-panel" style="justify-content: space-around">
-                <span class="edit-choose" al-click="editObject('choose')"></span>
-                <span class="edit-move" al-click="editObject('move')"></span>
+            <div class="flex-row canvas-panel">
+                <!--<span class="edit-choose" al-click="editObject('choose')"></span>
+                <span class="edit-move" al-click="editObject('move')"></span>-->
+                <span class="proj-world-name">Проект12 <br>Мир2</span>
+                <span class="dummy-span"> &nbsp; </span>
                 <span class="edit-del" al-click="editObject('del')"></span>
                 <span class="edit-copy" al-click="editObject('copy')"></span>
                 <span class="edit-route" al-click="editObject('route')"></span>
-                <span class="edit-zoomin"></span>
-                <span class="edit-zoomout"></span>
+                <!--<span class="edit-zoomin"></span>
+                <span class="edit-zoomout"></span>-->
+                <span class="flex-1 dummy-span"></span>
+                <div class="button">Список проектов</div>
+                <div class="button">Запуск</div>
             </div>
             <div id="canvas-container" class="flex-1">
                 <canvas id="canvas"></canvas>

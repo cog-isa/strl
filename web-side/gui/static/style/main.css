@@ -40,9 +40,11 @@
 
 
 
-html, body, .dbody {
+html, body {
     height: 100%;
     width: 100%;
+    min-height: 600px;
+    min-width: 1260px;
     padding: 0;
     margin: 0;
     display: -ms-flexbox;
@@ -169,37 +171,55 @@ body {
     margin: 10px 30px 10px 10px;
 }
 
-.left-panel-info {
-    align-items: flex-start;
-    padding-bottom: 15px;
-}
-.left-panel-info span {
-    font: 12px RobotoRegular;
-}
-
-.button {
-    background-color: #106162;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 12px;
-    cursor: pointer;
-    margin-left: 15px;
-    width: 200px;
-}
-
 .canvas {
     background-color: #fff;
 }
 .canvas-panel {
     background-color: #f0f0f0;
     color: #106162;
-    padding: 10px 20px;
-    border-bottom: 1px solid #bfbfbf;
     font-size: 18px;
+    align-items: stretch;
+    //justify-content: flex-end;
+}
+.canvas-panel span {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
+    padding: 7px 20px;
+    border-bottom: 1px solid #bfbfbf;
 }
+span.dummy-span {
+    padding: 5px;
+}
+
+.proj-world-name {
+    font: 12px RobotoRegular;
+    background-color: #f5f5f5;
+    color: #777;
+    border-right: 1px solid #bfbfbf;
+}
+
+.button {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #106162;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    width: 200px;
+    margin-left: 1px;
+}
+
+#canvas-container {
+    overflow: auto;
+}
+
+
 
 /* правая панель */
 
@@ -280,30 +300,31 @@ body {
 
  /* - MODELING - */
 
+span.play, span.stop {
+    padding: 7px 10px;
+}
+
 .play:before {
     content: "\f04b";
     cursor: pointer;
-    margin-right: 15px;
 }
 .stop:before {
     content: "\f04d";
     cursor: pointer;
-    margin-right: 15px;
-}
-.canvas input {
-    margin-right: 100px;
 }
 
 .small-button {
-    display: inline-block;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #106162;
     color: #fff;
     font-size: 16px;
-    text-align: center;
     width: 21px;
-    border-radius: 2px;
-    padding: 2px;
-    margin-left: 7px;
+    padding: 3px 10px;
+    margin-left: 1px;
     cursor: pointer;
 }
 
