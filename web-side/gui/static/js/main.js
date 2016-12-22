@@ -29,7 +29,7 @@ function mainScope($scope) {
                 $scope.canvas.objectCounter = {};
                 $scope.canvas.objectCounter['group'] = 0;
 
-                var greenWall = new fabric.Rect({
+              /*  var greenWall = new fabric.Rect({
                     left: 200,
                     top: 10,
                     fill: '#92d050',
@@ -73,7 +73,7 @@ function mainScope($scope) {
                     // left: 260,
                     //top: 60,
 
-                });
+                });*/
 
                 var redCarBody = new fabric.Rect({
                     left: 260,
@@ -114,7 +114,7 @@ function mainScope($scope) {
                     // left: 260,
                     //top: 60,
                     id: 'id-' + $scope.canvas.objectCounter['group']++,
-                    fill: '#d3d3ab',
+                    fill: '#d99690',
                     lockMovementX: true,
                     lockMovementY: true,
                     lockScalingX: true,
@@ -125,7 +125,7 @@ function mainScope($scope) {
                 });
                 //console.log(redCar.id);
 
-                var topGreenCarBody = new fabric.Rect({
+               /* var topGreenCarBody = new fabric.Rect({
                     left: 50,
                     top: 60,
                     width: 50,
@@ -214,9 +214,9 @@ function mainScope($scope) {
                     width: 30,
                     height: 30,
                     angle: 45
-                });
+                });*/
 
-                $scope.canvas.add(walls, $scope.redCar, topGreenCar, bottomGreenCar, rhombus);
+                $scope.canvas.add($scope.redCar);
             });
     };
 
@@ -232,14 +232,27 @@ function mainScope($scope) {
                     $scope.canvas.getActiveObject().set('lockMovementY', false);
                     break;
                 case 'del':
-                    $scope.redCar.remove();
+                     var activeObject = $scope.canvas.getActiveObject();
+                     $scope.canvas.remove(activeObject);
                     break;
                 case 'copy':
-                    var x = $scope.redCar;
-                    var object = fabric.util.x.clone($scope.canvas.getActiveObject());
-                    object.set("top", object.top + 5);
-                    object.set("left", object.left + 5);
-                    $scope.canvas.add(object);
+                    var selectObject = $scope.canvas.getActiveObject();
+                    selectObject.clone(function (o) {
+                        var cloneObject = o;
+                        if (cloneObject) {
+                            cloneObject.set({
+                                left: 150,
+                                top: 150
+                            });
+                            $scope.canvas.add(cloneObject);
+                            cloneObject.set('fill', '#000');
+                            cloneObject.set('width', 60);
+                            $scope.canvas.renderAll();
+                            $scope.canvas.calcOffset();
+                        } else {
+                            alert("Sorry Object Not Initialized");
+                        }
+                    });
                     break;
                 case 'route':
                     console.log('повернуть');
