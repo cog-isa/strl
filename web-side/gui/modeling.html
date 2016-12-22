@@ -16,11 +16,12 @@
     <script src="./static/vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 
     <script src="./static/js/main.js"></script>
+    <script src="./static/js/redactor.js"></script>
 
     <title>STRL</title>
 </head>
 
-<body>
+<body al-app="mainScope">
     <div class="flex-2 flex-column left-panel" al-app="mainScope">
 
         <div class="flex-1 flex-column canvas">
@@ -35,8 +36,8 @@
                 <div class="small-button">S</div>
                 <div class="small-button">T</div>-->
                 <span class="flex-1 dummy-span"></span>
-                <div class="button">Список проектов</div>
-                <div class="button">Запуск</div>
+                <a href="./listofproj.html" class="button">Список проектов</a>
+                <a href="./worldeditor.html" class="button">Запуск</a>
             </div>
             <div id="canvas-container" class="flex-1">
                 <canvas id="canvas"></canvas>
@@ -49,22 +50,10 @@
 
         <div class="flex-1 white-block relative">
             <div class="overflow-list">
-                <div class="layers-block"><div class="flex-row layers-name">Роботы</div>
+                <div class="layers-block" al-repeat="(id, objType) in listOfObject">
+                    <div class="flex-row layers-name">{{objType.name}}</div>
                     <div class="flex-column layers-list">
-                        <span>Робот Mk.1</span>
-                        <span>Робот Mk.2</span>
-                    </div>
-                </div>
-                <div class="layers-block"><div class="flex-row layers-name">Объекты</div>
-                    <div class="flex-column layers-list">
-                        <span>Стена 1</span>
-                        <span>Стена 2</span>
-                        <span>Стена 3</span>
-                    </div>
-                </div>
-                <div class="layers-block"><div class="flex-row layers-name">Маркеры</div>
-                    <div class="flex-column layers-list">
-                        <span>Маркер 1</span>
+                        <span al-repeat="obj in objType.objs">obj.name</span>
                     </div>
                 </div>
             </div>

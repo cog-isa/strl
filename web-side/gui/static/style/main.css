@@ -44,7 +44,7 @@ html, body {
     height: 100%;
     width: 100%;
     min-height: 600px;
-    min-width: 1260px;
+    min-width: 1000px;
     padding: 0;
     margin: 0;
     display: -ms-flexbox;
@@ -179,7 +179,6 @@ body {
     color: #106162;
     font-size: 18px;
     align-items: stretch;
-    //justify-content: flex-end;
 }
 .canvas-panel span {
     display: -ms-flexbox;
@@ -213,10 +212,13 @@ span.dummy-span {
     cursor: pointer;
     width: 200px;
     margin-left: 1px;
+    text-decoration: none;
 }
 
 #canvas-container {
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 100%;
 }
 
 
