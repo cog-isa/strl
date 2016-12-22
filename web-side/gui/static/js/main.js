@@ -108,8 +108,6 @@ function mainScope($scope) {
                     //top: 60,
                     id: 'id-' + $scope.canvas.objectCounter['group']++,
                     fill: '#d99690',
-                    lockMovementX: true,
-                    lockMovementY: true,
                     lockScalingX: true,
                     lockScalingY: true,
                     lockRotation: true
