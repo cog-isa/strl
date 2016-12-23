@@ -22,6 +22,39 @@ function mainScope($scope) {
     else {
         $scope.worldID = getParameterByName("worldid");
 
+
+        // Рисуем форму робота
+        var carBody = new fabric.Rect({
+            left: 260,
+            top: 60,
+            width: 50,
+            height: 70
+        });
+        var carWheel1 = new fabric.Rect({
+            left: 250,
+            top: 40,
+            width: 10,
+            height: 40
+        });
+        var carWheel2 = new fabric.Rect({
+            left: 310,
+            top: 40,
+            width: 10,
+            height: 40
+        });
+        var carWheel3 = new fabric.Rect({
+            left: 310,
+            top: 110,
+            width: 10,
+            height: 40
+        });
+        var carWheel4 = new fabric.Rect({
+            left: 250,
+            top: 110,
+            width: 10,
+            height: 40
+        });
+
         $scope.objectListByTypes = {};
 
 
@@ -60,6 +93,7 @@ function mainScope($scope) {
         $scope.$watch( "objectTypes != undefined && listOfObject != undefined", function (val) {
             if ($scope.objectTypes && $scope.listOfObject) {
                 for (var i = 0; i < $scope.listOfObject.length; i++) {
+                    var type;
                     for (var j = 0; j < $scope.objectTypes.length; j++) {
                         if ($scope.objectTypes[j].children.length != 0) {
                             for (var k = 0; k < $scope.objectTypes[j].children.length; k++) {
@@ -68,118 +102,194 @@ function mainScope($scope) {
                                         $scope.objectListByTypes[$scope.objectTypes[j].id] = {};
                                         $scope.objectListByTypes[$scope.objectTypes[j].id].name = $scope.objectTypes[j].name;
                                         $scope.objectListByTypes[$scope.objectTypes[j].id].objects = [];
+                                        type = $scope.objectListByTypes[$scope.objectTypes[j].id].name;
                                     }
                                     $scope.objectListByTypes[$scope.objectTypes[j].id].objects.push($scope.listOfObject[i]);
                                 }
                             }
                         }
                     }
+                    drawObject($scope.listOfObject[i],type);
                 }
             }
+            $scope.$scan();
         });
 
-
-
-
-
-        $scope.createObject = function (obj,objChild) {
-            $.ajax('/api/objects', {
-            method: 'POST',
-            dataType: "json",
-            contentType: 'application/json; charset=UTF-8',
-            data: JSON.stringify({
-                "name": objChild.name,
-                "type_id": objChild.id,
-                "world_id": +$scope.worldID,
-                "properties": {
-                    "height":111,
-                    "width": 71,
-                    "left": 100,
-                    "top": 150
-                }
-            })
-        }).fail(function () {
-        }).done(function () {
-               switch (obj.name) {
-               case 'Робот':
-                    if(objChild.name == "Робот, умеющий разрушать препятствия") {
-                        var carBody = new fabric.Rect({
-                        left: 260,
-                        top: 60,
-                        width: 50,
-                        height: 70
-                    });
-
-                    var carWheel1 = new fabric.Rect({
-                        left: 250,
-                        top: 40,
-                        width: 10,
-                        height: 40
-                    });
-
-                    var carWheel2 = new fabric.Rect({
-                        left: 310,
-                        top: 40,
-                        width: 10,
-                        height: 40
-                    });
-
-                    var carWheel3 = new fabric.Rect({
-                        left: 310,
-                        top: 110,
-                        width: 10,
-                        height: 40
-                    });
-
-                    var carWheel4 = new fabric.Rect({
-                        left: 250,
-                        top: 110,
-                        width: 10,
-                        height: 40
-                    });
-
+        // Вывод объектов
+        function drawObject(obj,type) {
+            console.log(obj);
+            switch (type) {
+                case 'Робот':
+                    // Собираем робота
                     $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
-                        id: 'id-' + $scope.canvas.objectCounter['group']++,
-                        fill: '#e91e63',
+                        id: obj.id,
+                        height: obj.properties.height,
+                        width: obj.properties.width,
+                        top: obj.properties.top,
+                        left: obj.properties.left,
+                        fill: obj.properties.fill,
                         lockScalingX: true,
                         lockScalingY: true,
                         lockRotation: true
                     });
-                    $scope.canvas.add($scope.car);
-                    }
-                    else {
-                        $scope.car.set("fill", "#8bc34a");
-                        $scope.canvas.add($scope.car);
-                        $scope.canvas.renderAll();
-                    }
 
+                    $scope.canvas.add($scope.car);
+                    $scope.canvas.clear().renderAll();
                     break;
+
                 case 'Стена':
-                     $scope.wall = new fabric.Rect({
-                        left: 100,
-                        top: 50,
-                        width: 100,
-                        height: 20,
-                        fill: '#e3e2de'
+                    var wall = new fabric.Rect({
+                        id: obj.id,
+                        height: obj.properties.height,
+                        width: obj.properties.width,
+                        top: obj.properties.top,
+                        left: obj.properties.left,
+                        fill: obj.properties.fill,
+                        lockScalingX: true,
+                        lockScalingY: true,
+                        lockRotation: true
                     });
-                    $scope.canvas.add($scope.wall);
+                    $scope.canvas.add(wall);
                     break;
+
                 case 'Маркер':
-                    $scope.marker = new fabric.Rect({
-                        left: 100,
-                        top: 50,
-                        width: 20,
-                        height: 20,
-                        angle: 45,
-                        fill:'#F44336;'
+                    var marker = new fabric.Rect({
+                        id: obj.id,
+                        height: obj.properties.height,
+                        width: obj.properties.width,
+                        top: obj.properties.top,
+                        left: obj.properties.left,
+                        fill: obj.properties.fill,
+                        lockScalingX: true,
+                        lockScalingY: true,
+                        lockRotation: true
                     });
-                    $scope.canvas.add($scope.marker);
+                    $scope.canvas.add(marker);
                     break;
-                }
-            });
-            $scope.$scan();
+            }
         };
 
+
+        // Создание объектов
+
+        $scope.createObject = function (obj,objChild) {
+            if (obj.name != "Робот" || (obj.name == "Робот" && objChild)) {
+                var setObj = {}, color = '';
+                (obj == "Робот") ? setObj = objChild : setObj = obj;
+                switch (obj.name) {
+                    case 'Робот':
+                        setObj = objChild;
+                        if (objChild.name == "Робот, умеющий разрушать препятствия") {
+                            color = "#e91e63";
+                        }
+                        else {
+                            color = "#8bc34a";
+                        }
+                        break;
+                    case 'Стена':
+                        setObj = obj;
+                        color = "#e3e2de";
+                        break;
+                    case 'Маркер':
+                        setObj = obj;
+                        color = "#F44336";
+                        break;
+                }
+                $.ajax('/api/objects', {
+                    method: 'POST',
+                    dataType: "json",
+                    contentType: 'application/json; charset=UTF-8',
+                    data: JSON.stringify({
+                        "name": setObj.name,
+                        "type_id": setObj.id,
+                        "world_id": +$scope.worldID,
+                        "properties": {
+                            "height": 111,
+                            "width": 71,
+                            "left": 500,
+                            "top": 500,
+                            "fill":color
+                        }
+                    })
+                }).fail(function () {
+                }).done(function (data) {
+                    switch (obj.name) {
+                        case 'Робот':
+
+                            // Собираем робота
+                            $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
+                                id: data.id,
+                                lockScalingX: true,
+                                lockScalingY: true,
+                                lockRotation: true,
+                                top: 300,
+                                left: 300
+                            });
+
+                            // Красим робота
+                            if (objChild.name == "Робот, умеющий разрушать препятствия") {
+                                $scope.car.set("fill", color);
+                                $scope.canvas.add($scope.car);
+                            }
+                            else {
+                                $scope.car.set("fill", color);
+                                $scope.canvas.add($scope.car);
+                            }
+                            $scope.canvas.renderAll();
+                            break;
+
+                        case 'Стена':
+                            var wall = new fabric.Rect({
+                                id: data.id,
+                                left: 100,
+                                top: 50,
+                                width: 100,
+                                height: 20,
+                                fill: color
+                            });
+                            $scope.canvas.add(wall);
+                            break;
+
+                        case 'Маркер':
+                            var marker = new fabric.Rect({
+                                id: data.id,
+                                left: 100,
+                                top: 50,
+                                width: 20,
+                                height: 20,
+                                angle: 45,
+                                fill: color
+                            });
+                            $scope.canvas.add(marker);
+                            break;
+                    }
+                });
+                $scope.$scan();
+            }
+        };
+
+        // Записыавем изменения объекта и отсылаем на сервер
+
+        /*$scope.$watch('#objHeight', function (val) { saveObjProp(val, 'height'); });
+        $scope.$watch('#objWidth', function (val) { saveObjProp(val, 'width'); });
+        $scope.$watch('#objColor', function (val) { saveObjProp(val, 'color'); });*/
+        $scope.saveObjProp = function(key,val) {
+            var activeObj = $scope.canvas.getActiveObject();
+            var properties = {};
+            properties[key] = val;
+            $.ajax('/api/objects/'+ activeObj.id, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json; charset=UTF-8'},
+            dataType: "json",
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify({
+                "properties": properties
+            })
+        }).fail(function () {
+        }).done(function () {
+                activeObj.set(properties);
+        });
+        };
 
         /* CANVAS */
 
