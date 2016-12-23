@@ -52,9 +52,9 @@
         <div class="flex-1 white-block relative">
             <div class="overflow-list">
                 <div class="layers-block" al-repeat="obj in objectTypes">
-                    <div class="flex-row layers-name">{{obj.name}}</div>
+                    <div class="flex-row layers-name" al-click="createObject(obj,objChild)">{{obj.name}}</div>
                     <div class="flex-column layers-list">
-                        <span al-repeat="objChild in obj.children" al-click="createObject(objChild)">{{objChild.name}}</span>
+                        <span al-repeat="objChild in obj.children" al-click="createObject(obj,objChild)">{{objChild.name}}</span>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
             </div>
             <div class="flex-row obj-property">
                 <span class="flex-1">Цвет</span>
-                <input type="color"/>
+                <input al-value="activeObjColor" type="color"/>
             </div>
         </div>
     </div>

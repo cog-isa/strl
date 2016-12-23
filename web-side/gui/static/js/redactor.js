@@ -58,30 +58,109 @@ function mainScope($scope) {
                 }
                 $scope.listOfObject[id].objs.push(result[i]);
             }
-            for (id in $scope.listOfObject) {
+            /*for (id in $scope.listOfObject) {
                 for (var i = 0; i < $scope.objectTypes.length; i++) {
                     if (id == $scope.objectTypes[i].id)
                         $scope.listOfObject[id] = $scope.objectTypes[i].name;
                 }
-            }
+            }*/
             $scope.$scan();
         });
 
-        $scope.createObject = function (objChild) {
+        $scope.createObject = function (obj,objChild) {
             $.ajax('/api/objects', {
             method: 'POST',
             dataType: "json",
-            data: {
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify({
                 "name": objChild.name,
-                "type_id": objChild.parent_id,
+                "type_id": objChild.id,
                 "world_id": +$scope.worldID,
                 "properties": {
                     "height":111,
-                    "width": 71
+                    "width": 71,
+                    "left": 100,
+                    "top": 150
                 }
-            }
+            })
         }).fail(function () {
-        }).done(function (result) {
+        }).done(function () {
+               switch (obj.name) {
+               case 'Робот':
+                    if(objChild.name == "Робот, умеющий разрушать препятствия") {
+                        var carBody = new fabric.Rect({
+                        left: 260,
+                        top: 60,
+                        width: 50,
+                        height: 70
+                    });
+
+                    var carWheel1 = new fabric.Rect({
+                        left: 250,
+                        top: 40,
+                        width: 10,
+                        height: 40
+                    });
+
+                    var carWheel2 = new fabric.Rect({
+                        left: 310,
+                        top: 40,
+                        width: 10,
+                        height: 40
+                    });
+
+                    var carWheel3 = new fabric.Rect({
+                        left: 310,
+                        top: 110,
+                        width: 10,
+                        height: 40
+                    });
+
+                    var carWheel4 = new fabric.Rect({
+                        left: 250,
+                        top: 110,
+                        width: 10,
+                        height: 40
+                    });
+
+                    $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
+                        id: 'id-' + $scope.canvas.objectCounter['group']++,
+                        fill: '#e91e63',
+                        lockScalingX: true,
+                        lockScalingY: true,
+                        lockRotation: true
+                    });
+                    $scope.canvas.add($scope.car);
+                    }
+                    else {
+                        $scope.car.set("fill", "#8bc34a");
+                        $scope.canvas.add($scope.car);
+                        $scope.canvas.renderAll();
+                    }
+
+                    break;
+                case 'Стена':
+                     $scope.wall = new fabric.Rect({
+                        left: 100,
+                        top: 50,
+                        width: 100,
+                        height: 20,
+                        fill: '#e3e2de'
+                    });
+                    $scope.canvas.add($scope.wall);
+                    break;
+                case 'Маркер':
+                    $scope.marker = new fabric.Rect({
+                        left: 100,
+                        top: 50,
+                        width: 20,
+                        height: 20,
+                        angle: 45,
+                        fill:'#F44336;'
+                    });
+                    $scope.canvas.add($scope.marker);
+                    break;
+                }
             });
             $scope.$scan();
         };
@@ -102,70 +181,20 @@ function mainScope($scope) {
                 $scope.canvas.setWidth(9600);
                 $scope.canvas.setHeight(9600);
                 $scope.canvas.renderAll();
-
-                $scope.canvas.on('object:selected', function () {
-                    var obj = $scope.canvas.getActiveObject();
-                    $scope.activeObjWidth = obj.getWidth();
-                    $scope.activeObjWidth = obj.getHeight();
-                    $scope.activeObjColor = obj.fill;
-                });
                 $scope.canvas.objectCounter = {};
                 $scope.canvas.objectCounter['group'] = 0;
-
-                var redCarBody = new fabric.Rect({
-                    left: 260,
-                    top: 60,
-                    width: 50,
-                    height: 70
-                });
-
-                var redCarWheel1 = new fabric.Rect({
-                    left: 250,
-                    top: 40,
-                    width: 10,
-                    height: 40
-                });
-
-                var redCarWheel2 = new fabric.Rect({
-                    left: 310,
-                    top: 40,
-                    width: 10,
-                    height: 40
-                });
-
-                var redCarWheel3 = new fabric.Rect({
-                    left: 310,
-                    top: 110,
-                    width: 10,
-                    height: 40
-                });
-
-                var redCarWheel4 = new fabric.Rect({
-                    left: 250,
-                    top: 110,
-                    width: 10,
-                    height: 40
-                });
-
-                $scope.redCar = new fabric.Group([redCarBody, redCarWheel1, redCarWheel2, redCarWheel3, redCarWheel4], {
-                    // left: 260,
-                    //top: 60,
-                    id: 'id-' + $scope.canvas.objectCounter['group']++,
-                    fill: '#d99690',
-                    lockScalingX: true,
-                    lockScalingY: true,
-                    lockRotation: true
-                    //selectable: false
-
-                });
-
-                $scope.canvas.add($scope.redCar);
             });
         };
 
         $scope.createCanvas();
 
-
+        $scope.canvas.on('object:selected', function () {
+            var obj = $scope.canvas.getActiveObject();
+            $scope.activeObjWidth = obj.getWidth();
+            $scope.activeObjHeight = obj.getHeight();
+            $scope.activeObjColor = obj.fill;
+            $scope.$scan();
+        });
         /* Управление объектами на canvas */
 
         $scope.editObject = function (actionType) {
