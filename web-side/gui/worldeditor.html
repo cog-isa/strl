@@ -53,7 +53,7 @@
                 <div class="layers-block" al-repeat="obj in objectTypes">
                     <div class="flex-row layers-name">{{obj.name}}</div>
                     <div class="flex-column layers-list">
-                        <span al-repeat="objChild in obj.children">{{objChild.name}}</span>
+                        <span al-repeat="objChild in obj.children" al-click="createObject(objChild)">{{objChild.name}}</span>
                     </div>
                 </div>
                 <!--<div class="layers-block"><div class="flex-row layers-name">Объекты</div>
@@ -79,11 +79,11 @@
 
             <div class="flex-row obj-property">
                 <span class="flex-1">Длина</span>
-                <input type="number"/>
+                <input al-value="activeObjHeight" type="number"/>
             </div>
             <div class="flex-row obj-property">
                 <span class="flex-1">Ширина</span>
-                <input type="number"/>
+                <input al-value="activeObjWidth" type="number"/>
             </div>
             <div class="flex-row obj-property">
                 <span class="flex-1">Цвет</span>

@@ -17,8 +17,9 @@ function mainScope($scope) {
     })(jQuery);
 
 
-    $scope.test = 10;
-    /***/
+
+    /*запрос на получение типов объектов*/
+
     $.ajax('/api/object_types', {
         method: 'GET',
         headers: {
@@ -31,92 +32,109 @@ function mainScope($scope) {
         $scope.objectTypes = result;
         $scope.$scan();
 
-       /* for(var i = 0; i < $scope.objectTypes.length; i++) {
-            var objectName = $scope.objectTypes[i].name;
-            switch (objectName) {
-                case 'Робот':
-                    $scope.objectRobot = $scope.objectTypes[i];
-                    break;
-                case 'Стена':
-                    $scope.objectWall = $scope.objectTypes[i];
-                    break;
-                case 'Маркер':
-                    $scope.objectMarker = $scope.objectTypes[i];
-                    break;
-            }
-        }*/
-
     });
 
+    $scope.createObject = function (objChild) {
+            //objWorldID = dd;
+        $.ajax('/api/objects', {
+            method: 'POST',
+            /*headers: {
+               'Content-Type': 'application/json; charset=UTF-8'
+            },*/
+            dataType: "json",
+            data: {
+                "name":  objChild.name,
+                "type_id":  objChild.parent_id,
+                "world_id": 1,
+                "properties": {
+                    "height": 111,
+                    "width": 71
+                }
+            }
+    }).fail(function () {
+
+    }).done(function () {
+
+        });
+    };
 
 
     $scope.createCanvas = function () {
          jQuery( document ).ready(function() {
-                jQuery('#canvas').attr({
-                    'width': jQuery('#canvas-container').width(),
-                    'height': jQuery('#canvas-container').height()
-                });
-                // отрисовку элементов на канвас надо вынести в отдельную функцию и уже ее вызывать.
-                // + добавить resize
+             jQuery('#canvas').attr({
+                 'width': jQuery('#canvas-container').width(),
+                 'height': jQuery('#canvas-container').height()
+             });
+             // отрисовку элементов на канвас надо вынести в отдельную функцию и уже ее вызывать.
+             // + добавить resize
 
-                $scope.canvas = new fabric.Canvas('canvas');
-                $scope.canvas.on('object:selected', function(){
-                    var obj = $scope.canvas.getActiveObject();
-                    $scope.activeObjWidth = obj.getWidth();
-                    $scope.activeObjWidth =obj.getHeight();
-                });
-                $scope.canvas.objectCounter = {};
-                $scope.canvas.objectCounter['group'] = 0;
+             $scope.canvas = new fabric.Canvas('canvas');
+             $scope.canvas.on('object:selected', function(){
+                 var obj = $scope.canvas.getActiveObject();
+                 $scope.activeObjWidth = obj.getWidth();
+                 $scope.activeObjHeight =obj.getHeight();
+                 //$scope.activeObjColor =obj.getColor();
+                 $scope.$scan();
+             });
 
-                var redCarBody = new fabric.Rect({
-                    left: 260,
-                    top: 60,
-                    width: 50,
-                    height: 70
-                });
+             $scope.canvas.on('selection:cleared', function(){
+                 $scope.activeObjWidth = '';
+                 $scope.activeObjHeight = '';
+                 //$scope.activeObjColor =obj.getFill();
+                 $scope.$scan();
+             });
+             $scope.canvas.objectCounter = {};
+             $scope.canvas.objectCounter['group'] = 0;
 
-                var redCarWheel1 = new fabric.Rect({
-                    left: 250,
-                    top: 40,
-                    width: 10,
-                    height: 40
-                });
+             var redCarBody = new fabric.Rect({
+                 left: 260,
+                 top: 60,
+                 width: 50,
+                 height: 70
+             });
 
-                var redCarWheel2 = new fabric.Rect({
-                    left: 310,
-                    top: 40,
-                    width: 10,
-                    height: 40
-                });
-
-                var redCarWheel3 = new fabric.Rect({
-                    left: 310,
-                    top: 110,
-                    width: 10,
-                    height: 40
-                });
-
-                var redCarWheel4 = new fabric.Rect({
-                    left: 250,
-                    top: 110,
-                    width: 10,
-                    height: 40
-                });
-
-                $scope.redCar = new fabric.Group([redCarBody, redCarWheel1, redCarWheel2, redCarWheel3, redCarWheel4], {
-                    // left: 260,
-                    //top: 60,
-                    id: 'id-' + $scope.canvas.objectCounter['group']++,
-                    fill: '#d99690',
-                    lockScalingX: true,
-                    lockScalingY: true,
-                    lockRotation: true
-                    //selectable: false
-
-                });
-
-                $scope.canvas.add($scope.redCar);
+            var redCarWheel1 = new fabric.Rect({
+                left: 250,
+                top: 40,
+                width: 10,
+                height: 40
             });
+
+            var redCarWheel2 = new fabric.Rect({
+                left: 310,
+                top: 40,
+                width: 10,
+                height: 40
+            });
+
+            var redCarWheel3 = new fabric.Rect({
+                left: 310,
+                top: 110,
+                width: 10,
+                height: 40
+            });
+
+            var redCarWheel4 = new fabric.Rect({
+                left: 250,
+                top: 110,
+                width: 10,
+                height: 40
+            });
+
+            $scope.redCar = new fabric.Group([redCarBody, redCarWheel1, redCarWheel2, redCarWheel3, redCarWheel4], {
+                // left: 260,
+                //top: 60,
+                id: 'id-' + $scope.canvas.objectCounter['group']++,
+                fill: '#d99690',
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true
+                //selectable: false
+
+            });
+
+            $scope.canvas.add($scope.redCar);
+        });
     };
 
     $scope.createCanvas();
