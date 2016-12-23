@@ -22,7 +22,7 @@ function mainScope($scope) {
     else {
         $scope.worldID = getParameterByName("worldid");
 
-        $scope.listOfObject = {} ;       // хранится список всех созданных объектов по типам
+        $scope.objectListByTypes = {};
 
 
         /* Запрос на получение списка типов объектов */
@@ -50,22 +50,37 @@ function mainScope($scope) {
         }).fail(function () {
             console.error("Нет мира с ID "+$scope.worldID);
         }).done(function (result) {
-            for (var i=0; i < result.length; i++) {
-                var id = result[i].type_id;
-                if (!$scope.listOfObject[id]) {
-                    $scope.listOfObject[id] = {};
-                    $scope.listOfObject[id].objs = [];
-                }
-                $scope.listOfObject[id].objs.push(result[i]);
-            }
-            /*for (id in $scope.listOfObject) {
-                for (var i = 0; i < $scope.objectTypes.length; i++) {
-                    if (id == $scope.objectTypes[i].id)
-                        $scope.listOfObject[id] = $scope.objectTypes[i].name;
-                }
-            }*/
+            $scope.listOfObject = result;
             $scope.$scan();
         });
+
+
+        /* Сортируем список созданных объектов по типам */
+
+        $scope.$watch( "objectTypes != undefined && listOfObject != undefined", function (val) {
+            if ($scope.objectTypes && $scope.listOfObject) {
+                for (var i = 0; i < $scope.listOfObject.length; i++) {
+                    for (var j = 0; j < $scope.objectTypes.length; j++) {
+                        if ($scope.objectTypes[j].children.length != 0) {
+                            for (var k = 0; k < $scope.objectTypes[j].children.length; k++) {
+                                if ($scope.objectTypes[j].children[k].id == $scope.listOfObject[i].type_id) {
+                                    if (!$scope.objectListByTypes[$scope.objectTypes[j].id]) {
+                                        $scope.objectListByTypes[$scope.objectTypes[j].id] = {};
+                                        $scope.objectListByTypes[$scope.objectTypes[j].id].name = $scope.objectTypes[j].name;
+                                        $scope.objectListByTypes[$scope.objectTypes[j].id].objects = [];
+                                    }
+                                    $scope.objectListByTypes[$scope.objectTypes[j].id].objects.push($scope.listOfObject[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+
+
 
         $scope.createObject = function (obj,objChild) {
             $.ajax('/api/objects', {
