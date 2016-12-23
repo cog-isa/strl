@@ -17,15 +17,25 @@
     <script src="./static/vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 
     <script src="./static/js/main.js"></script>
+	<script src="./static/js/listofproj.js"></script>
 
-    <title>STRL</title>
+    <title>Проекты STRL</title>
 </head>
-<body>
-    <div class="flex-1 flex-row" al-app="mainScope">
+<body al-app="listOfProjScope">
+    <div class="flex-1 flex-row" al-app="listOfProjScope">
 
         <div class="flex-1 flex-column" style="padding: 0px 20px">
             <div class="flex-1 white-block relative">
                 <div class="overflow-list">
+				
+					<div class="flex-row project-name" al-repeat="proj in projects">
+						<div class="flex-1">{{proj.name}}</div>
+                        <span class="edit-project"></span>
+                        <span class="clone-project"></span>
+                        <span class="delete-project"></span>
+                    </div>
+				
+				<!--
                     <div class="flex-row project-name">
                         <div class="flex-1">Проект11</div>
                         <span class="edit-project"></span>
@@ -50,6 +60,8 @@
                         <span class="clone-project"></span>
                         <span class="delete-project"></span>
                     </div>
+					
+				-->	
                 </div>
             </div>
             <div class="add-button relative">Новый проект</div>
@@ -58,6 +70,15 @@
         <div class="flex-1 flex-column" style="padding: 0px 20px">
             <div class="flex-1 white-block relative">
                 <div class="overflow-list">
+							
+					<div class="flex-row project-name" al-repeat="world in projectsToWorlds[selectedPrjIndex]">
+                        <div class="flex-1">{{world.name}}</div>
+                        <span class="edit-project"></span>
+                        <span class="clone-project"></span>
+                        <span class="delete-project"></span>
+                    </div>				
+				
+				<!--
                     <div class="flex-row project-name">
                         <div class="flex-1">Мир1</div>
                         <span class="edit-project"></span>
@@ -82,6 +103,8 @@
                         <span class="clone-project"></span>
                         <span class="delete-project"></span>
                     </div>
+					-->
+					
                 </div>
             </div>
                 <div class="add-button relative">Новый мир</div>
