@@ -14,6 +14,9 @@
     <button onclick="getProject()">Получить</button><input id="tb-get-project-id" value="1">
 </div>
 <div>
+    <button onclick="getProjects()">Получить все</button>
+</div>
+<div>
     <button onclick="createProject()">Создать</button>
     Название: <input id="tb-create-project-name" value="">
 </div>
@@ -28,6 +31,11 @@
 
 
 <script>
+function getProjects() {
+    $.ajax('/api/projects', {
+        method: 'GET'
+    });
+}
 function getProject() {
     $.ajax('/api/projects/' + $('#tb-get-project-id').val(), {
         method: 'GET'

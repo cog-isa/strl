@@ -12,6 +12,19 @@ def route(app):
 
 	# --------------------   Project   -------------------------
 
+	@app.route('/api/projects', methods=['GET'])
+	def projects_get():
+		projects = Project.select()
+		"""
+		world_dcs = []
+		for world in worlds:
+			world_dc = model_to_dict(world, recurse=False)
+			world_dc['project_id'] = world_dc['project']
+			world_dc.pop('project')
+			world_dcs.append(world_dc)
+		"""
+		return jsonify([model_to_dict(project) for project in projects])
+
 	@app.route('/api/projects/<id>', methods=['GET'])
 	def project_get(id):
 		project = Project.get(Project.id == id)
