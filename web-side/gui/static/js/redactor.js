@@ -67,6 +67,24 @@ function mainScope($scope) {
             $scope.$scan();
         });
 
+        $scope.createObject = function (objChild) {
+            $.ajax('/api/objects', {
+            method: 'POST',
+            dataType: "json",
+            data: {
+                "name": objChild.name,
+                "type_id": objChild.parent_id,
+                "world_id": +$scope.worldID,
+                "properties": {
+                    "height":111,
+                    "width": 71
+                }
+            }
+        }).fail(function () {
+        }).done(function (result) {
+            });
+            $scope.$scan();
+        };
 
 
         /* CANVAS */
@@ -89,6 +107,7 @@ function mainScope($scope) {
                     var obj = $scope.canvas.getActiveObject();
                     $scope.activeObjWidth = obj.getWidth();
                     $scope.activeObjWidth = obj.getHeight();
+                    $scope.activeObjColor = obj.fill;
                 });
                 $scope.canvas.objectCounter = {};
                 $scope.canvas.objectCounter['group'] = 0;
@@ -168,7 +187,7 @@ function mainScope($scope) {
                                 });
                                 $scope.canvas.add(cloneObject);
                                 cloneObject.set('fill', '#000');
-                                cloneObject.set('width', 60);
+                                //cloneObject.set('width', 60);
                                 $scope.canvas.renderAll();
                                 $scope.canvas.calcOffset();
                             } else {
