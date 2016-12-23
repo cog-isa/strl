@@ -50,10 +50,10 @@
 
         <div class="flex-1 white-block relative">
             <div class="overflow-list">
-                <div class="layers-block" al-repeat="(id, objType) in listOfObject">
+                <div class="layers-block" al-repeat="(id, objType) in objectListByTypes">
                     <div class="flex-row layers-name">{{objType.name}}</div>
                     <div class="flex-column layers-list">
-                        <span al-repeat="obj in objType.objs">obj.name</span>
+                        <span al-repeat="obj in objType.objects">obj.name</span>
                     </div>
                 </div>
             </div>
