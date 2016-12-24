@@ -42,19 +42,19 @@ def recreate_db():
 
     # Создаем объект - разрушающий робот
     obj = Object.create(name='Разруш. робот 1', type_id=4, world_id=1)
-    Property.create(object=obj, name='position_x', value=20)
-    Property.create(object=obj, name='position_y', value=30)
+    Property.create(object=obj, name='left', value=20)
+    Property.create(object=obj, name='top', value=30)
     Property.create(object=obj, name='width', value=10)
     Property.create(object=obj, name='height', value=7)
-    Property.create(object=obj, name='color', value='#cccccc')
+    Property.create(object=obj, name='fill', value='#cccccc')
 
     # Создаем объект - стена
     obj = Object.create(name='Стена 1', type_id=2, world_id=1)
-    Property.create(object=obj, name='position_x', value=16)
-    Property.create(object=obj, name='position_y', value=9)
+    Property.create(object=obj, name='left', value=16)
+    Property.create(object=obj, name='top', value=9)
     Property.create(object=obj, name='width', value=5)
     Property.create(object=obj, name='height', value=21)
-    Property.create(object=obj, name='color', value='#eeeeee')
+    Property.create(object=obj, name='fill', value='#eeeeee')
 
 
     """
@@ -120,6 +120,7 @@ if __name__ == '__main__':
             print('unknown argument')
 
     #createTables()
+
 
     #api = RestAPI(app)
     #for model in models:

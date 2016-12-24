@@ -196,7 +196,10 @@ def route(app):
 			data['type'] = data['type_id']
 			data.pop('type_id')
 		with db.atomic() as txn:
-			effected_row_cnt = Object.update(**data).where(Object.id == id).execute()
+			if data:
+				effected_row_cnt = Object.update(**data).where(Object.id == id).execute()
+			else:
+				effected_row_cnt = None
 			for key, val in props_dc.items():
 				eff_cnt = Property.update(value=val).where((Property.object_id == id) & (Property.name == key)).execute()
 				if eff_cnt == 0:
