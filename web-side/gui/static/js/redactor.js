@@ -136,6 +136,7 @@ function mainScope($scope) {
                         top: obj.properties.top,
                         left: obj.properties.left,
                         fill: obj.properties.fill,
+                        angle: obj.properties.angle,
                         lockScalingX: true,
                         lockScalingY: true,
                         lockRotation: true
@@ -155,6 +156,7 @@ function mainScope($scope) {
                         top: obj.properties.top,
                         left: obj.properties.left,
                         fill: "#e3e2de",
+                        angle: obj.properties.angle,
                         lockScalingX: true,
                         lockScalingY: true,
                         lockRotation: true
@@ -171,7 +173,7 @@ function mainScope($scope) {
                         top: obj.properties.top,
                         left: obj.properties.left,
                         fill: "#F44336",
-                        angle: 45,
+                        angle: obj.properties.angle,
                         lockScalingX: true,
                         lockScalingY: true,
                         lockRotation: true
@@ -187,7 +189,7 @@ function mainScope($scope) {
 
         $scope.createObject = function (obj,objChild) {
             if (obj.name != "Робот" || (obj.name == "Робот" && objChild)) {
-                var setObj = {}, color = '', height = '', width = '';
+                var setObj = {}, color = '', height = '', width = '', angle = 0;
                 (obj == "Робот") ? setObj = objChild : setObj = obj;
                 switch (obj.name) {
                     case 'Робот':
@@ -212,6 +214,7 @@ function mainScope($scope) {
                         height = 15;
                         width = 15;
                         color = "#F44336";
+                        angle = 45;
                         break;
                 }
                 $.ajax('/api/objects', {
@@ -227,7 +230,8 @@ function mainScope($scope) {
                             "width": width,
                             "left": 100,
                             "top": 50,
-                            "fill":color
+                            "fill": color,
+                            "angle": angle
                         }
                     })
                 }).fail(function () {
@@ -289,26 +293,54 @@ function mainScope($scope) {
             }
         };
 
+
+
         // Записыавем изменения объекта и отсылаем на сервер
 
-
-        $scope.saveObjProp = function(key,val) {
-            var activeObj = $scope.canvas.getActiveObject();
-            var properties = {};
-            properties[key] = val;
-            $.ajax('/api/objects/'+ activeObj.id, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json; charset=UTF-8'},
-            dataType: "json",
-            contentType: 'application/json; charset=UTF-8',
-            data: JSON.stringify({
-                "properties": properties
-            })
-        }).fail(function () {
-        }).done(function () {
-                activeObj.set(properties);
-        });
+        $scope.createParam = function (key,val) {
+            if ($scope.canvas.getActiveObject()) {
+                var properties = {};
+                properties[key] = val;
+                var param = {"properties": properties};
+                $scope.saveObjProp(param,key,val);
+            }
         };
+
+        $scope.saveObjProp = function(param,key,val) {
+            var activeObj = $scope.canvas.getActiveObject();
+
+                        // TODO: НЕПРАВИЛЬНО ПИШУТСЯ РАЗМЕРЫ ДЛЯ МАРКЕРЫ И СТЕНЫ!!!!!
+                        // TODO: РАЗМЕРЫ МАШИНЫ ПИШУТСЯ ПРАВИЛЬНО, НО МАСШТАБИРУЕТСЯ НЕВЕРНО
+
+            $.ajax('/api/objects/'+ activeObj.id, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json; charset=UTF-8'},
+                contentType: 'application/json; charset=UTF-8',
+                data: JSON.stringify(param)
+            }).fail(function () {
+            }).done(function (data) {
+                if (key && val) {
+                    if (key!='width' || key!='height')
+                        activeObj.set(key, val);
+                    else {
+                        /*if (key == 'width') {
+                            activeObj.setScaleX(val/activeObj.width);
+                            //activeObj.setWidth(val);
+                        }
+                        else {
+                            activeObj.setScaleY(val/activeObj.height);
+                            //activeObj.setHeight(val);
+                        }*/
+                    }
+                    $scope.canvas.renderAll();
+                }
+            });
+        };
+
+
+
+
+
 
         /* CANVAS */
 
@@ -337,8 +369,35 @@ function mainScope($scope) {
             $scope.activeObjWidth = obj.getWidth();
             $scope.activeObjHeight = obj.getHeight();
             $scope.activeObjColor = obj.fill;
+            $scope.selectObjTop = obj.top;
+            $scope.selectObjLeft = obj.left;
             $scope.$scan();
         });
+        $scope.canvas.on('selection:cleared', function () {
+            $scope.activeObjWidth = '';
+            $scope.activeObjHeight = '';
+            $scope.activeObjColor = '';
+            $scope.$scan();
+        });
+
+        // Запись новых координат
+        $scope.canvas.on('mouse:up', function (options) {
+            if (options.target) {
+                if ($scope.selectObjTop != options.target.top && $scope.selectObjLeft != options.target.left) {
+                    var param = {
+                        "properties": {
+                            "left": options.target.left,
+                            "top": options.target.top
+                        }
+                    };
+                    $scope.saveObjProp(param);
+                    $scope.selectObjTop = options.target.top;
+                    $scope.selectObjLeft = options.target.left;
+                }
+           }
+        });
+
+
         /* Управление объектами на canvas */
 
         $scope.editObject = function (actionType) {
@@ -356,7 +415,6 @@ function mainScope($scope) {
                         }).done(function () {
                                 $scope.canvas.remove(activeObject);
                         });
-
                         break;
                     case 'copy':
                         var selectObject = $scope.canvas.getActiveObject();
@@ -378,6 +436,9 @@ function mainScope($scope) {
                         });
                         break;
                     case 'route':
+                        var param = {"properties": {"angle": ($scope.canvas.getActiveObject().get('angle') + 90)}};
+                        $scope.saveObjProp(param);
+                        // Перенести в done
                         $scope.canvas.getActiveObject().set('angle', ($scope.canvas.getActiveObject().get('angle') + 90));
                         $scope.canvas.renderAll();
                         break;

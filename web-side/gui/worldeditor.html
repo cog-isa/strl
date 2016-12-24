@@ -68,15 +68,15 @@
 
             <div class="flex-row obj-property">
                 <span class="flex-1">Длина</span>
-                <input id="objHeight" al-change="saveObjProp('height',activeObjHeight)" al-value="activeObjHeight" type="number"/>
+                <input al-change="createParam('height',activeObjHeight)" al-value="activeObjHeight" type="number"/>
             </div>
             <div class="flex-row obj-property">
                 <span class="flex-1">Ширина</span>
-                <input id="objWidth" al-change="saveObjProp('width',activeObjWidth)" al-value="activeObjWidth" type="number"/>
+                <input al-change="createParam('width',activeObjWidth)" al-value="activeObjWidth" type="number"/>
             </div>
             <div class="flex-row obj-property">
                 <span class="flex-1">Цвет</span>
-                <input id="objColor" al-change="saveObjProp('fill',activeObjColor)" al-value="activeObjColor" type="color"/>
+                <input al-change="createParam('fill',activeObjColor)" al-value="activeObjColor" type="color"/>
             </div>
         </div>
     </div>
