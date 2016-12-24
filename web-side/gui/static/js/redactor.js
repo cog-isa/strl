@@ -92,24 +92,35 @@ function mainScope($scope) {
 
         $scope.$watch( "objectTypes != undefined && listOfObject != undefined", function (val) {
             if ($scope.objectTypes && $scope.listOfObject) {
-                for (var i = 0; i < $scope.listOfObject.length; i++) {
+                for (var i = 0; i < $scope.listOfObject.length; i++) {      // бежим по списку объектов
                     var type;
-                    for (var j = 0; j < $scope.objectTypes.length; j++) {
+                    for (var j = 0; j < $scope.objectTypes.length; j++) {       // бежим по списку типов объектов
                         if ($scope.objectTypes[j].children.length != 0) {
-                            for (var k = 0; k < $scope.objectTypes[j].children.length; k++) {
+                            for (var k = 0; k < $scope.objectTypes[j].children.length; k++) {       // бежим по списку вложенных типов (если таковые есть)
                                 if ($scope.objectTypes[j].children[k].id == $scope.listOfObject[i].type_id) {
                                     if (!$scope.objectListByTypes[$scope.objectTypes[j].id]) {
                                         $scope.objectListByTypes[$scope.objectTypes[j].id] = {};
                                         $scope.objectListByTypes[$scope.objectTypes[j].id].name = $scope.objectTypes[j].name;
                                         $scope.objectListByTypes[$scope.objectTypes[j].id].objects = [];
-                                        type = $scope.objectListByTypes[$scope.objectTypes[j].id].name;
                                     }
                                     $scope.objectListByTypes[$scope.objectTypes[j].id].objects.push($scope.listOfObject[i]);
+                                    type = $scope.objectListByTypes[$scope.objectTypes[j].id].name;
+                                    drawObject($scope.listOfObject[i],type);
                                 }
                             }
                         }
+                        else if ($scope.objectTypes[j].id == $scope.listOfObject[i].type_id) {
+                            if (!$scope.objectListByTypes[$scope.objectTypes[j].id]) {
+                                $scope.objectListByTypes[$scope.objectTypes[j].id] = {};
+                                $scope.objectListByTypes[$scope.objectTypes[j].id].name = $scope.objectTypes[j].name;
+                                $scope.objectListByTypes[$scope.objectTypes[j].id].objects = [];
+                            }
+                            $scope.objectListByTypes[$scope.objectTypes[j].id].objects.push($scope.listOfObject[i]);
+                            type = $scope.objectListByTypes[$scope.objectTypes[j].id].name;
+                            drawObject($scope.listOfObject[i],type);
+                        }
                     }
-                    drawObject($scope.listOfObject[i],type);
+                    //drawObject($scope.listOfObject[i],type);
                 }
             }
             $scope.$scan();
@@ -117,14 +128,11 @@ function mainScope($scope) {
 
         // Вывод объектов
         function drawObject(obj,type) {
-            console.log(obj);
             switch (type) {
                 case 'Робот':
                     // Собираем робота
-                    $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
+                    var car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
                         id: obj.id,
-                        height: obj.properties.height,
-                        width: obj.properties.width,
                         top: obj.properties.top,
                         left: obj.properties.left,
                         fill: obj.properties.fill,
@@ -132,9 +140,11 @@ function mainScope($scope) {
                         lockScalingY: true,
                         lockRotation: true
                     });
+                    car.setScaleX(obj.properties.width/car.width);
+                    car.setScaleY(obj.properties.height/car.height);
 
-                    $scope.canvas.add($scope.car);
-                    $scope.canvas.clear().renderAll();
+                    $scope.canvas.add(car);
+                    $scope.canvas.renderAll();
                     break;
 
                 case 'Стена':
@@ -144,12 +154,13 @@ function mainScope($scope) {
                         width: obj.properties.width,
                         top: obj.properties.top,
                         left: obj.properties.left,
-                        fill: obj.properties.fill,
+                        fill: "#e3e2de",
                         lockScalingX: true,
                         lockScalingY: true,
                         lockRotation: true
                     });
                     $scope.canvas.add(wall);
+                    $scope.canvas.renderAll();
                     break;
 
                 case 'Маркер':
@@ -159,26 +170,30 @@ function mainScope($scope) {
                         width: obj.properties.width,
                         top: obj.properties.top,
                         left: obj.properties.left,
-                        fill: obj.properties.fill,
+                        fill: "#F44336",
+                        angle: 45,
                         lockScalingX: true,
                         lockScalingY: true,
                         lockRotation: true
                     });
                     $scope.canvas.add(marker);
+                    $scope.canvas.renderAll();
                     break;
             }
-        };
+        }
 
 
         // Создание объектов
 
         $scope.createObject = function (obj,objChild) {
             if (obj.name != "Робот" || (obj.name == "Робот" && objChild)) {
-                var setObj = {}, color = '';
+                var setObj = {}, color = '', height = '', width = '';
                 (obj == "Робот") ? setObj = objChild : setObj = obj;
                 switch (obj.name) {
                     case 'Робот':
                         setObj = objChild;
+                        height = 60;
+                        width = 35;
                         if (objChild.name == "Робот, умеющий разрушать препятствия") {
                             color = "#e91e63";
                         }
@@ -188,10 +203,14 @@ function mainScope($scope) {
                         break;
                     case 'Стена':
                         setObj = obj;
+                        height = 15;
+                        width = 225;
                         color = "#e3e2de";
                         break;
                     case 'Маркер':
                         setObj = obj;
+                        height = 15;
+                        width = 15;
                         color = "#F44336";
                         break;
                 }
@@ -204,10 +223,10 @@ function mainScope($scope) {
                         "type_id": setObj.id,
                         "world_id": +$scope.worldID,
                         "properties": {
-                            "height": 111,
-                            "width": 71,
-                            "left": 500,
-                            "top": 500,
+                            "height": height,
+                            "width": width,
+                            "left": 100,
+                            "top": 50,
                             "fill":color
                         }
                     })
@@ -219,12 +238,14 @@ function mainScope($scope) {
                             // Собираем робота
                             $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
                                 id: data.id,
+                                top: 50,
+                                left: 100,
                                 lockScalingX: true,
                                 lockScalingY: true,
-                                lockRotation: true,
-                                top: 300,
-                                left: 300
+                                lockRotation: true
                             });
+                            $scope.car.setScaleX(width/$scope.car.width);
+                            $scope.car.setScaleY(height/$scope.car.height);
 
                             // Красим робота
                             if (objChild.name == "Робот, умеющий разрушать препятствия") {
@@ -243,8 +264,8 @@ function mainScope($scope) {
                                 id: data.id,
                                 left: 100,
                                 top: 50,
-                                width: 100,
-                                height: 20,
+                                width: width,
+                                height: height,
                                 fill: color
                             });
                             $scope.canvas.add(wall);
@@ -255,8 +276,8 @@ function mainScope($scope) {
                                 id: data.id,
                                 left: 100,
                                 top: 50,
-                                width: 20,
-                                height: 20,
+                                width: width,
+                                height: height,
                                 angle: 45,
                                 fill: color
                             });
@@ -270,9 +291,7 @@ function mainScope($scope) {
 
         // Записыавем изменения объекта и отсылаем на сервер
 
-        /*$scope.$watch('#objHeight', function (val) { saveObjProp(val, 'height'); });
-        $scope.$watch('#objWidth', function (val) { saveObjProp(val, 'width'); });
-        $scope.$watch('#objColor', function (val) { saveObjProp(val, 'color'); });*/
+
         $scope.saveObjProp = function(key,val) {
             var activeObj = $scope.canvas.getActiveObject();
             var properties = {};
@@ -328,7 +347,16 @@ function mainScope($scope) {
                 switch (actionType) {
                     case 'del':
                         var activeObject = $scope.canvas.getActiveObject();
-                        $scope.canvas.remove(activeObject);
+                        $.ajax('/api/objects/'+ activeObject.id, {
+                            method: 'DELETE',
+                            headers: {'Content-Type': 'application/json; charset=UTF-8'},
+                            dataType: "json",
+                            contentType: 'application/json; charset=UTF-8'
+                        }).fail(function () {
+                        }).done(function () {
+                                $scope.canvas.remove(activeObject);
+                        });
+
                         break;
                     case 'copy':
                         var selectObject = $scope.canvas.getActiveObject();
