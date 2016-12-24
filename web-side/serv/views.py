@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from flask import jsonify, request
+from flask import jsonify, request, session
 #from flask.ext import setup
 from playhouse.shortcuts import model_to_dict
 from models import *
 from app import native_db as db
 import ujson
+
+from py4j.java_gateway import JavaGateway
 
 
 def route(app):
@@ -216,4 +218,161 @@ def route(app):
 			return '', 404
 		else:
 			return '', 204
+
+	# --------------------   Experiment   -------------------------
+
+	@app.route('/api/worlds/<world_id>/experiment/start', methods=['POST'])
+	def experiment_start(world_id):
+		world = World.get(id=world_id)
+
+		if 'start_time' not in session['start_time']:
+			session['start_time'] = {}
+
+		time = request.args.get('time')
+		if time is not None:
+			session['start_time'][world.id] = int(time)
+
+		gateway = JavaGateway()
+		bridge = gateway.entry_point
+		bridge.publish('/create_world', 'std_msgs/String',
+					   # json.dumps({"data": str(data['execution'])}, ensure_ascii=False))
+					   json.dumps({"data": str(world.id)}, ensure_ascii=False))
+		return '', 200
+
+	@app.route('/api/worlds/<world_id>/experiment/stop', methods=['POST'])
+	def experiment_stop(world_id):
+		world = World.get(id=world_id)
+		gateway = JavaGateway()
+		bridge = gateway.entry_point
+		bridge.publish('/destroy_world', 'std_msgs/String',
+					   # json.dumps({"data": str(data['execution'])}, ensure_ascii=False))
+					   json.dumps({"data": str(world.id)}, ensure_ascii=False))
+		return '', 200
+
+	# Эндпоинты для ros'a:
+
+	@app.route('/executions/<world_id>/get_data', methods=['GET'])
+	def ros_get_data(world_id):
+		# data = get_data_by_time(execution=world_id)
+
+		time = session['start_time'].pop(int(world_id), None)
+
+		# TODO: Сделать через prefetch
+		objs = Object.select().where(Object.world_id == world_id)
+		obj_dcs = []
+		for obj in objs:
+			if time is None:
+				props = Property.select().where(Property.object == obj)
+			else:
+				props = PropertyInTime.select().where((PropertyInTime.object == obj) & (PropertyInTime.time == time))
+			props = {prop.name: prop.value for prop in props}
+			obj_dc = {
+				'object': obj.id,
+				'program': None,
+				'time': time or 0,
+				'execution': world_id,
+				'properties': {
+					'name': obj.name,
+					# TODO: Переделать на эньюм
+					'active':  obj.id == 1,		#если false, то - стена
+					'geometry': {
+						'type': 'rectangle',
+						'position': {
+							'x': props.pop('left'),
+							'y': props.pop('top')
+						},
+						'width': props.pop('width'),
+						'height': props.pop('height'),
+					}
+				}
+			}
+			obj_dc['properties'].update(props)
+			obj_dcs.append(obj_dc)
+
+		data = {
+			# Идентификатор моделируемого мира
+			'id': world_id,
+			# Время начала моделирования
+			'time': time or 0,
+			'objects': obj_dcs
+		}
+
+		"""
+		def get_data_by_time(execution, time=None):
+			if not time: time = Object.select(fn.Max(Object.time)).where(Object.execution == execution).scalar()
+			groups = Object.select(fn.Max(Object.id)).where(Object.execution == execution,
+															Object.time <= time).group_by(Object.object)
+			objects = Object.select().where(Object.id << groups).order_by(-Object.id)
+
+			data = {
+				'id': execution, 'time': time,
+				'objects': [o._data for o in objects]
+			}
+
+			return data
+		"""
+
+		session['start_time'].pop([int(world_id)])
+
+		return jsonify(**data)
+
+	@app.route('/executions/<world_id>/set_data', methods=['POST'])
+	def ros_set_data(world_id):
+		data = ujson.loads(request.get_data())
+		ret_data = {
+			time: data['time'],
+			objects: []
+		}
+		with db.atomic() as txn:
+			for obj_dc in data['objects']:
+				props_dc = obj_dc['properties']
+				kv_args = {
+					'object_id': obj_dc['object'],
+					'time': data['time'],
+					'name': obj_dc['name']
+				}
+				'position': {('top', props_dc['position']['y'],
+								'x': props.pop('left'),
+								'y': props.pop('top')
+							},
+				'width': props.pop('width'),
+				'height': props.pop('height'),
+
+				props_dc2 = {
+					'left': props_dc['geometry']['position']['x'],
+				 	'top': props_dc['geometry']['position']['y'],
+				 	'width': props_dc['geometry']['width'],
+				 	'height': props_dc['geometry']['height']
+				}
+				props_dc.pop('active', None)
+				props_dc.pop('name', None)
+				props_dc.pop('geometry', None)
+				props.update(props_dc)
+
+				for key, val in props_dc2.items():
+					PropertyInTime.create(**dict(kv_args.items() + {key: val}))
+
+				ret_data['objects'].append({
+					'id': obj_dc['object'],
+					'properties': props_dc2
+				})
+
+		"""
+		objects = [Object.create(
+			time=data['time'],
+
+			execution_id=data['id'],
+			object=obj['object'],
+
+			program_id=obj['program'],
+			properties=obj['properties'])
+				   for obj in data['objects']]
+
+		data['objects'] = [o._data for o in objects]
+		"""
+
+		# TODO: Отправить в web-сокет
+		# socketio.emit('objects:index', data)
+
+		return ''
 

@@ -6,7 +6,7 @@ from models import *
 class PropertyInTime(Model):
 	object = ForeignKeyField(Object, on_update='CASCADE', on_delete='CASCADE')
 	# Какой-то отсчет времени; пока неясно, что там будет приходить от ROS
-	time = IntegerField(null=False)
+	time = IntegerField()
 	name = CharField(max_length=200)
 	value = JSONField(default='null')
 
