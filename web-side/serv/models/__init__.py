@@ -13,7 +13,7 @@ def run():
     globals()['Model'] = db.Model
 
     dirname = os.path.dirname(__file__)
-    files = ['program', 'project', 'user', 'world', 'execution',  'object_type', 'object', 'property_description',
+    files = ['program', 'project', 'user', 'world', 'experiment', 'execution',  'object_type', 'object', 'property_description',
              'property', 'property_in_time']
     files = [os.path.join(dirname, '%s.py' % _) for _ in files]
 

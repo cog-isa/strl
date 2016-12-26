@@ -8,6 +8,34 @@
 </head>
 <body>
 
+<div>
+    <button onclick="login()">Логин</button>
+    Логин: <input id="tb-login" value="user">
+    Пароль: <input id="tb-password" value="user">
+</div>
+<div>
+    <button onclick="logout()">Логаут</button>
+</div>
+
+<script>
+function login() {
+    $.ajax('/api/login', {
+        method: 'POST',
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify({
+            login: $('#tb-login').val(),
+            password: $('#tb-password').val()
+        })
+    });
+}
+function logout() {
+    $.ajax('/api/logout', {
+        method: 'POST'
+    });
+}
+</script>
+
+
 <h4>Проект</h4>
 
 <div>
@@ -27,8 +55,6 @@
 <div>
     <button onclick="removeProject()">Удалить</button><input id="tb-remove-project-id" value="1">
 </div>
-
-
 
 <script>
 function getProjects() {
@@ -186,10 +212,9 @@ function getObjectTypes() {
     <input id="tb-remove-object-id" value="1">
 </div>
 
+
+
 <script>
-
-
-
 function getObject() {
     $.ajax('/api/objects/' + $('#tb-get-object-type-id').val(), {
         method: 'GET'
@@ -224,6 +249,22 @@ function removeObject() {
     });
 }
 
+</script>
+
+
+<h4>"Эксперимент</h4>
+
+<div>
+    <button onclick="startExperiment()">Начать</button>
+    ID мира: <input id="tb-start-experiment-world-id" value="1">
+</div>
+
+<script>
+function startExperiment() {
+    $.ajax('/api/worlds/' + $('#tb-get-object-type-id').val() + '/experiment/start', {
+        method: 'POST'
+    });
+}
 </script>
 
 </body>
