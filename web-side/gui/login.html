@@ -1,0 +1,41 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./static/style/login.css">
+    <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>    
+</head>
+
+<body>
+<div align="center">
+    <div class="info-box">
+        <form id="f-login" class="login-form" action="/foo">
+            <input name="login" type="text"  name="login" placeholder="Логин"><br>
+            <input name="password" type="password"  name="password" placeholder="Пароль"><br>
+            <label><input type="checkbox" name="remember-me">Запомнить меня</label><br>
+            <input id="b-login" class="button" type="submit" value="Войти">
+        </form>        
+    </div>
+    <div align="center" style="padding: 10px;">
+        <span id="error" style="color:darkred; display: none">Неверный Логин/Пароль!</span>&nbsp;
+    </div>
+</div>
+
+<script>
+    $('#f-login').submit(function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        login();
+    });
+    function login() {
+        $.ajax('/api/auth', {
+            method: 'POST',
+            data: $('#f-login').serialize()
+        }).fail(function () {
+            $('span#error').show();
+        }).done(function () {
+            window.location = '/worldeditor.html';
+        });
+    }    
+</script>
+</body>
+</html>
