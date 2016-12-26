@@ -126,13 +126,18 @@ body {
     padding: 20px 15px 20px 25px;
     border-bottom: 1px solid #e3e2de;
     align-items: center;
+    cursor: pointer;
+}
+.project-name:hover {
+    background-color: #f1f7f7;
 }
 
-.edit-project, .clone-project, .delete-project{
+.edit-project, .clone-project, .delete-project, .signin-project {
     font-size: 20px;
     margin: 0px 10px;
     cursor: pointer;
     color: #5a6f6f;
+    text-decoration: none;
 }
 .edit-project:before {
     content: "\f044";
@@ -142,6 +147,9 @@ body {
 }
 .delete-project:before {
     content: "\f00d";
+}
+.signin-project:before {
+    content: "\f090";
 }
 
 .add-button {
