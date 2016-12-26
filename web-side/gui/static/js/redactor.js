@@ -233,33 +233,31 @@ function mainScope($scope) {
             if (obj.name != "Робот" || (obj.name == "Робот" && objChild)) {
                 var setObj = {};
                 (objChild) ? setObj = objChild : setObj = obj;
+                setObj.type_id = setObj.id;
                 setObj.angle = 0;
                 setObj.left = 100;
                 setObj.top = 50;
                 console.log(setObj);
                 switch (obj.name) {
                     case 'Робот':
-                        //setObj = objChild;
                         setObj.height = 60;
                         setObj.width = 35;
                         if (objChild.name == "Робот, умеющий разрушать препятствия") {
-                            setObj.color = "#e91e63";
+                            setObj.fill = "#e91e63";
                         }
                         else {
-                            setObj.color = "#8bc34a";
+                            setObj.fill = "#8bc34a";
                         }
                         break;
                     case 'Стена':
-                        //setObj = obj;
                         setObj.height = 15;
                         setObj.width = 225;
-                        setObj.color = "#e3e2de";
+                        setObj.fill = "#e3e2de";
                         break;
                     case 'Маркер':
-                        //setObj = obj;
                         setObj.height = 15;
                         setObj.width = 15;
-                        setObj.color = "#F44336";
+                        setObj.fill = "#F44336";
                         setObj.angle = 45;
                         break;
                 }
@@ -269,10 +267,11 @@ function mainScope($scope) {
 
 
         function createObjectRequest(setObj,copy, obj) {
-            //TODO: неправильные размеры копируемой фигуры
-            //TODO: цвет не устанавливается
-            //TODO: при копировании оба объекта прыгают
             console.log(setObj);
+            if (!setObj.cacheHeight || !setObj.cacheWidth)  {
+                setObj.cacheHeight = setObj.height;
+                setObj.cacheWidth = setObj.width;
+            }
             $.ajax('/api/objects', {
                 method: 'POST',
                 dataType: "json",
@@ -282,11 +281,11 @@ function mainScope($scope) {
                     "type_id": setObj.type_id,
                     "world_id": +$scope.world.id,
                     "properties": {
-                        "height": +setObj.height,
-                        "width": +setObj.width,
+                        "height": +setObj.cacheHeight,
+                        "width": +setObj.cacheWidth,
                         "left": 100,
                         "top": 50,
-                        "fill": setObj.color,
+                        "fill": setObj.fill,
                         "angle": setObj.angle
                     }
                 })
@@ -297,14 +296,16 @@ function mainScope($scope) {
                         var cloneObject = o;
                         if (cloneObject) {
                             cloneObject.set({
-                                left: 100,
-                                top: 50,
-                                height: +setObj.cacheHeight,
-                                width: +setObj.cacheWidth,
-                                fill: setObj.color
+                                id: data.id,
+                                type_id: setObj.type_id,
+                                left: 150,
+                                top: 150,
+                                height: +setObj.height,
+                                width: +setObj.width,
+                                fill: setObj.fill
                             });
                             $scope.canvas.add(cloneObject);
-                            //cloneObject.set('fill', setObj.color);
+                            //cloneObject.set("fill", setObj.fill);
                             $scope.canvas.renderAll();
                         } else {
                             alert("Объект для клонирования не выбран");
@@ -317,8 +318,8 @@ function mainScope($scope) {
                             // Собираем робота
                             $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
                                 id: data.id,
-                                top: 50,
-                                left: 100,
+                                top: 150,
+                                left: 150,
                                 lockScalingX: true,
                                 lockScalingY: true,
                                 lockRotation: true
@@ -328,11 +329,11 @@ function mainScope($scope) {
 
                             // Красим робота
                             if (setObj.name == "Робот, умеющий разрушать препятствия") {
-                                $scope.car.set("fill", setObj.color);
+                                $scope.car.set("fill", setObj.fill);
                                 $scope.canvas.add($scope.car);
                             }
                             else {
-                                $scope.car.set("fill", setObj.color);
+                                $scope.car.set("fill", setObj.fill);
                                 $scope.canvas.add($scope.car);
                             }
                             $scope.canvas.renderAll();
@@ -341,11 +342,11 @@ function mainScope($scope) {
                         case 'Стена':
                             var wall = new fabric.Rect({
                                 id: data.id,
-                                left: 100,
-                                top: 50,
+                                left: 150,
+                                top: 150,
                                 width: setObj.width,
                                 height: setObj.height,
-                                fill: setObj.color
+                                fill: setObj.fill
                             });
                             $scope.canvas.add(wall);
                             break;
@@ -353,12 +354,12 @@ function mainScope($scope) {
                         case 'Маркер':
                             var marker = new fabric.Rect({
                                 id: data.id,
-                                left: 100,
-                                top: 50,
+                                left: 150,
+                                top: 150,
                                 width: setObj.width,
                                 height: setObj.height,
                                 angle: 45,
-                                fill: setObj.color
+                                fill: setObj.fill
                             });
                             $scope.canvas.add(marker);
                             break;

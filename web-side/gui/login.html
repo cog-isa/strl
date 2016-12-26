@@ -9,8 +9,8 @@
 <div align="center">
     <div class="info-box">
         <form id="f-login" class="login-form" action="/foo">
-            <input name="login" type="text"  name="login" placeholder="Логин"><br>
-            <input name="password" type="password"  name="password" placeholder="Пароль"><br>
+            <input name="login" type="text" placeholder="Логин"><br>
+            <input name="password" type="password" placeholder="Пароль"><br>
             <label><input type="checkbox" name="remember-me">Запомнить меня</label><br>
             <input id="b-login" class="button" type="submit" value="Войти">
         </form>        
@@ -27,13 +27,18 @@
         login();
     });
     function login() {
-        $.ajax('/api/auth', {
+        $.ajax('/api/login', {
             method: 'POST',
-            data: $('#f-login').serialize()
+            headers: {'Content-Type': 'application/json; charset=UTF-8'},
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify({
+                login: $('#f-login input[name=login]').val(),
+                password: $('#f-login input[name=password]').val()
+            })
         }).fail(function () {
             $('span#error').show();
         }).done(function () {
-            window.location = '/worldeditor.html';
+            window.location = '/listofproj.html';
         });
     }    
 </script>
