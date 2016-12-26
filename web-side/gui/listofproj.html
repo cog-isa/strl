@@ -31,10 +31,10 @@
 				
 					<!-- Каждый проект -->
 					<div class="flex-row project-name" al-repeat="proj in projects">
-						<div class="flex-1" al-click="selectProject( {{$index}} )">{{proj.name}}</div>
-                        <span class="edit-project" al-click="editProject( {{$index}}, &quot;Новое название&quot;)"></span>
+						<div class="flex-1" al-click="selectProject(proj)">{{proj.name}}</div>
+                        <span class="edit-project" al-click="editProject(proj, &quot;Новое название&quot;)"></span>
                         <span class="clone-project" al-click="createProject()"></span>
-                        <span class="delete-project" al-click="deleteProject( {{$index}} )"></span>
+                        <span class="delete-project" al-click="deleteProject(proj)"></span>
                     </div>
 						
                 </div>
@@ -49,16 +49,16 @@
                 <div class="overflow-list">
 							
 					<!-- Каждый мир -->
-					<div class="flex-row project-name" al-repeat="world in projectsToWorlds[selectedPrjIndex]">
-                        <div class="flex-1" al-click="selectWorld( {{$index}} )">{{world.name}}</div>
-                        <span class="edit-project" al-click="editWorld(selectedPrjIndex, {{$index}}, &quot;Новое название&quot;)"></span>
-                        <span class="clone-project" al-click="createWorld(selectedPrjIndex)"></span>
-                        <span class="delete-project" al-click="deleteWorld(selectedPrjIndex, {{$index}} )"></span>											
+					<div class="flex-row project-name" al-repeat="world in worlds">
+                        <div class="flex-1" al-click="selectWorld( world )">{{world.name}}</div>
+                        <span class="edit-project" al-click="editWorld(world, &quot;Новое название&quot;)"></span>
+                        <span class="clone-project" al-click="createWorld(world.project_id)"></span>
+                        <span class="delete-project" al-click="deleteWorld(world )"></span>											
 						
                     </div>								
                 </div>
             </div>
-                <div class="add-button relative" al-click="createWorld(selectedPrjIndex)">Новый мир</div>
+                <div class="add-button relative" al-click="createWorld(selectedPrj)">Новый мир</div>
         </div>
 
     </div>
