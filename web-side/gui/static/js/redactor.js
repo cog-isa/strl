@@ -20,7 +20,8 @@ function mainScope($scope) {
         console.log("URL НЕ СОДЕРЖИТ ID МИРА - НАДО ЗАБЛОКИРОВАТЬ ЭКРАН");
 
     else {
-        $scope.worldID = getParameterByName("worldid");
+        $scope.world = {};
+        $scope.world.id = getParameterByName("worldid");
 
 
         // Рисуем форму робота
@@ -58,6 +59,38 @@ function mainScope($scope) {
         $scope.objectListByTypes = {};
 
 
+        // запрос на получении имени проекта и мира
+
+        $.ajax('/api/worlds/' + $scope.world.id, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8'
+            },
+            dataType: "json"
+        }).fail(function () {
+        }).done(function (result) {
+            $scope.world.name = result.name;
+            $scope.proj = {};
+            $scope.proj.id = result.project_id;
+            getProjName();
+        });
+
+        function getProjName() {
+            $.ajax('/api/projects/' + $scope.proj.id, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
+                dataType: "json"
+            }).fail(function () {
+            }).done(function (result) {
+                $scope.proj.name = result.name;
+                $scope.$scan();
+            });
+        }
+
+
+
         /* Запрос на получение списка типов объектов */
 
         $.ajax('/api/object_types', {
@@ -76,12 +109,12 @@ function mainScope($scope) {
 
         /* Запрос на получение списка объектов */
 
-        $.ajax('/api/worlds/'+$scope.worldID+'/objects', {
+        $.ajax('/api/worlds/'+$scope.world.id+'/objects', {
             method: 'GET',
             headers: {'Content-Type': 'application/json; charset=UTF-8'},
             dataType: "json"
         }).fail(function () {
-            console.error("Нет мира с ID "+$scope.worldID);
+            console.error("Нет мира с ID "+$scope.world.id);
         }).done(function (result) {
             $scope.listOfObject = result;
             $scope.$scan();
@@ -126,13 +159,18 @@ function mainScope($scope) {
             $scope.$scan();
         });
 
+
+
         // Вывод объектов
+
         function drawObject(obj,type) {
             switch (type) {
                 case 'Робот':
                     // Собираем робота
                     var car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
                         id: obj.id,
+                        type_id: obj.type_id,
+                        name: obj.name,
                         top: obj.properties.top,
                         left: obj.properties.left,
                         fill: obj.properties.fill,
@@ -151,6 +189,8 @@ function mainScope($scope) {
                 case 'Стена':
                     var wall = new fabric.Rect({
                         id: obj.id,
+                        type_id: obj.type_id,
+                        name: obj.name,
                         height: +obj.properties.height,
                         width: +obj.properties.width,
                         top: obj.properties.top,
@@ -168,6 +208,8 @@ function mainScope($scope) {
                 case 'Маркер':
                     var marker = new fabric.Rect({
                         id: obj.id,
+                        type_id: obj.type_id,
+                        name: obj.name,
                         height: +obj.properties.height,
                         width: +obj.properties.width,
                         top: obj.properties.top,
@@ -189,56 +231,89 @@ function mainScope($scope) {
 
         $scope.createObject = function (obj,objChild) {
             if (obj.name != "Робот" || (obj.name == "Робот" && objChild)) {
-                var setObj = {}, color = '', height = '', width = '', angle = 0;
-                (obj == "Робот") ? setObj = objChild : setObj = obj;
+                var setObj = {};
+                (objChild) ? setObj = objChild : setObj = obj;
+                setObj.angle = 0;
+                setObj.left = 100;
+                setObj.top = 50;
+                console.log(setObj);
                 switch (obj.name) {
                     case 'Робот':
-                        setObj = objChild;
-                        height = 60;
-                        width = 35;
+                        //setObj = objChild;
+                        setObj.height = 60;
+                        setObj.width = 35;
                         if (objChild.name == "Робот, умеющий разрушать препятствия") {
-                            color = "#e91e63";
+                            setObj.color = "#e91e63";
                         }
                         else {
-                            color = "#8bc34a";
+                            setObj.color = "#8bc34a";
                         }
                         break;
                     case 'Стена':
-                        setObj = obj;
-                        height = 15;
-                        width = 225;
-                        color = "#e3e2de";
+                        //setObj = obj;
+                        setObj.height = 15;
+                        setObj.width = 225;
+                        setObj.color = "#e3e2de";
                         break;
                     case 'Маркер':
-                        setObj = obj;
-                        height = 15;
-                        width = 15;
-                        color = "#F44336";
-                        angle = 45;
+                        //setObj = obj;
+                        setObj.height = 15;
+                        setObj.width = 15;
+                        setObj.color = "#F44336";
+                        setObj.angle = 45;
                         break;
                 }
-                $.ajax('/api/objects', {
-                    method: 'POST',
-                    dataType: "json",
-                    contentType: 'application/json; charset=UTF-8',
-                    data: JSON.stringify({
-                        "name": setObj.name,
-                        "type_id": setObj.id,
-                        "world_id": +$scope.worldID,
-                        "properties": {
-                            "height": height,
-                            "width": width,
-                            "left": 100,
-                            "top": 50,
-                            "fill": color,
-                            "angle": angle
+            createObjectRequest(setObj, false, obj);
+            }
+        };
+
+
+        function createObjectRequest(setObj,copy, obj) {
+            //TODO: неправильные размеры копируемой фигуры
+            //TODO: цвет не устанавливается
+            //TODO: при копировании оба объекта прыгают
+            console.log(setObj);
+            $.ajax('/api/objects', {
+                method: 'POST',
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                data: JSON.stringify({
+                    "name": setObj.name,
+                    "type_id": setObj.type_id,
+                    "world_id": +$scope.world.id,
+                    "properties": {
+                        "height": +setObj.height,
+                        "width": +setObj.width,
+                        "left": 100,
+                        "top": 50,
+                        "fill": setObj.color,
+                        "angle": setObj.angle
+                    }
+                })
+            }).fail(function () {
+            }).done(function (data) {
+                if (copy) {
+                    setObj.clone(function (o) {
+                        var cloneObject = o;
+                        if (cloneObject) {
+                            cloneObject.set({
+                                left: 100,
+                                top: 50,
+                                height: +setObj.cacheHeight,
+                                width: +setObj.cacheWidth,
+                                fill: setObj.color
+                            });
+                            $scope.canvas.add(cloneObject);
+                            //cloneObject.set('fill', setObj.color);
+                            $scope.canvas.renderAll();
+                        } else {
+                            alert("Объект для клонирования не выбран");
                         }
-                    })
-                }).fail(function () {
-                }).done(function (data) {
+                    });
+                }
+                else {
                     switch (obj.name) {
                         case 'Робот':
-
                             // Собираем робота
                             $scope.car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
                                 id: data.id,
@@ -248,16 +323,16 @@ function mainScope($scope) {
                                 lockScalingY: true,
                                 lockRotation: true
                             });
-                            $scope.car.setScaleX(width/$scope.car.width);
-                            $scope.car.setScaleY(height/$scope.car.height);
+                            $scope.car.setScaleX(setObj.width / $scope.car.width);
+                            $scope.car.setScaleY(setObj.height / $scope.car.height);
 
                             // Красим робота
-                            if (objChild.name == "Робот, умеющий разрушать препятствия") {
-                                $scope.car.set("fill", color);
+                            if (setObj.name == "Робот, умеющий разрушать препятствия") {
+                                $scope.car.set("fill", setObj.color);
                                 $scope.canvas.add($scope.car);
                             }
                             else {
-                                $scope.car.set("fill", color);
+                                $scope.car.set("fill", setObj.color);
                                 $scope.canvas.add($scope.car);
                             }
                             $scope.canvas.renderAll();
@@ -268,9 +343,9 @@ function mainScope($scope) {
                                 id: data.id,
                                 left: 100,
                                 top: 50,
-                                width: width,
-                                height: height,
-                                fill: color
+                                width: setObj.width,
+                                height: setObj.height,
+                                fill: setObj.color
                             });
                             $scope.canvas.add(wall);
                             break;
@@ -280,18 +355,19 @@ function mainScope($scope) {
                                 id: data.id,
                                 left: 100,
                                 top: 50,
-                                width: width,
-                                height: height,
+                                width: setObj.width,
+                                height: setObj.height,
                                 angle: 45,
-                                fill: color
+                                fill: setObj.color
                             });
                             $scope.canvas.add(marker);
                             break;
                     }
-                });
+                }
+
                 $scope.$scan();
-            }
-        };
+            });
+        }
 
 
 
@@ -413,27 +489,14 @@ function mainScope($scope) {
                         break;
                     case 'copy':
                         var selectObject = $scope.canvas.getActiveObject();
-                        selectObject.clone(function (o) {
-                            var cloneObject = o;
-                            if (cloneObject) {
-                                cloneObject.set({
-                                    left: 150,
-                                    top: 150
-                                });
-                                $scope.canvas.add(cloneObject);
-                                cloneObject.set('fill', '#000');
-                                //cloneObject.set('width', 60);
-                                $scope.canvas.renderAll();
-                                $scope.canvas.calcOffset();
-                            } else {
-                                alert("Объект для клонирования не выбран");
-                            }
-                        });
+                        createObjectRequest(selectObject,true);
                         break;
                     case 'route':
                         var param = {"properties": {"angle": ($scope.canvas.getActiveObject().get('angle') + 90)}};
                         $scope.saveObjProp(param);
-                        // Перенести в done
+
+                        // TODO Перенести в done
+
                         var objAngle = $scope.canvas.getActiveObject().getAngle();
                         $scope.canvas.getActiveObject().setAngle(objAngle + 90);
                         $scope.canvas.renderAll();
