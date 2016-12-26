@@ -151,11 +151,11 @@ function mainScope($scope) {
                 case 'Стена':
                     var wall = new fabric.Rect({
                         id: obj.id,
-                        height: obj.properties.height,
-                        width: obj.properties.width,
+                        height: +obj.properties.height,
+                        width: +obj.properties.width,
                         top: obj.properties.top,
                         left: obj.properties.left,
-                        fill: "#e3e2de",
+                        fill: obj.properties.fill,
                         angle: obj.properties.angle,
                         lockScalingX: true,
                         lockScalingY: true,
@@ -168,11 +168,11 @@ function mainScope($scope) {
                 case 'Маркер':
                     var marker = new fabric.Rect({
                         id: obj.id,
-                        height: obj.properties.height,
-                        width: obj.properties.width,
+                        height: +obj.properties.height,
+                        width: +obj.properties.width,
                         top: obj.properties.top,
                         left: obj.properties.left,
-                        fill: "#F44336",
+                        fill: obj.properties.fill,
                         angle: obj.properties.angle,
                         lockScalingX: true,
                         lockScalingY: true,
@@ -309,9 +309,6 @@ function mainScope($scope) {
         $scope.saveObjProp = function(param,key,val) {
             var activeObj = $scope.canvas.getActiveObject();
 
-                        // TODO: НЕПРАВИЛЬНО ПИШУТСЯ РАЗМЕРЫ ДЛЯ МАРКЕРЫ И СТЕНЫ!!!!!
-                        // TODO: РАЗМЕРЫ МАШИНЫ ПИШУТСЯ ПРАВИЛЬНО, НО МАСШТАБИРУЕТСЯ НЕВЕРНО
-
             $.ajax('/api/objects/'+ activeObj.id, {
                 method: 'PATCH',
                 headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -320,17 +317,15 @@ function mainScope($scope) {
             }).fail(function () {
             }).done(function (data) {
                 if (key && val) {
-                    if (key!='width' || key!='height')
+                    if (!(activeObj._objects && (key == 'width' || key == 'height')))
                         activeObj.set(key, val);
                     else {
-                        /*if (key == 'width') {
-                            activeObj.setScaleX(val/activeObj.width);
-                            //activeObj.setWidth(val);
+                        if (key == 'width') {
+                            activeObj.setScaleX(+val/activeObj.width);
                         }
                         else {
-                            activeObj.setScaleY(val/activeObj.height);
-                            //activeObj.setHeight(val);
-                        }*/
+                            activeObj.setScaleY(+val/activeObj.height);
+                        }
                     }
                     $scope.canvas.renderAll();
                 }
@@ -366,17 +361,17 @@ function mainScope($scope) {
 
         $scope.canvas.on('object:selected', function () {
             var obj = $scope.canvas.getActiveObject();
-            $scope.activeObjWidth = obj.getWidth();
-            $scope.activeObjHeight = obj.getHeight();
+            $scope.activeObjWidth = +obj.getWidth();
+            $scope.activeObjHeight = +obj.getHeight();
             $scope.activeObjColor = obj.fill;
             $scope.selectObjTop = obj.top;
             $scope.selectObjLeft = obj.left;
             $scope.$scan();
         });
         $scope.canvas.on('selection:cleared', function () {
-            $scope.activeObjWidth = '';
-            $scope.activeObjHeight = '';
-            $scope.activeObjColor = '';
+            $scope.activeObjWidth = null;
+            $scope.activeObjHeight = null;
+            $scope.activeObjColor = null;
             $scope.$scan();
         });
 
@@ -439,7 +434,8 @@ function mainScope($scope) {
                         var param = {"properties": {"angle": ($scope.canvas.getActiveObject().get('angle') + 90)}};
                         $scope.saveObjProp(param);
                         // Перенести в done
-                        $scope.canvas.getActiveObject().set('angle', ($scope.canvas.getActiveObject().get('angle') + 90));
+                        var objAngle = $scope.canvas.getActiveObject().getAngle();
+                        $scope.canvas.getActiveObject().setAngle(objAngle + 90);
                         $scope.canvas.renderAll();
                         break;
                 }
