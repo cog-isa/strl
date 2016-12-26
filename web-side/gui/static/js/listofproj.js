@@ -103,13 +103,13 @@
 			$scope.$scan();            
         });	
 		
-	function createWorld(proj_index, name) =  {		
+	function createWorld(proj_index) =  {		
 		$.ajax('/api/worlds', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8'},
             dataType: "json",
 			data: JSON.stringify({
-				"name": name,
+				"name": "Новый мир",
 				"project_id": projects[proj_index].id
 			})
         }).fail(function () {
