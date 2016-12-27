@@ -12,6 +12,6 @@ class PropertyInTime(Model):
 
 	class Meta:
 		db_table = 'properties_in_time'
-		primary_key = CompositeKey('object', 'name')
+		primary_key = CompositeKey('time', 'object', 'name')
 
 

@@ -3,6 +3,7 @@ from flask import Flask
 from flask_peewee.db import Database
 from flask.ext.bower import Bower
 from flask_socketio import SocketIO
+from flask_sockets import Sockets
 from peewee import PostgresqlDatabase
 
 
@@ -26,3 +27,4 @@ native_db = PostgresqlDatabase(
 db = Database(app, native_db)
 # bower = Bower(app)
 # socketio = SocketIO(app)
+

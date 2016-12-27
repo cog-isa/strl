@@ -257,6 +257,7 @@ function removeObject() {
 <div>
     <button onclick="startExperiment()">Начать</button>
     ID мира: <input id="tb-start-experiment-world-id" value="1">
+    <button onclick="stopExperiment()">Закончить</button>
 </div>
 
 <script>
@@ -265,6 +266,27 @@ function startExperiment() {
         method: 'POST'
     });
 }
+function stopExperiment() {
+    $.ajax('/api/worlds/' + $('#tb-get-object-type-id').val() + '/experiment/stop', {
+        method: 'POST'
+    });
+}
+
+</script>
+
+<script>
+    var ws = new WebSocket("ws://" + location.host + "/experiment-data");
+    ws.onmessage = function(evt){
+        var received_msg = evt.data;
+        console.log(received_msg);
+        //alert(received_msg);
+    };
+
+    /*
+    ws.onopen = function(){
+        ws.send("hello john");
+    };
+    */
 </script>
 
 </body>

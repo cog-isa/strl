@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import hashlib
+import math
 import os
 from functools import wraps
 
@@ -14,7 +15,10 @@ import ujson
 from py4j.java_gateway import JavaGateway
 
 
-def route(app):
+ws = None
+
+
+def route(app, sockets):
 
 	# --------------------   User   -------------------------
 
@@ -287,7 +291,13 @@ def route(app):
 		# if time is not None:
 			# session['start_time'][world.id] = int(time)
 		time = None if time is None else int(time)
-		Experiment.update(start_time=time).where(Experiment.world_id == world_id).execute()
+
+		with db.atomic() as txn:
+			Experiment.update(start_time=time).where(Experiment.world_id == world_id).execute()
+			# Удаляем всю историю после заданного времени
+			objs = Object.select(Object.id).where(Object.world_id == world_id)
+			arg_time = time or -1
+			effected_row_cnt = PropertyInTime.delete().where((PropertyInTime.object_id << objs) & (PropertyInTime.time > arg_time)).execute()
 
 		gateway = JavaGateway()
 		bridge = gateway.entry_point
@@ -310,7 +320,6 @@ def route(app):
 	# Эндпоинты для ros'a:
 
 	@app.route('/executions/<world_id>/get_data', methods=['GET'])
-	@is_autherized
 	def ros_get_data(world_id):
 		# data = get_data_by_time(execution=world_id)
 
@@ -332,21 +341,33 @@ def route(app):
 				'time': time or 0,
 				'execution': world_id,
 				'properties': {
-					'program': None,
+					# 'program': obj.name,	# программа робота
 					'name': obj.name,
 					# TODO: Переделать на эньюм
 					'active':  obj.type_id in (4, 5),		#если false, то - стена
 					'geometry': {
 						'type': 'rectangle',
 						'position': {
-							'x': props.pop('left'),
-							'y': props.pop('top')
+							'x': float(props.pop('left')),
+							'y': float(props.pop('top'))
 						},
-						'width': props.pop('width'),
-						'height': props.pop('height'),
+						'width': float(props['width']),
+						'height': float(props['height'])
 					}
 				}
 			}
+			# Если объект - робот
+			if obj.type_id in (4, 5):
+				if obj.type_id == 4:
+					obj_dc['properties']['program'] = 'active_robot'
+				elif obj.type_id == 5:
+					obj_dc['properties']['program'] = 'passive_robot'
+				else:
+					obj_dc['properties']['program'] = None
+
+			# Радиус описанной окружности
+			obj_dc['properties']['geometry']['radius'] =\
+				math.sqrt(obj_dc['properties']['geometry']['width'] ** 2 + obj_dc['properties']['geometry']['height'] ** 2) / 2
 			obj_dc['properties'].update(props)
 			obj_dcs.append(obj_dc)
 
@@ -378,21 +399,15 @@ def route(app):
 		return jsonify(**data)
 
 	@app.route('/executions/<world_id>/set_data', methods=['POST'])
-	@is_autherized
 	def ros_set_data(world_id):
 		data = ujson.loads(request.get_data())
 		ret_data = {
-			time: data['time'],
-			objects: []
+			'time': data['time'],
+			'objects': []
 		}
 		with db.atomic() as txn:
 			for obj_dc in data['objects']:
 				props_dc = obj_dc['properties']
-				kv_args = {
-					'object_id': obj_dc['object'],
-					'time': data['time'],
-					'name': obj_dc['name']
-				}
 				"""
 				'position': {('top', props_dc['position']['y'],
 								'x': props.pop('left'),
@@ -410,10 +425,11 @@ def route(app):
 				props_dc.pop('active', None)
 				props_dc.pop('name', None)
 				props_dc.pop('geometry', None)
-				props.update(props_dc)
+				props_dc2.update(props_dc)
 
 				for key, val in props_dc2.items():
-					PropertyInTime.create(**dict(kv_args.items() + {key: val}))
+					# PropertyInTime.create(**dict(kv_args.items() + {key: val}))
+					PropertyInTime.create(object_id=obj_dc['object'], time=data['time'], name=key, value=val)
 
 				ret_data['objects'].append({
 					'id': obj_dc['object'],
@@ -437,5 +453,17 @@ def route(app):
 		# TODO: Отправить в web-сокет
 		# socketio.emit('objects:index', data)
 
+		print(ret_data)
+
+		ws.send(ujson.dumps(ret_data))
+
 		return ''
+
+	@sockets.route('/experiment-data')
+	def experiment_data(ws_):
+		global ws
+		ws = ws_
+		while not ws.closed:
+			message = ws.receive()
+			#ws.send(message)
 

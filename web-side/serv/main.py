@@ -3,14 +3,18 @@
 import sys
 
 from flask_peewee.rest import RestAPI, RestResource
+from flask_sockets import Sockets
+
+
 
 from app import app #, socketio
 import views
 from models import *
-import controllers
+# import controllers
 
 
 # controllers.route(app)
+sockets = Sockets(app)
 
 
 def recreate_db():
@@ -42,7 +46,7 @@ def recreate_db():
 	experiment = Experiment.create(world=world)  # Создаем тестовый мир
 
 	# Создаем объект - разрушающий робот
-	obj = Object.create(name='Разруш. робот 1', type_id=4, world_id=1)
+	obj = Object.create(name='robot2', type_id=4, world_id=1)
 	Property.create(object=obj, name='left', value=20)
 	Property.create(object=obj, name='top', value=30)
 	Property.create(object=obj, name='width', value=10)
@@ -50,7 +54,7 @@ def recreate_db():
 	Property.create(object=obj, name='fill', value='#cccccc')
 
 	# Создаем объект - стена
-	obj = Object.create(name='Стена 1', type_id=2, world_id=1)
+	obj = Object.create(name='wall1', type_id=2, world_id=1)
 	Property.create(object=obj, name='left', value=16)
 	Property.create(object=obj, name='top', value=9)
 	Property.create(object=obj, name='width', value=5)
@@ -105,14 +109,19 @@ def recreate_db():
 
 
 def run_server():
-	views.route(app)
-	app.run(host='0.0.0.0')
+	views.route(app, sockets)
+
+	#app.run(host='0.0.0.0')
+
+	from gevent import pywsgi
+	from geventwebsocket.handler import WebSocketHandler
+	server = pywsgi.WSGIServer(('0.0.0.0', 5000), app, handler_class=WebSocketHandler)
+	server.serve_forever()
 
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:
 		run_server()
-		app.run(host='0.0.0.0')
 	else:
 		if sys.argv[1] == 'recreatedb':
 			recreate_db()

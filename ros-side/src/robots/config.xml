@@ -1,4 +1,4 @@
 <root>
-  <robot program="1" src="scripts/robot1"/>
-  <robot program="2" src="scripts/robot2"/>
+  <robot program="passive_robot" src="scripts/robot1"/>
+  <robot program="active_robot" src="scripts/robot2"/>
 </root>
