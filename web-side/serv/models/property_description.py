@@ -14,18 +14,8 @@ class Object(Model):
 '''
 
 
-class Object(Model):
+class PropertyDescription(Model):
 	name = CharField(max_length=200)
-	type = ForeignKeyField(ObjectType)
-	world = ForeignKeyField(World, on_update='CASCADE', on_delete='CASCADE')
 
-	class Meta:
-		db_table = 'objects'
-
-	@staticmethod
-	def get_by_id(id):
-		object = Object.get(Object.id == id)
-		props = Property.select().where(Property.object == object).execute()
-		props
 
 

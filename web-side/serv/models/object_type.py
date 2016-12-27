@@ -14,18 +14,10 @@ class Object(Model):
 '''
 
 
-class Object(Model):
+class ObjectType(Model):
 	name = CharField(max_length=200)
-	type = ForeignKeyField(ObjectType)
-	world = ForeignKeyField(World, on_update='CASCADE', on_delete='CASCADE')
+	parent = ForeignKeyField('self', null=True)
+	position = SmallIntegerField()
 
 	class Meta:
-		db_table = 'objects'
-
-	@staticmethod
-	def get_by_id(id):
-		object = Object.get(Object.id == id)
-		props = Property.select().where(Property.object == object).execute()
-		props
-
-
+		db_table = 'object_types'
