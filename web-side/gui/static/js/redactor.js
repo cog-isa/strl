@@ -282,7 +282,9 @@ function mainScope($scope) {
                 dataType: "json",
                 contentType: 'application/json; charset=UTF-8',
                 data: JSON.stringify({
-                    "name": setObj.name,
+                    //"name": setObj.name,
+                    //TODO: Для роботов имена могут быть только на латинице. Пока делаем имена числами
+                    "name": '' + +new Date(),
                     "type_id": setObj.type_id,
                     "world_id": +$scope.world.id,
                     "properties": {
