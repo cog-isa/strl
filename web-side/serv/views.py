@@ -32,9 +32,9 @@ def route(app):
 
 	@app.route('/api/login', methods=['POST'])
 	def login():
-		auth_token = session.get('auth_token')
-		if auth_token:
-			return 'Already logged in', 400
+		#auth_token = session.get('auth_token')
+		#if auth_token:
+		#	return 'Already logged in', 400
 		args = request.json
 		login_ = args['login']
 		password = args['password']
