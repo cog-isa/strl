@@ -57,8 +57,12 @@ function mainScope($scope) {
         });
 
         $scope.objectListByTypes = {};
+
         /** Словарь объектов на канвасе для быстрого доступа при моделировании. */
         $scope.canvasObjects = {};
+
+        /** Текущая временная отсечка процесса моделирования. */
+        $scope.modelingTime = 0;
 
 
         // запрос на получении имени проекта и мира
@@ -531,6 +535,8 @@ function mainScope($scope) {
                 //objectsDc[objectDcs[i].id] = objectDcs[i];
             }
             console.log(data);
+            $scope.modelingTime = data.time;
+            $scope.$scan();
             $scope.canvas.renderAll();
         };
 
