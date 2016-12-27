@@ -36,7 +36,7 @@ html, body, .dbody {
 }
 
 body {
-    background-color: #dbdbdb;
+    background-color: #e3e2de;
     font: 12pt RobotoLight;
     color: #5d5d5d;
 }
@@ -73,7 +73,7 @@ form {
 
 .button {
     text-align: center;
-    background-color: #5a6f6f;
+    background-color: #106162;
     color: #fff;
     font: 12pt RobotoRegular;
     border: none;

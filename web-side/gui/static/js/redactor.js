@@ -450,6 +450,7 @@ function mainScope($scope) {
             $scope.activeObjHeight = null;
             $scope.activeObjColor = null;
             $scope.$scan();
+
         });
 
         // Запись новых координат
