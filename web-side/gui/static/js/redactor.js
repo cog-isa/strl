@@ -57,6 +57,8 @@ function mainScope($scope) {
         });
 
         $scope.objectListByTypes = {};
+        /** Словарь объектов на канвасе для быстрого доступа при моделировании. */
+        $scope.canvasObjects = {};
 
 
         // запрос на получении имени проекта и мира
@@ -183,6 +185,7 @@ function mainScope($scope) {
                     car.setScaleY(obj.properties.height/car.height);
 
                     $scope.canvas.add(car);
+                    $scope.canvasObjects[obj.id] = car;
                     $scope.canvas.renderAll();
                     break;
 
@@ -202,6 +205,7 @@ function mainScope($scope) {
                         lockRotation: true
                     });
                     $scope.canvas.add(wall);
+                    $scope.canvasObjects[obj.id] = wall;
                     $scope.canvas.renderAll();
                     break;
 
@@ -221,6 +225,7 @@ function mainScope($scope) {
                         lockRotation: true
                     });
                     $scope.canvas.add(marker);
+                    $scope.canvasObjects[obj.id] = marker;
                     $scope.canvas.renderAll();
                     break;
             }
@@ -505,6 +510,44 @@ function mainScope($scope) {
                         break;
                 }
             }
+        };
+
+
+        /* Моделирование */
+
+        var ws = new WebSocket("ws://" + location.host + "/experiment-data");
+        ws.onmessage = function(e){
+            var data = JSON.parse(e.data);
+            var objectDcs = data.objects;
+            for (var i = 0, l = objectDcs.length; i < l; ++i) {
+                var objectDc = objectDcs[i];
+                $scope.canvasObjects[objectDc.id].set({
+                    left: objectDc.properties.left,
+                    top: objectDc.properties.top,
+                    angle: objectDc.properties.angle
+                });
+                //objectsDc[objectDcs[i].id] = objectDcs[i];
+            }
+            console.log(data);
+            $scope.canvas.renderAll();
+        };
+
+        $scope.startModeling = function () {
+            $.ajax('/api/worlds/' + $scope.world.id + '/experiment/start', {
+                method: 'POST'
+            }).fail(function(){
+               alert('Не удалось запустить моделирование')
+            }).done(function(){
+            });
+        };
+
+        $scope.stopModeling = function () {
+            $.ajax('/api/worlds/' + $scope.world.id + '/experiment/stop', {
+                method: 'POST'
+            }).fail(function(){
+               alert('Не удалось остановить моделирование')
+            }).done(function(){
+            });
         };
     }
 

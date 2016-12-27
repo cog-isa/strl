@@ -12,7 +12,7 @@ from peewee import PostgresqlDatabase
 DEBUG = True
 SECRET_KEY = 'ssshhhh'
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../gui/static')
 app.config.from_object(__name__)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.jinja_env.autoescape = False

@@ -36,6 +36,7 @@ def recreate_db():
 		ObjectType.create(name=ot_name, parent=robot_ot, position=position)
 		position += 1
 
+
 	# Создаем тестовый проект
 	project = Project.create(name='Проект1')
 
@@ -45,6 +46,7 @@ def recreate_db():
 	# Создаем тестовый эксперимент
 	experiment = Experiment.create(world=world)  # Создаем тестовый мир
 
+	"""
 	# Создаем объект - разрушающий робот
 	obj = Object.create(name='robot2', type_id=4, world_id=1)
 	Property.create(object=obj, name='left', value=20)
@@ -60,6 +62,7 @@ def recreate_db():
 	Property.create(object=obj, name='width', value=5)
 	Property.create(object=obj, name='height', value=21)
 	Property.create(object=obj, name='fill', value='#eeeeee')
+	"""
 
 	"""
 	{

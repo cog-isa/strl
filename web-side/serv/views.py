@@ -7,6 +7,7 @@ from functools import wraps
 
 from flask import jsonify, request, session
 #from flask.ext import setup
+from flask import send_from_directory
 from playhouse.shortcuts import model_to_dict
 from models import *
 from app import native_db as db
@@ -19,6 +20,28 @@ ws = None
 
 
 def route(app, sockets):
+
+	# --------------------   Сервим статические файлы   -------------------------
+
+	@app.route('/login')
+	@app.route('/login.html')
+	def serve_login():
+		return send_from_directory('../gui', 'login.html')
+
+	@app.route('/listofproj')
+	@app.route('/listofproj.html')
+	def serve_listofproj():
+		return send_from_directory('../gui', 'listofproj.html')
+
+	@app.route('/worldeditor')
+	@app.route('/worldeditor.html')
+	def serve_worldeditor():
+		return send_from_directory('../gui', 'worldeditor.html')
+
+	@app.route('/modeling')
+	@app.route('/modeling.html')
+	def serve_modeling():
+		return send_from_directory('../gui', 'modeling.html')
 
 	# --------------------   User   -------------------------
 

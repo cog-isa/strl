@@ -85,10 +85,10 @@ def run():
         pos.x, pos.y = int(round(pos.x)), int(round(pos.y))
         dist = data.dist
 
-        rem(pos.x, dist.u)
-        rem(pos.x, dist.d)
-        rem(dist.l, pos.y)
-        rem(dist.r, pos.y)
+        rem(pos.x, int(dist.u))
+        rem(pos.x, int(dist.d))
+        rem(int(dist.l), pos.y)
+        rem(int(dist.r), pos.y)
 
         tx, ty = find_tar(pos.x, pos.y)
         tx += pos.x; ty += pos.y
