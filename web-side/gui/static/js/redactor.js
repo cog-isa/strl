@@ -14,6 +14,8 @@ function mainScope($scope) {
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
+    var isModeling = window.location.pathname.indexOf('modeling') >= 0;
+
     // проверка на корректность url - должен содержать ID выбранного мира
 
     if (!getParameterByName("worldid"))
@@ -521,24 +523,26 @@ function mainScope($scope) {
 
         /* Моделирование */
 
-        var ws = new WebSocket("ws://" + location.host + "/experiment-data");
-        ws.onmessage = function(e){
-            var data = JSON.parse(e.data);
-            var objectDcs = data.objects;
-            for (var i = 0, l = objectDcs.length; i < l; ++i) {
-                var objectDc = objectDcs[i];
-                $scope.canvasObjects[objectDc.id].set({
-                    left: objectDc.properties.left,
-                    top: objectDc.properties.top,
-                    angle: objectDc.properties.angle
-                });
-                //objectsDc[objectDcs[i].id] = objectDcs[i];
-            }
-            console.log(data);
-            $scope.modelingTime = data.time;
-            $scope.$scan();
-            $scope.canvas.renderAll();
-        };
+        if (isModeling) {
+            var ws = new WebSocket("ws://" + location.host + "/experiment-data");
+            ws.onmessage = function (e) {
+                var data = JSON.parse(e.data);
+                var objectDcs = data.objects;
+                for (var i = 0, l = objectDcs.length; i < l; ++i) {
+                    var objectDc = objectDcs[i];
+                    $scope.canvasObjects[objectDc.id].set({
+                        left: objectDc.properties.left,
+                        top: objectDc.properties.top,
+                        angle: objectDc.properties.angle
+                    });
+                    //objectsDc[objectDcs[i].id] = objectDcs[i];
+                }
+                console.log(data);
+                $scope.modelingTime = data.time;
+                $scope.$scan();
+                $scope.canvas.renderAll();
+            };
+        }
 
         $scope.startModeling = function () {
             $.ajax('/api/worlds/' + $scope.world.id + '/experiment/start', {
