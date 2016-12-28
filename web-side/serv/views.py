@@ -59,9 +59,6 @@ def route(app, sockets):
 
 	@app.route('/api/login', methods=['POST'])
 	def login():
-		#auth_token = session.get('auth_token')
-		#if auth_token:
-		#	return 'Already logged in', 400
 		args = request.json
 		login_ = args['login']
 		password = args['password']
@@ -69,10 +66,13 @@ def route(app, sockets):
 		except User.DoesNotExist:
 			return 'Invalid login or password', 400
 
-		auth_token = hashlib.sha1(os.urandom(128)).hexdigest()
-		with db.atomic() as txn:
-			User.update(auth_token=auth_token).where(User.id == user.id).execute()
-			session['auth_token'] = auth_token
+		if user.auth_token is None:
+			with db.atomic() as txn:
+				user.auth_token = hashlib.sha1(os.urandom(128)).hexdigest()
+				user.save()
+				# User.update(auth_token=auth_token).where(User.id == user.id).execute()
+		session['auth_token'] = user.auth_token
+
 		return ''
 
 	@app.route('/api/logout', methods=['POST'])
