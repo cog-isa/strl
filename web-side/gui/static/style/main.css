@@ -128,8 +128,14 @@ body {
     align-items: center;
     cursor: pointer;
 }
+.project-name.active {
+    background-color: #def5f5;
+}
 .project-name:hover {
     background-color: #f1f7f7;
+}
+.project-name.active:hover {
+    background-color: #def5f5;
 }
 
 .edit-project, .clone-project, .delete-project, .signin-project {

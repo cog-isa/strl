@@ -37,7 +37,7 @@
 	function getProjects() {
 		$.ajax('/api/projects', {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8'},
+            headers: {'Content-Type': 'application/json; charset=UTF-8'},
             dataType: "json"			
         }).fail(function () {
 			console.error("Ошибка получения списка проектов");
