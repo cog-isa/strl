@@ -54,7 +54,7 @@
                 <div class="layers-block" al-repeat="object in objectTypes">
                     <div class="flex-row layers-name" al-click="createObject(object)">{{object.name}}</div>
                     <div class="flex-column layers-list">
-                        <span al-repeat="objChild in object.children" al-click="createObject(object,objChild)">{{objChild.name}}</span>
+                        <span al-repeat="objChild in object.children" al-click="createObject(objChild)">{{objChild.name}}</span>
                     </div>
                 </div>
             </div>
