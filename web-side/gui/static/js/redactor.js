@@ -183,9 +183,9 @@ function mainScope($scope) {
                         left: obj.properties.left,
                         fill: obj.properties.fill,
                         angle: obj.properties.angle,
-                        lockScalingX: true,
-                        lockScalingY: true,
-                        lockRotation: true
+                        //lockScalingX: true,
+                        //lockScalingY: true,
+                        //lockRotation: true
                     });
                     car.setScaleX(obj.properties.width/car.width);
                     car.setScaleY(obj.properties.height/car.height);
@@ -206,9 +206,9 @@ function mainScope($scope) {
                         left: obj.properties.left,
                         fill: obj.properties.fill,
                         angle: obj.properties.angle,
-                        lockScalingX: true,
-                        lockScalingY: true,
-                        lockRotation: true
+                        //lockScalingX: true,
+                        //lockScalingY: true,
+                        //lockRotation: true
                     });
                     $scope.canvas.add(wall);
                     $scope.canvasObjects[obj.id] = wall;
@@ -226,9 +226,9 @@ function mainScope($scope) {
                         left: obj.properties.left,
                         fill: obj.properties.fill,
                         angle: obj.properties.angle,
-                        lockScalingX: true,
-                        lockScalingY: true,
-                        lockRotation: true
+                        //lockScalingX: true,
+                        //lockScalingY: true,
+                        //lockRotation: true
                     });
                     $scope.canvas.add(marker);
                     $scope.canvasObjects[obj.id] = marker;
@@ -315,7 +315,8 @@ function mainScope($scope) {
                                 top: 150,
                                 height: +setObj.height,
                                 width: +setObj.width,
-                                fill: setObj.fill
+                                fill: setObj.fill,
+                                angle: setObj.angle
                             });
                             $scope.canvas.add(cloneObject);
                             //cloneObject.set("fill", setObj.fill);
@@ -333,9 +334,10 @@ function mainScope($scope) {
                                 id: data.id,
                                 top: 150,
                                 left: 150,
-                                lockScalingX: true,
-                                lockScalingY: true,
-                                lockRotation: true
+                                angle: setObj.angle
+                                //lockScalingX: true,
+                                //lockScalingY: true,
+                                //lockRotation: true
                             });
                             $scope.car.setScaleX(setObj.width / $scope.car.width);
                             $scope.car.setScaleY(setObj.height / $scope.car.height);
@@ -359,7 +361,8 @@ function mainScope($scope) {
                                 top: 150,
                                 width: setObj.width,
                                 height: setObj.height,
-                                fill: setObj.fill
+                                fill: setObj.fill,
+                                angle: setObj.angle
                             });
                             $scope.canvas.add(wall);
                             break;
@@ -456,6 +459,7 @@ function mainScope($scope) {
             $scope.activeObjColor = obj.fill;
             $scope.selectObjTop = obj.top;
             $scope.selectObjLeft = obj.left;
+            //$scope.selectObjAngle = obj.getAngle();
             $scope.$scan();
         });
         $scope.canvas.on('selection:cleared', function () {
@@ -465,6 +469,10 @@ function mainScope($scope) {
             $scope.$scan();
 
         });
+        $scope.canvas.on('object:modified', function (options) {
+        $scope.selectObjAngle = options.target.getAngle();
+
+      });
 
         // Запись новых координат
         $scope.canvas.on('mouse:up', function (options) {
@@ -473,12 +481,15 @@ function mainScope($scope) {
                     var param = {
                         "properties": {
                             "left": options.target.left,
-                            "top": options.target.top
+                            "top": options.target.top,
+                            "angle": options.target.angle,
                         }
                     };
                     $scope.saveObjProp(param);
                     $scope.selectObjTop = options.target.top;
                     $scope.selectObjLeft = options.target.left;
+                    $scope.selectObjAngle = options.target.angle;
+
                 }
            }
         });
@@ -506,7 +517,7 @@ function mainScope($scope) {
                         var selectObject = $scope.canvas.getActiveObject();
                         createObjectRequest(selectObject,true);
                         break;
-                    case 'route':
+                    /*case 'route':
                         var param = {"properties": {"angle": ($scope.canvas.getActiveObject().get('angle') + 90)}};
                         $scope.saveObjProp(param);
 
@@ -515,7 +526,7 @@ function mainScope($scope) {
                         var objAngle = $scope.canvas.getActiveObject().getAngle();
                         $scope.canvas.getActiveObject().setAngle(objAngle + 90);
                         $scope.canvas.renderAll();
-                        break;
+                        break;*/
                 }
             }
         };
