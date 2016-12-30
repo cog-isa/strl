@@ -31,34 +31,34 @@ function mainScope($scope) {
 
         // Рисуем форму робота
         var carBody = new fabric.Rect({
-            left: 260,
-            top: 60,
-            width: 50,
-            height: 70
+            left: 5,
+            top: 7,
+            width: 25,
+            height: 35
         });
         var carWheel1 = new fabric.Rect({
-            left: 250,
-            top: 40,
-            width: 10,
-            height: 40
+            left: 0,
+            top: 0,
+            width: 5,
+            height: 14
         });
         var carWheel2 = new fabric.Rect({
-            left: 310,
-            top: 40,
-            width: 10,
-            height: 40
+            left: 30,
+            top: 0,
+            width: 5,
+            height: 14
         });
         var carWheel3 = new fabric.Rect({
-            left: 310,
-            top: 110,
-            width: 10,
-            height: 40
+            left: 0,
+            top: 35,
+            width: 5,
+            height: 14
         });
         var carWheel4 = new fabric.Rect({
-            left: 250,
-            top: 110,
-            width: 10,
-            height: 40
+            left: 30,
+            top: 35,
+            width: 5,
+            height: 14
         });
 
         $scope.objectListByTypes = {};              // объекты, отфильтрованные по типам
@@ -126,7 +126,7 @@ function mainScope($scope) {
                         objDefault[$scope.objectTypes[i].children[j].id].properties = {};
                         objDefault[$scope.objectTypes[i].children[j].id].type_id = $scope.objectTypes[i].children[j].id;
                         objDefault[$scope.objectTypes[i].children[j].id].name = 'new';
-                        objDefault[$scope.objectTypes[i].children[j].id].properties.height = 65;
+                        objDefault[$scope.objectTypes[i].children[j].id].properties.height = 50;
                         objDefault[$scope.objectTypes[i].children[j].id].properties.width = 35;
                         objDefault[$scope.objectTypes[i].children[j].id].properties.top = 150;
                         objDefault[$scope.objectTypes[i].children[j].id].properties.left = 150;
@@ -254,18 +254,24 @@ function mainScope($scope) {
                 $scope.canvas.renderAll();
                 $scope.canvas.objectCounter = {};
                 $scope.canvas.objectCounter['group'] = 0;
+
+                if (isModeling) {
+                    $scope.canvas.selection = false;
+                }
             });
         //};
+
 
 
         // Вывод объектов
 
         function drawObject(id, obj) {
+            var drawobj;
             switch (obj.type_id) {
                 case 4:
                 case 5:
                     // Собираем робота
-                    var car = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
+                    drawobj = new fabric.Group([carBody, carWheel1, carWheel2, carWheel3, carWheel4], {
                         id: id,
                         type_id: obj.type_id,
                         name: obj.name,
@@ -274,15 +280,12 @@ function mainScope($scope) {
                         fill: obj.properties.fill,
                         angle: obj.properties.angle
                     });
-                    car.setScaleX(obj.properties.width/car.width);
-                    car.setScaleY(obj.properties.height/car.height);
-
-                    $scope.canvas.add(car);
-                    $scope.canvas.renderAll();
+                    drawobj.setScaleX(obj.properties.width/drawobj.width);
+                    drawobj.setScaleY(obj.properties.height/drawobj.height);
                     break;
 
                 case 2:
-                    var wall = new fabric.Rect({
+                    drawobj = new fabric.Rect({
                         id: id,
                         type_id: obj.type_id,
                         name: obj.name,
@@ -293,13 +296,10 @@ function mainScope($scope) {
                         fill: obj.properties.fill,
                         angle: obj.properties.angle
                     });
-                    $scope.canvas.add(wall);
-                    $scope.canvasObjects[obj.id] = wall;
-                    $scope.canvas.renderAll();
                     break;
 
                 case 3:
-                    var marker = new fabric.Rect({
+                    drawobj = new fabric.Rect({
                         id: id,
                         type_id: obj.type_id,
                         name: obj.name,
@@ -310,11 +310,13 @@ function mainScope($scope) {
                         fill: obj.properties.fill,
                         angle: obj.properties.angle
                     });
-                    $scope.canvas.add(marker);
-                    $scope.canvasObjects[obj.id] = marker;
-                    $scope.canvas.renderAll();
                     break;
             }
+            if (isModeling) {
+                drawobj.selectable = false;
+            }
+            $scope.canvas.add(drawobj);
+            $scope.canvas.renderAll();
         }
 
 
@@ -393,7 +395,6 @@ function mainScope($scope) {
         $scope.canvas.on('object:modified', function (options) {
             $scope.activeObjWidth = +options.target.getWidth();      // Отобразить ширину в инпуте
             $scope.activeObjHeight = +options.target.getHeight();    // Отобразить высоту в инпуте
-            console.log(options.target);
 
             var param = {
                 "properties": {
@@ -433,8 +434,9 @@ function mainScope($scope) {
             }).fail(function () {
             }).done(function (data) {
                 if (key && val) {
-                    if (!(activeObj._objects && (key == 'width' || key == 'height')))
+                    if (!(activeObj._objects && (key == 'width' || key == 'height'))) {
                         activeObj.set(key, val);
+                    }
                     else {
                         if (key == 'width') {
                             activeObj.setScaleX(+val/activeObj.width);
@@ -443,8 +445,9 @@ function mainScope($scope) {
                             activeObj.setScaleY(+val/activeObj.height);
                         }
                     }
-                    $scope.canvas.renderAll();
                 }
+                activeObj.set("fill", activeObj.fill);
+                $scope.canvas.renderAll();
             });
         };
 
@@ -478,10 +481,10 @@ function mainScope($scope) {
                         obj.name = selectObject.name;
                         obj.type_id = selectObject.type_id;
                         obj.properties = {};
-                        obj.properties.height = selectObject.height;
-                        obj.properties.width = selectObject.width;
-                        obj.properties.left = selectObject.left;
-                        obj.properties.top = selectObject.top;
+                        obj.properties.height = selectObject.cacheHeight;
+                        obj.properties.width = selectObject.cacheWidth;
+                        obj.properties.left = selectObject.left + 10 + selectObject.cacheWidth;
+                        obj.properties.top = selectObject.top + 10;
                         obj.properties.fill = selectObject.fill;
                         obj.properties.angle = selectObject.angle;
                         obj.copy = true;
@@ -511,9 +514,7 @@ function mainScope($scope) {
                         top: objectDc.properties.top,
                         angle: objectDc.properties.angle
                     });
-                    //objectsDc[objectDcs[i].id] = objectDcs[i];
                 }
-                console.log(data);
                 $scope.modelingTime = data.time;
                 $scope.$scan();
                 $scope.canvas.renderAll();
