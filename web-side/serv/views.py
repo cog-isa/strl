@@ -3,6 +3,7 @@
 import hashlib
 import math
 import os
+import random
 from functools import wraps
 
 from flask import jsonify, request, session
@@ -257,7 +258,15 @@ def route(app, sockets):
 		data = request.json
 		props_dc = data.pop('properties', {})
 		with db.atomic() as txn:
-			object = Object.create(**data)
+			orig_name = data['name']
+			while True:
+				suffix = _generate_name_suffix()
+				data['name'] = orig_name + '-' + suffix
+				try:
+					object = Object.create(**data)
+					break
+				except IntegrityError:
+					pass
 			for key, val in props_dc.items():
 				prop = Property.create(object=object, name=key, value=val)
 		obj_dc = model_to_dict(object)
@@ -490,3 +499,5 @@ def route(app, sockets):
 			message = ws.receive()
 			#ws.send(message)
 
+	def _generate_name_suffix():
+		return str(random.randint(0, 99))

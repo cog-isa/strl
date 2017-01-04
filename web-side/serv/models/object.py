@@ -21,6 +21,7 @@ class Object(Model):
 
 	class Meta:
 		db_table = 'objects'
+		constraints = [SQL('UNIQUE(world_id, name)')]
 
 	@staticmethod
 	def get_by_id(id):

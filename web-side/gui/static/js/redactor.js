@@ -14,7 +14,8 @@ function mainScope($scope) {
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
-    var isModeling = window.location.pathname.indexOf('modeling') >= 0;      // проверяем, находимся ли мы на странице моделирования или редактора
+    /** Флаг, находимся ли мы на странице моделирования или редактора */
+    var isModeling = window.location.pathname.indexOf('modeling') >= 0;
 
     /** проверка на корректность url - должен содержать ID выбранного мира */
 
@@ -266,6 +267,8 @@ function mainScope($scope) {
         // Вывод объектов
 
         function drawObject(id, obj) {
+            // TODO: Катя и Марина Ёповы! Переменные в JS именуются через camel - ипать его в сраку - case!!!  (drawObj)
+            // TODO: Привыкайте к нормальному кодестайлу.
             var drawobj;
             switch (obj.type_id) {
                 case 4:
@@ -280,8 +283,8 @@ function mainScope($scope) {
                         fill: obj.properties.fill,
                         angle: obj.properties.angle
                     });
-                    drawobj.setScaleX(obj.properties.width/drawobj.width);
-                    drawobj.setScaleY(obj.properties.height/drawobj.height);
+                    drawobj.setScaleX(obj.properties.width / drawobj.width);
+                    drawobj.setScaleY(obj.properties.height / drawobj.height);
                     break;
 
                 case 2:
@@ -316,6 +319,7 @@ function mainScope($scope) {
                 drawobj.selectable = false;
             }
             $scope.canvas.add(drawobj);
+            $scope.canvasObjects[id] = drawobj;
             $scope.canvas.renderAll();
         }
 
@@ -506,6 +510,7 @@ function mainScope($scope) {
             var ws = new WebSocket("ws://" + location.host + "/experiment-data");
             ws.onmessage = function (e) {
                 var data = JSON.parse(e.data);
+                console.log(data.objects);
                 var objectDcs = data.objects;
                 for (var i = 0, l = objectDcs.length; i < l; ++i) {
                     var objectDc = objectDcs[i];
