@@ -32,7 +32,7 @@
 					<!-- Каждый проект -->
 					<div class="flex-row project-name" al-repeat="proj in projects" al-class="active: proj === selectedPrj" al-click="selectProject(proj)">
 						<div class="flex-1">{{proj.name}}</div>
-                        <span class="edit-project" al-click="editProject(proj, &quot;Новое название&quot;)"></span>
+                        <span class="edit-project" al-click="editProject(proj)"></span>
                         <span class="clone-project" al-click="createProject()"></span>
                         <span class="delete-project" al-click="deleteProject(proj)"></span>
                     </div>

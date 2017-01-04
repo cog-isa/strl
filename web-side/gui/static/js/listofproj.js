@@ -66,19 +66,22 @@
         });					
 	}
 	
-	function editProject(proj, newName) {		 
+	function editProject(proj) {
+		var name = prompt('Новое название проекта:');
+		if (name == null || !name.trim())
+			return;
 		$.ajax('/api/projects/' + proj.id, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8'},            
+            headers: { 'Content-Type': 'application/json; charset=UTF-8'},
 			data: JSON.stringify({
-                        "name": newName
-                    })
+				"name": name.trim()
+			})
         }).fail(function () {
 			console.error("Ошибка редактирования проекта");
 			getProjects();
         }).done(function (result) {			
 			getProjects();
-        });	
+        });
 	}
 	
 	function deleteProject(proj) {		 
@@ -125,12 +128,15 @@
         });			
 	}
 	
-	function editWorld(world, newName) {		
+	function editWorld(world) {
+		var name = prompt('Новое название мира:');
+		if (name == null || !name.trim())
+			return;
 		$.ajax('/api/worlds/' + world.id, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json; charset=UTF-8'},            
 			data: JSON.stringify({
-				"name": newName,
+				"name": name.trim()
 			})
         }).fail(function () {
 			console.error("Ошибка редактирования мира");
