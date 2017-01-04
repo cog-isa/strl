@@ -11,6 +11,7 @@ class Object(NodeFuncs):
 
     self.id = self.properties['name']
     self.nodes = []
+    self.markerdist = []
 
     NodeFuncs.__init__(self, namespace=self.world.get_name('~'), name=self.properties['name'])
 

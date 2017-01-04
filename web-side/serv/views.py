@@ -378,7 +378,7 @@ def route(app, sockets):
 					# TODO: Переделать на эньюм
 					'active':  obj.type_id in (4, 5),		#если false, то - стена
 					'geometry': {
-						'type': 'rectangle',
+						'type': 'romb' if obj.type_id == 3 else 'circle' if obj.type_id in (4, 5) else 'rectangle',
 						'position': {
 							'x': float(props.pop('left')),
 							'y': float(props.pop('top'))

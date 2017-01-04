@@ -51,11 +51,10 @@
 					<!-- Каждый мир -->
 					<div class="flex-row project-name" al-repeat="world in worlds">
                         <div class="flex-1"><a href="./worldeditor.html?worldid={{world.id}}">{{world.name}}</a></div>
-                        <span class="edit-project" al-click="editWorld(world, &quot;Новое название&quot;)"></span>
+                        <span class="edit-project" al-click="editWorld(world)"></span>
                         <span class="clone-project" al-click="createWorld(world.project_id)"></span>
                         <span class="delete-project" al-click="deleteWorld(world )"></span>											
-						
-                    </div>								
+                    </div>
                 </div>
             </div>
                 <div class="add-button relative" al-click="createWorld(selectedPrj)">Новый мир</div>

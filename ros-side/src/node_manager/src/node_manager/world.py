@@ -87,7 +87,7 @@ class World(NodeFuncs):
           data = self.__prepare_data()
           bridge.set_data(data)
 
-      time.sleep(1.5)
+     # time.sleep(1.5)
 
 
     def __loop(self):
