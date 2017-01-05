@@ -3,6 +3,7 @@
 import os
 import sys
 
+"""
 sys.path.insert(0, '/home/dmitriy/projects/strl/ros-side/devel/lib/python2.7/dist-packages')
 sys.path.insert(0, '/opt/ros/kinetic/lib/python2.7/dist-packages')
 
@@ -15,6 +16,7 @@ os.environ['ROS_ROOT'] = '/opt/ros/kinetic/share/ros'
 os.environ['PKG_CONFIG_PATH'] = '/home/dmitriy/projects/strl/ros-side/devel/lib/pkgconfig:/opt/ros/kinetic/lib/pkgconfig'
 os.environ['ROS_PACKAGE_PATH'] = '/home/dmitriy/projects/strl/ros-side/src:/opt/ros/kinetic/share'
 os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'
+"""
 
 import rospy, copy, math
 from node_manager.srv import *
