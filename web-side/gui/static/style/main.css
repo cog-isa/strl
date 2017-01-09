@@ -123,10 +123,12 @@ body {
  /* – LIST OF PROJECT –*/
 
 .project-name {
+    color: inherit;
     padding: 20px 15px 20px 25px;
     border-bottom: 1px solid #e3e2de;
     align-items: center;
-    cursor: pointer;
+    cursor: default;
+    text-decoration: none;
 }
 .project-name.active {
     background-color: #def5f5;
