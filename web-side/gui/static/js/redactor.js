@@ -80,7 +80,9 @@ function mainScope($scope) {
                 'Content-Type': 'application/json; charset=UTF-8'
             },
             dataType: "json"
-        }).fail(function () {
+        }).fail(function (e) {
+            if (e.status === 401)
+				window.location = '/login.html';
         }).done(function (result) {
             $scope.world.name = result.name;
             $scope.proj = {};                   // переменная, содержащая данные о проекте
@@ -506,6 +508,7 @@ function mainScope($scope) {
 
         /* Моделирование */
 
+        /*
         if (isModeling) {
             var ws = new WebSocket("ws://" + location.host + "/experiment-data");
             ws.onmessage = function (e) {
@@ -525,6 +528,9 @@ function mainScope($scope) {
                 $scope.canvas.renderAll();
             };
         }
+        */
+
+        $scope.intervalId = null;
 
         $scope.startModeling = function () {
             $.ajax('/api/worlds/' + $scope.world.id + '/experiment/start', {
@@ -532,6 +538,33 @@ function mainScope($scope) {
             }).fail(function(){
                alert('Не удалось запустить моделирование')
             }).done(function(){
+                $scope.intervalId = setInterval(function(){
+                    $.ajax('/api/worlds/' + $scope.world.id + '/experiment/data', {
+                        method: 'GET',
+                        dataType: 'json'
+                    }).fail(function(e){
+                        console.error(e);
+                    }).done(function(items){
+                        //var data = JSON.parse(e.data);
+                        for (var i = 0, l = items.length; i < l; ++i) {
+                            var data = items[i];
+                            //if (!data) return;
+                            //console.log(data.objects);
+                            var objectDcs = data.objects;
+                            for (var i = 0, l = objectDcs.length; i < l; ++i) {
+                                var objectDc = objectDcs[i];
+                                $scope.canvasObjects[objectDc.id].set({
+                                    left: objectDc.properties.left,
+                                    top: objectDc.properties.top,
+                                    angle: objectDc.properties.angle
+                                });
+                            }
+                            $scope.modelingTime = data.time;
+                            $scope.$scan();
+                            $scope.canvas.renderAll();
+                        }
+                    });
+                }, 200);
             });
         };
 
@@ -541,6 +574,8 @@ function mainScope($scope) {
             }).fail(function(){
                alert('Не удалось остановить моделирование')
             }).done(function(){
+                if ($scope.intervalId != null)
+                    clearInterval($scope.intervalId);
             });
         };
     }

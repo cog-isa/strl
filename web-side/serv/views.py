@@ -18,6 +18,7 @@ from py4j.java_gateway import JavaGateway
 
 
 ws = None
+experiment_data = {}
 
 
 def route(app, sockets):
@@ -336,6 +337,9 @@ def route(app, sockets):
 		bridge.publish('/create_world', 'std_msgs/String',
 					   # json.dumps({"data": str(data['execution'])}, ensure_ascii=False))
 					   ujson.dumps({"data": str(world.id)}, ensure_ascii=False))
+
+		experiment_data[world_id] = []
+
 		return '', 200
 
 	@app.route('/api/worlds/<world_id>/experiment/stop', methods=['POST'])
@@ -487,10 +491,13 @@ def route(app, sockets):
 
 		print(ret_data)
 
-		ws.send(ujson.dumps(ret_data))
+		# ws.send(ujson.dumps(ret_data))
+
+		experiment_data[world_id].append(ret_data)
 
 		return ''
 
+	"""
 	@sockets.route('/experiment-data')
 	def experiment_data(ws_):
 		global ws
@@ -498,6 +505,23 @@ def route(app, sockets):
 		while not ws.closed:
 			message = ws.receive()
 			#ws.send(message)
+	"""
+
+
+	@app.route('/api/worlds/<world_id>/experiment/data', methods=['GET'])
+	@is_autherized
+	def experiment_data_get(world_id):
+		"""
+		data = experiment_data[world_id]
+		datum = data[-1] if len(data) else None
+		del data[:]
+		print len(experiment_data[world_id])
+		return ujson.dumps(datum), 200, {'Content-Type': 'application/json; charset=UTF-8'}
+		"""
+		jsn = ujson.dumps(experiment_data[world_id])
+		del experiment_data[world_id][:]
+		return jsn, 200, {'Content-Type': 'application/json; charset=UTF-8'}
+
 
 	def _generate_name_suffix():
 		return str(random.randint(0, 99))

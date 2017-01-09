@@ -39,7 +39,9 @@
             method: 'GET',
             headers: {'Content-Type': 'application/json; charset=UTF-8'},
             dataType: "json"			
-        }).fail(function () {
+        }).fail(function (e) {
+			if (e.status === 401)
+				window.location = '/login.html';
 			console.error("Ошибка получения списка проектов");
 			$scope.$scan();
         }).done(function (result) {		
