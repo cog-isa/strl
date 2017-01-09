@@ -189,6 +189,7 @@ body {
 
 .canvas {
     background-color: #fff;
+    max-height: 100%;
 }
 .canvas-panel {
     background-color: #f0f0f0;
@@ -234,7 +235,6 @@ span.dummy-span {
 #canvas-container {
     overflow-x: auto;
     overflow-y: auto;
-    width: 100%;
 }
 
 
