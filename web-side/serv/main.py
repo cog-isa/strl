@@ -32,10 +32,9 @@ def recreate_db():
 		position += 1
 	robot_ot = ObjectType.get(name='Робот')
 	position = 0
-	for ot_name in 'Робот, умеющий разрушать препятствия', 'Робот, неумеющий разрушать препятствия':
+	for ot_name in ('Робот, умеющий разрушать препятствия', ):
 		ObjectType.create(name=ot_name, parent=robot_ot, position=position)
 		position += 1
-
 
 	# Создаем тестовый проект
 	project = Project.create(name='Проект1')
