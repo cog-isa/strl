@@ -246,9 +246,8 @@ function mainScope($scope) {
 
         //$scope.createCanvas = function () {
             jQuery(document).ready(function () {
-                // TODO: задаем жестко ширину, чтобы не растягивалась
-                // TODO: почему width растягивается, а height - нет???
-                // TODO: придумать альтернативу
+                // TODO: задаем жестко ширину, чтобы не растягивалось
+                // TODO: почему width растягивается по контенту, а height - по высоте родителя (flex)???
                 jQuery('#canvas-container').width(jQuery('#canvas-container').width());
 
                 $scope.canvas = new fabric.Canvas('canvas');

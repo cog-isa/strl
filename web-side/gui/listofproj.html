@@ -49,12 +49,12 @@
                 <div class="overflow-list">
 							
 					<!-- Каждый мир -->
-					<div class="flex-row project-name" al-repeat="world in worlds">
-                        <div class="flex-1"><a href="./worldeditor.html?worldid={{world.id}}">{{world.name}}</a></div>
+					<a href="./worldeditor.html?worldid={{world.id}}" class="flex-row project-name" al-repeat="world in worlds">
+                        <div class="flex-1">{{world.name}}</div>
                         <span class="edit-project" al-click="editWorld(world)"></span>
                         <span class="clone-project" al-click="createWorld(world.project_id)"></span>
                         <span class="delete-project" al-click="deleteWorld(world )"></span>											
-                    </div>
+                    </a>
                 </div>
             </div>
                 <div class="add-button relative" al-click="createWorld(selectedPrj)">Новый мир</div>
